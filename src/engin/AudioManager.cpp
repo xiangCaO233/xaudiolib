@@ -28,7 +28,7 @@ int XAudioManager::loadaudio(const std::string &audio) {
     auto handelit = handles.find(name);
     if (handelit != handles.end()) {
         LOG_WARN("载入音频[" + audio + "]失败,音频已载入过,句柄[" +
-                 std::to_string(id) + "]已存在");
+                 std::to_string(handelit->second) + "]已存在");
         return id;
     } else {
         LOG_DEBUG("正在打开音频[" + audio + "]");
