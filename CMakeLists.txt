@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(CODEC_SOURCES src/engin/codec/coder.cpp src/engin/codec/decoder.cpp)
+set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(MIXER_SOURCES src/engin/mix/mixer.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
 set(ENGIN_SOURCES src/engin/AudioEngin.cpp src/engin/AudioManager.cpp

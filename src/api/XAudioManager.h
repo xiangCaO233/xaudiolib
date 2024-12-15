@@ -1,6 +1,7 @@
 #ifndef API_X_AUDIO_MANAGER_H
 #define API_X_AUDIO_MANAGER_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -13,6 +14,9 @@ class XAudioManager {
 
     const std::string &get_audio_name(int id);
     const std::string &get_audio_path(int id);
+
+    void set_audio_current_pos(const std::string &auido, int64_t time);
+    void set_audio_current_pos(int id, int64_t time);
 
     float getVolume(const std::string &audio);
     float getVolume(int id);
@@ -33,6 +37,10 @@ class XAudioManager {
     // 获取音频信息
     const std::string &audio_name(int audio_id);
     const std::string &audio_path(int audio_id);
+
+    // 设置播放时间
+    void set_audio_time(const std::string &audio_name, int64_t time);
+    void set_audio_time(int audio_id, int64_t time);
 
     // 获取音频音量
     float volume(const std::string &audio_name);
