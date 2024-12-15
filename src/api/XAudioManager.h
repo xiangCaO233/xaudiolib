@@ -10,10 +10,13 @@ class XAudioManager {
     void loadaudio(const std::string &audio);
     void unloadaudio(const std::string &audio);
     void unloadaudio(int id);
+
     const std::string &get_audio_name(int id);
     const std::string &get_audio_path(int id);
+
     float getVolume(const std::string &audio);
     float getVolume(int id);
+
     void setAudioVolume(const std::string &audio);
     void setAudioVolume(int id);
 

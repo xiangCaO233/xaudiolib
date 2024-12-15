@@ -12,7 +12,7 @@ set(CONFIG_SOURCES src/config/config.cpp)
 set(ENGIN_SOURCES src/engin/AudioEngin.cpp src/engin/AudioManager.cpp
                   ${CONFIG_SOURCES} ${CODEC_SOURCES} ${MIXER_SOURCES})
 set(LOG_SOURCE src/logger/logger.cpp)
-set(API_SOURCES src/api/XAudioEngin.cpp src/api/XAudioManager.cpp)
+set(API_SOURCES src/api/cpp/XAudioEngin.cpp src/api/cpp/XAudioManager.cpp)
 
 set(LIB_SOURCES ${LOG_SOURCE} ${API_SOURCES} ${ENGIN_SOURCES})
 
