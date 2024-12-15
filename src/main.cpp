@@ -1,24 +1,21 @@
 #include <iostream>
 #include <string>
-#if defined(__APPLE__)
-#include <AudioToolbox/AudioToolbox.h>
-#include <CoreAudio/CoreAudio.h>
-#elif defined(__linux__)
-#elif defined(_WIN32)
-#elif defined(_WIN64)
-#elif defined(__ANDROID__)
-#else
-#endif
 
 #include "api/XAudioManager.h"
 #include "logger/logger.h"
 
 int main(int argc, char *argv[]) {
     std::cout << "xaudios!" << std::endl;
+
     auto manager = XAudioManager::newmanager();
-    std::string audio_path = "testaudio.mp3";
+    std::string audio_path = "../resources/Tensions - スキャンダル.mp3";
+    std::string audio_path2 = "aaaa.mp3";
     manager->load(audio_path);
+    manager->load(audio_path2);
     manager->unload(audio_path);
+
+    LOG_TRACE(manager->audio_path(0));
+    LOG_TRACE(manager->audio_name(0));
 
     return 0;
 }
