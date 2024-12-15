@@ -16,23 +16,45 @@ extern "C" {
 #include <string>
 #include <unordered_map>
 
+class XAudioManager;
+
+class XSound {
+    // 句柄(id)
+    int handle;
+    // pcm声音数据
+    std::vector<float> pcm_data;
+    // 播放速率
+    float speed;
+    // 音量
+    float volume;
+
+    // 未知常量
+    static std::string unknown;
+    static std::string unknown_path;
+    friend XAudioManager;
+
+   public:
+    // 构造XSound
+    XSound(int h, std::string n, std::string p,
+           std::shared_ptr<AVFormatContext> f, float s, float vm)
+        : handle(h), name(n), path(p), audio_format(f), speed(s), volume(vm){};
+    // 析构XSound
+    virtual ~XSound() = default;
+
+    // 音频文件名
+    const std::string name;
+    // 音频路径
+    const std::string path;
+    // 音频格式
+    const std::shared_ptr<AVFormatContext> audio_format;
+};
+
 class XAudioManager {
    private:
-    // 变量
-    // 音频文件路径-句柄
-    std::unordered_map<std::string, int> audio_handles;
-    // 句柄-音频格式
-    std::unordered_map<int, std::shared_ptr<AVFormatContext>> audio_formats;
-    // 句柄-缓存音频pcm数据
-    std::unordered_map<int, std::vector<float>> audio_pcm_datas;
-    // 句柄-音频播放速率
-    std::unordered_map<int, float> audio_speeds;
-    // 句柄-音频名
-    std::unordered_map<int, std::string> audio_names;
-    // 句柄-音频路径
-    std::unordered_map<int, std::string> audio_paths;
-    // 句柄-音频音量
-    std::unordered_map<int, float> audio_volumes;
+    // 音频的句柄
+    std::unordered_map<std::string, int> handles;
+    // 全部音频
+    std::unordered_map<int, std::shared_ptr<XSound>> audios;
     // 后缀名-编解码器
     std::unordered_map<std::string, std::pair<XAudioDecoder, XAudioEncoder>>
         audio_codecs;

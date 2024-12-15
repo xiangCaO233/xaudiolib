@@ -17,7 +17,7 @@ XAudioDecoder::XAudioDecoder(AVCodecID id) {
 
 XAudioDecoder::~XAudioDecoder() {}
 
-int XAudioDecoder::decode_audio(std::shared_ptr<AVFormatContext> &format,
+int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext> &format,
                                 int streamIndex, std::vector<float> &pcm_data) {
     av_log_set_level(AV_LOG_ERROR);  // 只打印错误信息
     // 填充解码器上下文参数
