@@ -127,8 +127,7 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
                        file_color_code, msg.source.filename, msg.source.line,
                        bg_color_code);
     }
-    fmt::format_to(std::back_inserter(dest), "{}{}{}", bg_color_code, "\n",
-                   bg_color_code);
+    fmt::format_to(std::back_inserter(dest), "{}{}", "\033[0m", "\n");
 };
 
 std::unique_ptr<spdlog::formatter> CustomFormatter::clone() const {
