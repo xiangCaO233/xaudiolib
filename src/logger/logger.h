@@ -14,6 +14,7 @@
 #include <spdlog/spdlog.h>
 
 #include <ctime>
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -47,23 +48,9 @@ class XLogger {
    public:
     // 获取文件名
     inline static const char *get_relative_file_path(const char *full_path) {
-        if (!full_path || *full_path == '\0') {
-            return "unknown";
-        }
-
-        static thread_local std::string relative_path;
         std::string path(full_path);
-        size_t pos;
-#ifdef _WIN32
-        pos = path.find_last_of("\\");
-#else
-        pos = path.find_last_of("/\\");
-#endif
-        if (pos != std::string::npos) {
-            relative_path = path.substr(pos + 1);
-        } else {
-            relative_path = path;
-        }
+        thread_local std::string relative_path =
+            std::filesystem::path(path).filename().string();
         return relative_path.c_str();
     }
 
