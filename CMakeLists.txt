@@ -7,10 +7,12 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
+set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
 set(MIXER_SOURCES src/engin/mix/mixer.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
-set(ENGIN_SOURCES src/engin/AudioEngin.cpp src/engin/AudioManager.cpp
-                  ${CONFIG_SOURCES} ${CODEC_SOURCES} ${MIXER_SOURCES})
+set(ENGIN_SOURCES
+    src/engin/AudioEngin.cpp src/engin/AudioManager.cpp ${CONFIG_SOURCES}
+    ${CODEC_SOURCES} ${DEVICE_SOURCES} ${MIXER_SOURCES})
 set(LOG_SOURCE src/logger/logger.cpp)
 set(API_SOURCES src/api/cpp/XAudioEngin.cpp src/api/cpp/XAudioManager.cpp)
 

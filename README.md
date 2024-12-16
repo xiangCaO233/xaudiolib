@@ -26,5 +26,5 @@
 
 -   logger xgl2d 的日志同源
 
-### 缓存解码音频样例
-![decodesample](decode.jpg)
+### 样例
+![sample](sample.jpg)
