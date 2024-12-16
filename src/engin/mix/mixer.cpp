@@ -1,5 +1,5 @@
 #include "mixer.h"
 
-XAuidoMixer::XAuidoMixer() {}
+XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {}
 
 XAuidoMixer::~XAuidoMixer() {}

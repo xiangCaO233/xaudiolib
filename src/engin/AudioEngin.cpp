@@ -8,6 +8,7 @@
 #include <string>
 
 #include "config/config.h"
+#include "engin/mix/mixer.h"
 #include "engin/sdl/xplayer.h"
 #include "logger/logger.h"
 
@@ -17,7 +18,7 @@ std::string XSound::unknown_path = "unknown path";
 // 引擎实现
 int XAudioEngin::currentid = 0;
 
-XAudioEngin::XAudioEngin() {}
+XAudioEngin::XAudioEngin() = default;
 
 XAudioEngin::~XAudioEngin() { shutdown(); }
 
@@ -245,12 +246,32 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     }
     loopflags[audio_id] = loop;
     // TODO(xiang 2024-12-16): 多设备播放同一音频可能出现问题
-    auto mixer_audioit = mixer.audio_orbits.find(audio_id);
-    if (mixer_audioit == mixer.audio_orbits.end()) {
+
+    // 寻找此设备对应的播放器
+    auto playerit = players.find(device_index);
+    if (playerit == players.end()) {
+        // 不存在此设备的播放器
+        // 初始化播放器并加入播放器表
+        auto player = std::make_shared<XPlayer>();
+        player->set_device_index(device_index);
+        players.insert({device_index, player});
+        LOG_INFO("成功创建位于输出设备索引[" + std::to_string(device_index) +
+                 "]的播放器");
+        playerit = players.find(device_index);
+    } else {
+        LOG_INFO("成功找到输出设备[" + std::to_string(device_index) +
+                 "]上的播放器");
+    }
+    // 找播放器绑定的混音器中是否存在此音频
+    auto mixer_audioit = playerit->second->mixer->audio_orbits.find(audio_id);
+    if (mixer_audioit == playerit->second->mixer->audio_orbits.end()) {
+        // 不存在
         // 加入混音器
-        mixer.audio_orbits.insert({audio_id, audioit->second});
+        playerit->second->mixer->audio_orbits.insert(
+            {audio_id, audioit->second});
         LOG_INFO("添加播放音频句柄[" + std::to_string(audio_id) + "]");
     } else {
+        // 存在
         LOG_INFO("继续播放句柄[" + std::to_string(audio_id) + "]");
     }
     // 继续播放

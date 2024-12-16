@@ -1,5 +1,6 @@
 #include "xplayer.h"
 
+#include <memory>
 #include <string>
 
 #include "config/config.h"
@@ -8,7 +9,8 @@
 XPlayer::XPlayer() : paused(false), running(false) {
     // 环形缓冲区配置
     // 初始化内存
-    rbuffer.bufferhead = new float[Config::mix_buffer_size];
+    rbuffer.bufferhead =
+        std::shared_ptr<float>(new float[Config::mix_buffer_size]);
     // 缓冲区大小
     rbuffer.buffersize = Config::mix_buffer_size;
     // 读写位置
@@ -28,12 +30,14 @@ XPlayer::XPlayer() : paused(false), running(false) {
     desired_spec.callback = &XPlayer::audio_callback;
     // 用户数据
     desired_spec.userdata = this;
+
+    // 混音器初始化
+    mixer = std::make_shared<XAuidoMixer>(this);
 }
 
 XPlayer::~XPlayer() {
     // 确保资源释放
     stop();
-    delete[] rbuffer.bufferhead;
 }
 // 设置设备索引
 void XPlayer::set_device_index(int device_index) {
@@ -103,7 +107,7 @@ void XPlayer::push_data(const float* data, size_t size) {
     std::lock_guard<std::mutex> lock(buffer_mutex);
     for (size_t i = 0; i < size; ++i) {
         // 写数据
-        rbuffer.bufferhead[rbuffer.writepos] = data[i];
+        rbuffer.bufferhead.get()[rbuffer.writepos] = data[i];
         // 更新写指针
         rbuffer.writepos = (rbuffer.writepos + 1) % rbuffer.buffersize;
         // 如果写指针追上读指针,丢弃最老的数据
@@ -131,7 +135,8 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
             // 缓冲区写完,输出静音
             output[i] = 0.0f;
         } else {
-            output[i] = player->rbuffer.bufferhead[player->rbuffer.readpos];
+            output[i] =
+                player->rbuffer.bufferhead.get()[player->rbuffer.readpos];
             player->rbuffer.readpos =
                 (player->rbuffer.readpos + 1) % player->rbuffer.buffersize;
         }

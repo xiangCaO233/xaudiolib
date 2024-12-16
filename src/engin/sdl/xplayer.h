@@ -3,11 +3,14 @@
 
 #include <SDL_audio.h>
 
+#include <memory>
 #include <thread>
+
+#include "engin/mix/mixer.h"
 
 struct ringbuffer {
     // 缓冲区物理头
-    float* bufferhead;
+    std::shared_ptr<float> bufferhead;
     // 缓冲区写入位置
     int writepos;
     // 缓冲区读取位置
@@ -28,13 +31,17 @@ class XPlayer {
     // 条件变量,通知数据更新
     std::condition_variable cv;
     // 环形音频处理缓冲区
-    ringbuffer rbuffer;
+    ringbuffer rbuffer{};
     // sdl音频规范(期望)
     SDL_AudioSpec desired_spec{};
+    // 此播放器绑定的混音器
+    std::shared_ptr<XAuidoMixer> mixer;
     // 输出设备索引
     int outdevice_index{-1};
     // 播放设备
-    SDL_AudioDeviceID device_id;
+    SDL_AudioDeviceID device_id{};
+
+    friend XAudioEngin;
 
    public:
     // 构造XPlayer

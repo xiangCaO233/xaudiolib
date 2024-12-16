@@ -93,11 +93,9 @@ class XAudioEngin {
     // 全局音量
     float gVolume{0.5f};
 
-    // 混音器
-    XAuidoMixer mixer;
-
     // 播放器
-    XPlayer player;
+    std::unordered_map<int, std::shared_ptr<XPlayer>> players;
+    std::shared_ptr<XPlayer> player;
 
     // 载入音频
     int load(const std::string &audio);
