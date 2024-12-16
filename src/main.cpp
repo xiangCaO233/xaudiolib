@@ -2,7 +2,6 @@
 #include <string>
 
 #include "api/XAudioManager.h"
-#include "logger/logger.h"
 
 int main(int argc, char *argv[]) {
     auto manager = XAudioManager::newmanager();
@@ -21,6 +20,8 @@ int main(int argc, char *argv[]) {
     manager->load(audio_path4);
     manager->load(audio_path3);
 
+    std::string devicename = "External Headphones";
+
     bool quit{false};
     while (true) {
         std::cout << "输入句柄以播放" << std::endl;
@@ -31,19 +32,31 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case '0': {
-                manager->play(0, false);
+                manager->play(devicename, 0, false);
                 break;
             }
             case '1': {
-                manager->play(1, false);
+                manager->play(devicename, 1, false);
                 break;
             }
             case '2': {
-                manager->play(2, false);
+                manager->play(devicename, 2, false);
                 break;
             }
             case '3': {
-                manager->play(3, false);
+                manager->play(devicename, 3, false);
+                break;
+            }
+            case '4': {
+                manager->play(devicename, 4, false);
+                break;
+            }
+            case '5': {
+                manager->play(devicename, 5, false);
+                break;
+            }
+            case '6': {
+                manager->play(devicename, 6, false);
                 break;
             }
         }
@@ -54,6 +67,8 @@ int main(int argc, char *argv[]) {
 
     // 卸载音频
     manager->unload(0);
+    manager->unload(1);
+    manager->unload(2);
     manager->unload(3);
 
     return 0;

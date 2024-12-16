@@ -12,6 +12,8 @@ class XAudioManager {
     void unloadaudio(const std::string &audio);
     void unloadaudio(int id);
 
+    void choose_device(const std::string &device_name, bool iscapture);
+
     const std::string &get_audio_name(int id);
     const std::string &get_audio_path(int id);
 
@@ -27,8 +29,16 @@ class XAudioManager {
     float getGlobalVolume();
     void setGlobalAudioVolume(float volume);
 
-    void playAudio(int id, bool isloop);
-    void pauseAudio(int id);
+    void playAudio(int device_index, int id, bool isloop);
+    void playAudio(const std::string &device, const std::string &audioname,
+                   bool isloop);
+    void playAudio(int device_index, const std::string &audioname, bool isloop);
+    void playAudio(const std::string &device, int id, bool isloop);
+
+    void pauseAudio(int device_index, int id);
+    void pauseAudio(const std::string &device, const std::string &audioname);
+    void pauseAudio(int device_index, const std::string &audioname);
+    void pauseAudio(const std::string &device, int id);
 
    public:
     // 公开接口
@@ -39,6 +49,9 @@ class XAudioManager {
     // 卸载音频
     void unload(const std::string &audio_name);
     void unload(int audio_id);
+
+    // 选择音频设备
+    void select_device(const std::string &device_name, bool iscapture);
 
     // 获取音频信息
     const std::string &audio_name(int audio_id);
@@ -61,10 +74,17 @@ class XAudioManager {
     // 设置全局音量
     void setGlobalVolume(float volume);
 
-    // 是否循环播放句柄
-    void play(int audio_id, bool loop);
+    // 播放音频句柄
+    void play(int device_index, int audio_id, bool loop);
+    void play(const std::string &devicename, const std::string &audioname,
+              bool loop);
+    void play(int device_index, const std::string &audioname, bool loop);
+    void play(const std::string &devicename, int audio_id, bool loop);
     // 暂停音频句柄
-    void pause(int audio_id);
+    void pause(int device_index, int audio_id);
+    void pause(const std::string &devicename, const std::string &audioname);
+    void pause(int device_index, const std::string &audioname);
+    void pause(const std::string &devicename, int audio_id);
 };
 
 #endif  // API_X_AUDIO_MANAGER_H

@@ -22,6 +22,7 @@ void XAudioManager::unloadaudio(const std::string &audio) {
 };
 
 void XAudioManager::unloadaudio(int id) { engin->unload(id); };
+
 // 获取音频名
 const std::string &XAudioManager::get_audio_name(int id) {
     return engin->name(id);
@@ -56,5 +57,31 @@ float XAudioManager::getGlobalVolume() { return engin->gVolume; };
 void XAudioManager::setGlobalAudioVolume(float volume){};
 
 // 播放和暂停音频
-void XAudioManager::playAudio(int id, bool isloop){};
-void XAudioManager::pauseAudio(int id){};
+void XAudioManager::playAudio(int device_index, int id, bool isloop) {
+    engin->play(device_index, id, isloop);
+};
+void XAudioManager::playAudio(const std::string &device,
+                              const std::string &audioname, bool isloop) {
+    engin->play(device, audioname, isloop);
+};
+void XAudioManager::playAudio(int device_index, const std::string &audioname,
+                              bool isloop) {
+    engin->play(device_index, audioname, isloop);
+};
+void XAudioManager::playAudio(const std::string &device, int id, bool isloop) {
+    engin->play(device, id, isloop);
+};
+
+void XAudioManager::pauseAudio(int device_index, int id) {
+    engin->pause(device_index, id);
+};
+void XAudioManager::pauseAudio(const std::string &device,
+                               const std::string &audioname) {
+    engin->pause(device, audioname);
+};
+void XAudioManager::pauseAudio(int device_index, const std::string &audioname) {
+    engin->pause(device_index, audioname);
+};
+void XAudioManager::pauseAudio(const std::string &device, int id) {
+    engin->pause(device, id);
+};

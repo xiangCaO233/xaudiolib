@@ -86,7 +86,9 @@ class XAudioEngin {
 
     // 设备列表
     std::unordered_map<int, std::shared_ptr<XOutputDevice>> outdevices;
+    std::unordered_map<std::string, int> outdevice_indicies;
     std::unordered_map<int, std::shared_ptr<XInputDevice>> inputdevices;
+    std::unordered_map<std::string, int> inputdevice_indicies;
 
     // 全局音量
     float gVolume{0.5f};
@@ -125,10 +127,17 @@ class XAudioEngin {
     // 设置全局音量
     void setGlobalVolume(float volume);
 
-    // 播放句柄
-    void play(int audio_id, bool loop);
-    // 暂停音频句柄
-    void pause(int audio_id);
+    // 播放
+    void play(int device_index, int audio_id, bool loop);
+    void play(const std::string &devicename, int audio_id, bool loop);
+    void play(int device_index, const std::string &audioname, bool loop);
+    void play(const std::string &devicename, const std::string &audioname,
+              bool loop);
+    // 暂停
+    void pause(int device_index, int audio_id);
+    void pause(const std::string &devicename, int audio_id);
+    void pause(int device_index, const std::string &audioname);
+    void pause(const std::string &devicename, const std::string &audioname);
     // 终止音频句柄
     void stop(int audio_id);
 

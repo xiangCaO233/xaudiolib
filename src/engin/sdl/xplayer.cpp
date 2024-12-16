@@ -96,6 +96,7 @@ void XPlayer::resume() {
     // 唤起线程
     cv.notify_all();
 };
+
 // 推送数据到环形缓冲区
 void XPlayer::push_data(const float* data, size_t size) {
     // 取得锁

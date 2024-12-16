@@ -38,9 +38,34 @@ float XAudioManager::globalVolume() { return getGlobalVolume(); };
 void XAudioManager::setGlobalVolume(float volume) {
     setGlobalAudioVolume(volume);
 };
-// 是否循环播放句柄
-void XAudioManager::play(int audio_id, bool loop) {
-    playAudio(audio_id, loop);
+// 播放音频句柄
+void XAudioManager::play(int device_index, int audio_id, bool loop) {
+    playAudio(device_index, audio_id, loop);
 };
+void XAudioManager::play(const std::string &devicename,
+                         const std::string &audioname, bool loop) {
+    playAudio(devicename, audioname, loop);
+};
+void XAudioManager::play(int device_index, const std::string &audioname,
+                         bool loop) {
+    playAudio(device_index, audioname, loop);
+};
+void XAudioManager::play(const std::string &devicename, int audio_id,
+                         bool loop) {
+    playAudio(devicename, audio_id, loop);
+};
+
 // 暂停音频句柄
-void XAudioManager::pause(int audio_id) { pauseAudio(audio_id); };
+void XAudioManager::pause(int device_index, int audio_id) {
+    pauseAudio(device_index, audio_id);
+};
+void XAudioManager::pause(const std::string &devicename,
+                          const std::string &audioname) {
+    pauseAudio(devicename, audioname);
+};
+void XAudioManager::pause(int device_index, const std::string &audioname) {
+    pauseAudio(device_index, audioname);
+};
+void XAudioManager::pause(const std::string &devicename, int audio_id) {
+    pauseAudio(devicename, audio_id);
+};

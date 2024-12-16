@@ -40,8 +40,16 @@ class XAudioManager {
     void setGlobalAudioVolume(float volume);
 
     // 播放和暂停音频
-    void playAudio(int id, bool isloop);
-    void pauseAudio(int id);
+    void playAudio(int device_index, int id, bool isloop);
+    void playAudio(const std::string &device, const std::string &audioname,
+                   bool isloop);
+    void playAudio(int device_index, const std::string &audioname, bool isloop);
+    void playAudio(const std::string &device, int id, bool isloop);
+
+    void pauseAudio(int device_index, int id);
+    void pauseAudio(const std::string &device, const std::string &audioname);
+    void pauseAudio(int device_index, const std::string &audioname);
+    void pauseAudio(const std::string &device, int id);
 
    public:
     // 构造XAudioManager音频管理器
