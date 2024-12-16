@@ -24,12 +24,22 @@ class XPlayer {
     std::atomic<bool> running;
     // 播放暂停状态
     std::atomic<bool> paused;
-    // sdl播放线程
-    std::thread sdl_playthread;
+    // 数据请求状态
+    std::atomic<bool> isrequested;
+
+    // 混音互斥锁
+    std::mutex mix_mutex;
+    // 条件变量,通知混音器请求数据更新
+    std::condition_variable mixercv;
+
     // 缓冲区互斥锁
     std::mutex buffer_mutex;
     // 条件变量,通知数据更新
     std::condition_variable cv;
+
+    // sdl播放线程
+    std::thread sdl_playthread;
+
     // 环形音频处理缓冲区
     ringbuffer rbuffer{};
     // sdl音频规范(期望)
@@ -42,6 +52,7 @@ class XPlayer {
     SDL_AudioDeviceID device_id{};
 
     friend XAudioEngin;
+    friend XAuidoMixer;
 
    public:
     // 构造XPlayer

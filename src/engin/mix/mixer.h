@@ -1,7 +1,6 @@
 #ifndef X_AUDIO_MIXER_H
 #define X_AUDIO_MIXER_H
 
-#include <list>
 #include <memory>
 #include <thread>
 #include <unordered_map>
@@ -13,12 +12,16 @@ class XAudioEngin;
 class XAuidoMixer {
     // 混音线程
     std::thread mixthread;
-    // 目标播放器指针(不释放,其他地方已管理)
+    // 目标播放器指针(仅传递方便访问,不释放,其他地方已管理)
     XPlayer* des_player;
     // 全部音轨(音频句柄-音频)
     std::unordered_map<int, std::shared_ptr<XSound>> audio_orbits;
 
     friend XAudioEngin;
+    friend XPlayer;
+
+    // 向播放器发送数据的线程函数
+    void send_pcm_thread();
 
    public:
     // 构造XAuidoMixer

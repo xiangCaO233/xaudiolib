@@ -54,6 +54,7 @@
 
 class XAudioEngin;
 class XPlayer;
+class XAuidoMixer;
 
 class Config {
     // 音频传输方式
@@ -62,7 +63,8 @@ class Config {
     const static int decode_thread_count;
     // 混音方式
     const static int mix_method;
-    // 混音处理时的环形缓冲区大小
+    // 混音处理时的环形缓冲区大小(设备性能越低这个需要越大)
+    // 越大时可能会增加延迟
     const static int mix_buffer_size;
     // 播放音频时的声道数
     const static int channel;
@@ -76,6 +78,7 @@ class Config {
 
     friend XAudioEngin;
     friend XPlayer;
+    friend XAuidoMixer;
 
     // 载入配置
     static void load(const std::string &config_file);

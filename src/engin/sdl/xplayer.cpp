@@ -85,8 +85,10 @@ void XPlayer::stop() {
     running = false;
     // 唤起线程
     cv.notify_all();
+    mixercv.notify_all();
     // 等待线程正常结束
     if (sdl_playthread.joinable()) sdl_playthread.join();
+    if (mixer->mixthread.joinable()) mixer->mixthread.join();
 };
 // 暂停
 void XPlayer::pause() {
@@ -99,6 +101,7 @@ void XPlayer::resume() {
     paused = false;
     // 唤起线程
     cv.notify_all();
+    mixercv.notify_all();
 };
 
 // 推送数据到环形缓冲区
@@ -140,5 +143,13 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
             player->rbuffer.readpos =
                 (player->rbuffer.readpos + 1) % player->rbuffer.buffersize;
         }
+    }
+    // 如果数据量少于一半，唤起混音器继续提供数据
+    if ((player->rbuffer.writepos - player->rbuffer.readpos +
+         player->rbuffer.buffersize) %
+            player->rbuffer.buffersize <
+        player->rbuffer.buffersize / 2) {
+        player->isrequested = true;
+        player->isrequested.notify_all();
     }
 };
