@@ -33,7 +33,7 @@ class XPlayer {
     std::condition_variable mixercv;
 
     // 缓冲区互斥锁
-    std::mutex buffer_mutex;
+    std::mutex player_mutex;
     // 条件变量,通知数据更新
     std::condition_variable cv;
 
@@ -75,7 +75,7 @@ class XPlayer {
     void resume();
 
     // 推送数据到环形缓冲区
-    void push_data(const float* data, size_t size);
+    void push_data(const uint32_t* data, size_t size);
 
     // sdl播放回调函数
     static void audio_callback(void* userdata, uint8_t* stream, int len);

@@ -14,7 +14,7 @@ XAuidoMixer::~XAuidoMixer() = default;
 void XAuidoMixer::send_pcm_thread() {
     // 混音线程函数
     while (des_player->running) {
-        LOG_DEBUG("混音线程运行...");
+        // LOG_DEBUG("混音线程运行...");
         std::unique_lock<std::mutex> lock(des_player->mix_mutex);
         // 等待播放器请求数据
         des_player->mixercv.wait(lock, [this]() {
@@ -24,6 +24,17 @@ void XAuidoMixer::send_pcm_thread() {
         });
         // 播放器停止则混音线程也立刻停止
         if (!des_player->running) break;
-        LOG_DEBUG("推送数据");
+        for (auto& audioit : audio_orbits) {
+            auto& audio = audioit.second;
+            if (!audio->pauseflag) {
+                auto size = int(floorf(Config::mix_buffer_size / 3.0f));
+                // LOG_DEBUG("推送数据[" + std::to_string(size * 4) + "]bytes");
+                des_player->push_data(audio->pcm_data.data() + audio->playpos,
+                                      size);
+                audio->playpos += size;
+                des_player->cv.notify_all();
+            }
+        }
+        des_player->isrequested = false;
     }
 }

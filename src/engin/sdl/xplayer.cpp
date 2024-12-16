@@ -1,6 +1,7 @@
 #include "xplayer.h"
 
 #include <cmath>
+#include <cstring>
 #include <memory>
 #include <string>
 
@@ -76,7 +77,7 @@ void XPlayer::start() {
         while (running) {
             // LOG_DEBUG("等待数据或继续播放");
             // 等待数据推送或暂停恢复
-            std::unique_lock<std::mutex> lock(buffer_mutex);
+            std::unique_lock<std::mutex> lock(player_mutex);
             cv.wait(lock, [this]() { return !paused || !running; });
         }
         SDL_CloseAudioDevice(device_id);
@@ -117,8 +118,24 @@ void XPlayer::resume() {
 };
 
 // 推送数据到环形缓冲区
-void XPlayer::push_data(const float* data, size_t size){
+void XPlayer::push_data(const uint32_t* data, size_t size) {
     // 运行于混音线程
+    // 写入数据到环形缓冲区
+    // 运行于混音线程
+    size_t bufferremain =
+        rbuffer.buffersize - rbuffer.writepos;  // 写指针到缓冲区末尾的空间
+    if (size <= bufferremain) {
+        // 数据可以完全写入，不需要环绕
+        std::copy(data, data + size,
+                  rbuffer.bufferhead.get() + rbuffer.writepos);
+        rbuffer.writepos = (rbuffer.writepos + size) % rbuffer.buffersize;
+    } else {
+        // 数据需要环绕写入
+        std::copy(data, data + bufferremain,
+                  rbuffer.bufferhead.get() + rbuffer.writepos);
+        std::copy(data + bufferremain, data + size, rbuffer.bufferhead.get());
+        rbuffer.writepos = (size - bufferremain) % rbuffer.buffersize;
+    }
 };
 
 // sdl播放回调函数
@@ -127,10 +144,11 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     // 转换回播放器对象
     auto player = static_cast<XPlayer*>(userdata);
     auto& rbuffer = player->rbuffer;
-    LOG_DEBUG("SDL读取音频数据...");
-    LOG_DEBUG("SDL请求长度:[" + std::to_string(len) + "]");
-    LOG_DEBUG("当前环形缓冲区-->{readpos:[" + std::to_string(rbuffer.readpos) +
-              "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
+    // LOG_DEBUG("SDL读取音频数据...");
+    // LOG_DEBUG("SDL请求长度:[" + std::to_string(len) + "]");
+    // LOG_DEBUG("当前环形缓冲区-->{readpos:[" + std::to_string(rbuffer.readpos)
+    // +
+    //           "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
     auto audiopcm = rbuffer.bufferhead;
     // 环形缓冲区内可读的数据量
     size_t pcmsize;
@@ -155,6 +173,27 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
         std::memset(stream, 0, len);
         return;
     }
-    std::memcpy(stream, audiopcm.get() + rbuffer.readpos,
-                numSamples * sizeof(int32_t));
+    if (rbuffer.writepos >= rbuffer.readpos) {
+        // 无环绕，直接全部拷贝
+        std::memcpy(stream, audiopcm.get() + rbuffer.readpos,
+                    numSamples * sizeof(int32_t));
+        rbuffer.readpos += numSamples;
+    } else {
+        // 环绕情况，分块拷贝
+        size_t bufferremainsize = rbuffer.buffersize - rbuffer.readpos;
+        if (numSamples <= bufferremainsize) {
+            // 全部数据在缓冲区尾部，无需环绕
+            std::memcpy(stream, audiopcm.get() + rbuffer.readpos,
+                        numSamples * sizeof(int32_t));
+            rbuffer.readpos += numSamples;
+        } else {
+            // 确实发生环绕，分两段拷贝
+            std::memcpy(stream, audiopcm.get() + rbuffer.readpos,
+                        bufferremainsize * sizeof(int32_t));
+            size_t dataremainsize = numSamples - bufferremainsize;
+            std::memcpy(stream + bufferremainsize, audiopcm.get(),
+                        dataremainsize * sizeof(int32_t));
+            rbuffer.readpos = dataremainsize;  // 环绕后新的读位置
+        }
+    }
 };

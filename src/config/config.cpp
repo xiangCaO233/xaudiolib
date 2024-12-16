@@ -7,7 +7,7 @@ const int Config::decode_thread_count = 4;
 // 混音方式
 const int Config::mix_method = CPU_MIX_BY_OPENAL;
 // 混音处理时的环形缓冲区大小
-const int Config::mix_buffer_size = 1024;
+const int Config::mix_buffer_size = 4096;
 // 播放音频时的声道数
 const int Config::channel = AUDIO_DOUBLE_CHANNEL;
 // 播放音频时的采样率
