@@ -15,6 +15,7 @@ set(SDL_SOURCES src/engin/sdl/xmicrophone.cpp src/engin/sdl/xplayer.cpp)
 set(ENGIN_SOURCES
     src/engin/AudioEngin.cpp
     src/engin/AudioManager.cpp
+    src/engin/Sound.cpp
     ${CONFIG_SOURCES}
     ${CODEC_SOURCES}
     ${DEVICE_SOURCES}

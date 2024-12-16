@@ -49,7 +49,6 @@ class XAudioEngin {
 
     // 播放器
     std::unordered_map<int, std::shared_ptr<XPlayer>> players;
-    std::shared_ptr<XPlayer> player;
 
     // 载入音频
     int load(const std::string &audio);

@@ -54,7 +54,7 @@ void XPlayer::start() {
         return;
     }
     running = true;
-
+    LOG_DEBUG("启动播放线程...");
     // 启动线程
     sdl_playthread = std::thread([this]() {
         // 打开设备
@@ -67,16 +67,23 @@ void XPlayer::start() {
                       std::to_string(outdevice_index) + "]");
             LOG_ERROR(error);
             return;
+        } else {
+            LOG_INFO("成功打开设备[" + std::to_string(outdevice_index) + "]");
         }
         // 开始播放
         SDL_PauseAudioDevice(device_id, 0);
         while (running) {
+            // LOG_DEBUG("等待数据或继续播放");
             // 等待数据推送或暂停恢复
             std::unique_lock<std::mutex> lock(buffer_mutex);
             cv.wait(lock, [this]() { return !paused || !running; });
         }
         SDL_CloseAudioDevice(device_id);
     });
+    sdl_playthread.detach();
+    LOG_DEBUG("启动混音线程");
+    mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
+    mixer->mixthread.detach();
 };
 // 终止
 void XPlayer::stop() {
@@ -88,7 +95,9 @@ void XPlayer::stop() {
     mixercv.notify_all();
     // 等待线程正常结束
     if (sdl_playthread.joinable()) sdl_playthread.join();
+    LOG_DEBUG("播放线程结束");
     if (mixer->mixthread.joinable()) mixer->mixthread.join();
+    LOG_DEBUG("混音线程结束");
 };
 // 暂停
 void XPlayer::pause() {
@@ -106,8 +115,6 @@ void XPlayer::resume() {
 
 // 推送数据到环形缓冲区
 void XPlayer::push_data(const float* data, size_t size) {
-    // 取得锁
-    std::lock_guard<std::mutex> lock(buffer_mutex);
     for (size_t i = 0; i < size; ++i) {
         // 写数据
         rbuffer.bufferhead.get()[rbuffer.writepos] = data[i];
@@ -117,8 +124,6 @@ void XPlayer::push_data(const float* data, size_t size) {
         if (rbuffer.writepos == rbuffer.readpos)
             rbuffer.readpos = (rbuffer.readpos + 1) % rbuffer.buffersize;
     }
-    // 通知播放线程有数据更新
-    cv.notify_all();
 };
 
 // sdl播放回调函数
@@ -128,6 +133,8 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     // 暂停或者缓冲区无数据,填充静音数据
     if (player->paused || player->rbuffer.readpos == player->rbuffer.writepos) {
         std::memset(stream, 0, len);
+        player->isrequested = true;
+        player->mixercv.notify_all();
         return;
     }
     // 获取缓冲区数据
@@ -144,12 +151,13 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
                 (player->rbuffer.readpos + 1) % player->rbuffer.buffersize;
         }
     }
+    LOG_DEBUG("检查缓冲区");
     // 如果数据量少于一半，唤起混音器继续提供数据
     if ((player->rbuffer.writepos - player->rbuffer.readpos +
          player->rbuffer.buffersize) %
             player->rbuffer.buffersize <
         player->rbuffer.buffersize / 2) {
         player->isrequested = true;
-        player->isrequested.notify_all();
+        player->mixercv.notify_all();
     }
 };

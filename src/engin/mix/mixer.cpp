@@ -1,21 +1,24 @@
 #include "mixer.h"
 
 #include <cstring>
+#include <string>
 
 #include "../Sound.h"
 #include "../sdl/xplayer.h"
 #include "config/config.h"
+#include "logger/logger.h"
 
 XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {}
 
-XAuidoMixer::~XAuidoMixer() {}
+XAuidoMixer::~XAuidoMixer() = default;
 
 void XAuidoMixer::send_pcm_thread() {
     while (des_player->running) {
+        LOG_DEBUG("等待更新请求");
         // 取得锁
         std::unique_lock<std::mutex> lock(des_player->buffer_mutex);
         // 等待播放器请求数据
-        des_player->cv.wait(lock, [this]() {
+        des_player->mixercv.wait(lock, [this]() {
             // 播放器为非暂停状态并在请求更新时或者播放器关闭了的时候解开线程锁
             return (!des_player->paused && des_player->isrequested) ||
                    !des_player->running;
@@ -26,20 +29,31 @@ void XAuidoMixer::send_pcm_thread() {
 
         for (auto& orbit : audio_orbits) {
             auto audio = orbit.second;
-            if (audio->pauseflag) {
+            if (!audio->pauseflag) {
                 // 获取音源数据
                 auto srcdata = audio->pcm_data.data();
-                size_t audiodata_size = Config::mix_buffer_size / 3;
-                float* audiodata = new float[audiodata_size];
+                size_t audiodata_size = Config::mix_buffer_size / 2;
+                auto audiodata = new float[audiodata_size];
+
                 // 导入pcm数据
                 std::memcpy(audiodata, srcdata + audio->playpos,
                             audiodata_size);
+                LOG_DEBUG("当前音频位置:[" + std::to_string(audio->playpos) +
+                          "]");
                 // 更新播放位置
                 audio->playpos += audiodata_size;
                 // 推送数据
+                LOG_DEBUG("推送pcm数据");
                 des_player->push_data(audiodata, audiodata_size);
+                LOG_DEBUG("已推送pcm数据[" + std::to_string(audiodata_size) +
+                          "]bytes");
                 // 清理临时导出的音频数据
                 delete[] audiodata;
+                // 更新读位置并唤起可能暂停了的播放线程
+                des_player->rbuffer.readpos =
+                    des_player->rbuffer.writepos - audiodata_size;
+                LOG_DEBUG("唤起播放线程");
+                des_player->cv.notify_all();
             }
         }
 
