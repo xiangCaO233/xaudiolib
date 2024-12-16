@@ -21,6 +21,37 @@ int main(int argc, char *argv[]) {
     manager->load(audio_path4);
     manager->load(audio_path3);
 
+    bool quit{false};
+    while (true) {
+        std::cout << "输入句柄以播放" << std::endl;
+        std::cout << "输入q以退出" << std::endl;
+        switch (std::cin.get()) {
+            case 'q': {
+                quit = true;
+                break;
+            }
+            case '0': {
+                manager->play(0, false);
+                break;
+            }
+            case '1': {
+                manager->play(1, false);
+                break;
+            }
+            case '2': {
+                manager->play(2, false);
+                break;
+            }
+            case '3': {
+                manager->play(3, false);
+                break;
+            }
+        }
+        if (quit) {
+            break;
+        }
+    }
+
     // 卸载音频
     manager->unload(0);
     manager->unload(3);

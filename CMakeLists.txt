@@ -25,6 +25,10 @@ include_directories(src)
 find_package(spdlog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
+# OpenAL(CPU混音计算)
+find_package(OpenAL REQUIRED)
+# OpenCL(GPU加速混音计算)
+find_package(OpenCL REQUIRED)
 # 包管理器
 find_package(PkgConfig REQUIRED)
 # ffmpeg
@@ -55,31 +59,56 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
   target_link_libraries(
     testxaudiolib
-    PUBLIC spdlog::spdlog ${COREAUDIO_LIBRARY} ${AUDIOTOOLBOX_LIBRARY}
-           ${AUDIOUNIT_LIBRARY} SDL2::SDL2 PkgConfig::ffmpeg)
+    PUBLIC spdlog::spdlog
+           ${COREAUDIO_LIBRARY}
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio PUBLIC spdlog::spdlog ${COREAUDIO_LIBRARY} ${AUDIOTOOLBOX_LIBRARY}
-                  ${AUDIOUNIT_LIBRARY} SDL2::SDL2 PkgConfig::ffmpeg)
+    xaudio
+    PUBLIC spdlog::spdlog
+           ${COREAUDIO_LIBRARY}
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
   target_link_libraries(
     libxaudio
-    PUBLIC spdlog::spdlog ${COREAUDIO_LIBRARY} ${AUDIOTOOLBOX_LIBRARY}
-           ${AUDIOUNIT_LIBRARY} SDL2::SDL2 PkgConfig::ffmpeg)
+    PUBLIC spdlog::spdlog
+           ${COREAUDIO_LIBRARY}
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
-  target_link_libraries(testxaudiolib PUBLIC spdlog::spdlog SDL2::SDL2
-                                             PkgConfig::ffmpeg)
-  target_link_libraries(xaudio PUBLIC spdlog::spdlog SDL2::SDL2
-                                      PkgConfig::ffmpeg)
-  target_link_libraries(libxaudio PUBLIC spdlog::spdlog SDL2::SDL2
-                                         PkgConfig::ffmpeg)
+  target_link_libraries(
+    testxaudiolib PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL
+                         SDL2::SDL2 PkgConfig::ffmpeg)
+  target_link_libraries(
+    xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                  PkgConfig::ffmpeg)
+  target_link_libraries(
+    libxaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                     PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
-  target_link_libraries(testxaudiolib PUBLIC spdlog::spdlog SDL2::SDL2
-                                             PkgConfig::ffmpeg)
-  target_link_libraries(xaudio PUBLIC spdlog::spdlog SDL2::SDL2
-                                      PkgConfig::ffmpeg)
-  target_link_libraries(libxaudio PUBLIC spdlog::spdlog SDL2::SDL2
-                                         PkgConfig::ffmpeg)
+  target_link_libraries(
+    testxaudiolib PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL
+                         SDL2::SDL2 PkgConfig::ffmpeg)
+  target_link_libraries(
+    xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                  PkgConfig::ffmpeg)
+  target_link_libraries(
+    libxaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                     PkgConfig::ffmpeg)
 else()
   # 其他系统
   message(STATUS "当前系统: ${CMAKE_SYSTEM_NAME}")

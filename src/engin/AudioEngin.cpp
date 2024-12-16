@@ -35,7 +35,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
         auto input_device_name = SDL_GetAudioDeviceName(i, true);
         auto device_name_str = std::string(input_device_name);
         auto inputdevice = std::make_shared<XInputDevice>(i, device_name_str);
-        LOG_TRACE("检测到输入设备" + device_name_str);
+        LOG_DEBUG("检测到输入设备" + device_name_str);
         e->inputdevices.insert({i, inputdevice});
     }
 
@@ -48,7 +48,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
         auto output_device_name = SDL_GetAudioDeviceName(i, false);
         auto device_name_str = std::string(output_device_name);
         auto outdevice = std::make_shared<XOutputDevice>(i, device_name_str);
-        LOG_TRACE("检测到输出设备:" + device_name_str);
+        LOG_DEBUG("检测到输出设备:" + device_name_str);
         e->outdevices.insert({i, outdevice});
     }
     return e;
@@ -57,7 +57,6 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
 void XAudioEngin::shutdown() {}
 
 int XAudioEngin::load(const std::string &audio) {
-    // TODO(xiang 2024-12-15): 实现载入音频
     std::filesystem::path path(audio);
     auto extension = path.extension().string();
     auto p = std::filesystem::absolute(path).string();
@@ -65,7 +64,7 @@ int XAudioEngin::load(const std::string &audio) {
     auto handelit = handles.find(name);
     if (handelit != handles.end()) {
         LOG_WARN("载入音频[" + audio + "]失败,音频已载入过,句柄[" +
-                 std::to_string(handelit->second) + "]已存在");
+                 std::to_string(handelit->second) + "]");
         return currentid;
     } else {
         LOG_DEBUG("正在打开音频[" + audio + "]");
@@ -89,12 +88,17 @@ int XAudioEngin::load(const std::string &audio) {
             // 获取流信息
             if (avformat_find_stream_info(format, nullptr) < 0) {
                 LOG_ERROR("获取流信息失败");
-                // TODO(xiang 2024-12-15): 清理前面塞入的数据
+                // 清理前面塞入的数据
+                handelit = handles.find(name);
+                handles.erase(handelit);
+                auto audioit = audios.find(currentid);
+                audios.erase(audioit);
+
                 return -1;
             }
             int streamindex = -1;
             if (codecit == audio_codecs.end()) {
-                LOG_TRACE("未找到[" + extension + "]编解码器");
+                LOG_WARN("未找到[" + extension + "]编解码器");
                 streamindex = av_find_best_stream(format, AVMEDIA_TYPE_AUDIO,
                                                   -1, -1, nullptr, -1);
                 // 直接在表中分配
@@ -104,7 +108,7 @@ int XAudioEngin::load(const std::string &audio) {
                         {format->streams[streamindex]->codecpar->codec_id,
                          format->streams[streamindex]->codecpar->codec_id}));
             } else {
-                LOG_TRACE("找到解码器:[" + extension + "]");
+                LOG_INFO("找到解码器:[" + extension + "]");
             }
             if (streamindex == -1)
                 streamindex = av_find_best_stream(format, AVMEDIA_TYPE_AUDIO,
@@ -119,6 +123,12 @@ int XAudioEngin::load(const std::string &audio) {
             } else {
                 LOG_ERROR("解码出现问题");
                 // TODO(xiang 2024-12-15): 清除前部分填充的数据
+                handelit = handles.find(name);
+                handles.erase(handelit);
+                auto audioit = audios.find(currentid);
+                audios.erase(audioit);
+                audio_codecs.erase(codecit);
+
                 return -1;
             }
         } else {
@@ -130,7 +140,7 @@ int XAudioEngin::load(const std::string &audio) {
     return currentid++;
 };
 void XAudioEngin::unload(const std::string &audio) {
-    // TODO(xiang 2024-12-15): 实现卸载音频
+    // 卸载音频
     auto handelit = handles.find(audio);
     if (handelit != handles.end()) {
         unload(handelit->second);
@@ -140,7 +150,7 @@ void XAudioEngin::unload(const std::string &audio) {
 };
 
 void XAudioEngin::unload(int id) {
-    // TODO(xiang 2024-12-15): 实现使用id卸载音频
+    // 使用id卸载音频
     auto audioit = audios.find(id);
     if (audioit != audios.end()) {
         // 删除句柄
@@ -166,6 +176,7 @@ const std::string &XAudioEngin ::path(int id) {
     if (it != audios.end()) return it->second->path;
     return XSound::unknown_path;
 };
+
 // 设置音频当前播放到的位置
 void XAudioEngin::pos(const std::string &auido, int64_t time){
     // TODO(xiang 2024-12-15): 设置音频播放位置

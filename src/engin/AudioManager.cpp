@@ -51,3 +51,10 @@ void XAudioManager::setAudioVolume(const std::string &audio, float v) {
 void XAudioManager::setAudioVolume(int id, float v) {
     engin->setVolume(id, v);
 };
+// 设置全局音量
+float XAudioManager::getGlobalVolume() { return engin->globalVolume; };
+void XAudioManager::setGlobalAudioVolume(float volume){};
+
+// 播放和暂停音频
+void XAudioManager::playAudio(int id, bool isloop){};
+void XAudioManager::pauseAudio(int id){};

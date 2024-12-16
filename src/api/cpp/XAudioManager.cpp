@@ -32,3 +32,15 @@ void XAudioManager::set_audio_time(const std::string &audio_name,
 void XAudioManager::set_audio_time(int audio_id, int64_t time) {
     set_audio_current_pos(audio_id, time);
 };
+// 获取全局音量
+float XAudioManager::globalVolume() { return getGlobalVolume(); };
+// 设置全局音量
+void XAudioManager::setGlobalVolume(float volume) {
+    setGlobalAudioVolume(volume);
+};
+// 是否循环播放句柄
+void XAudioManager::play(int audio_id, bool loop) {
+    playAudio(audio_id, loop);
+};
+// 暂停音频句柄
+void XAudioManager::pause(int audio_id) { pauseAudio(audio_id); };

@@ -1,6 +1,17 @@
 #ifndef X_AUDIO_ENGIN_H
 #define X_AUDIO_ENGIN_H
 
+#if defined(__APPLE__)
+// 苹果coreaudio库
+#include <AudioToolbox/AudioToolbox.h>
+#include <CoreAudio/CoreAudio.h>
+#elif defined(__linux__)
+#elif defined(_WIN32)
+#elif defined(_WIN64)
+#elif defined(__ANDROID__)
+#else
+#endif
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -11,10 +22,6 @@
 #include "engin/device/indevice.h"
 #include "engin/device/outdevice.h"
 #include "engin/mix/mixer.h"
-
-extern "C" {
-#include <libavformat/avformat.h>
-}
 
 class XAudioManager;
 class XAudioEngin;
@@ -66,6 +73,9 @@ class XAudioEngin {
     // 设备列表
     std::unordered_map<int, std::shared_ptr<XOutputDevice>> outdevices;
     std::unordered_map<int, std::shared_ptr<XInputDevice>> inputdevices;
+
+    // 全局音量
+    float globalVolume{0.5f};
 
     // 混音器
     XAuidoMixer mixer;

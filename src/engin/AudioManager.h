@@ -35,6 +35,14 @@ class XAudioManager {
     void setAudioVolume(const std::string &audio, float v);
     void setAudioVolume(int id, float v);
 
+    // 设置全局音量
+    float getGlobalVolume();
+    void setGlobalAudioVolume(float volume);
+
+    // 播放和暂停音频
+    void playAudio(int id, bool isloop);
+    void pauseAudio(int id);
+
    public:
     // 构造XAudioManager音频管理器
     XAudioManager();
