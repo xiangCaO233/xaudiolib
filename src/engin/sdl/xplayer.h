@@ -21,11 +21,11 @@ struct ringbuffer {
 
 class XPlayer {
     // 播放线程运行状态
-    std::atomic<bool> running;
+    bool running;
     // 播放暂停状态
-    std::atomic<bool> paused;
+    bool paused;
     // 数据请求状态
-    std::atomic<bool> isrequested;
+    bool isrequested;
 
     // 混音互斥锁
     std::mutex mix_mutex;

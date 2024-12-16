@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include "config/config.h"
@@ -74,12 +75,21 @@ void XPlayer::start() {
         }
         // 开始播放
         SDL_PauseAudioDevice(device_id, 0);
+
+        // TODO(xiang 2024-12-17): 正常播放时死循环解锁耗费资源
         while (running) {
+            {
+                // 暂停在此处等待
+                std::unique_lock<std::mutex> pauselock(player_mutex);
+                cv.wait(pauselock, [this]() { return !paused || !running; });
+            }
             // LOG_DEBUG("等待数据或继续播放");
+            // 播放中在此等待
             // 等待数据推送或暂停恢复
             std::unique_lock<std::mutex> lock(player_mutex);
-            cv.wait(lock, [this]() { return !paused || !running; });
+            cv.wait(lock, [this]() { return paused || !running; });
         }
+
         SDL_CloseAudioDevice(device_id);
     });
     sdl_playthread.detach();
@@ -122,8 +132,8 @@ void XPlayer::push_data(const uint32_t* data, size_t size) {
     // 运行于混音线程
     // 写入数据到环形缓冲区
     // 运行于混音线程
-    size_t bufferremain =
-        rbuffer.buffersize - rbuffer.writepos;  // 写指针到缓冲区末尾的空间
+    // 写指针到缓冲区末尾的空间
+    size_t bufferremain = rbuffer.buffersize - rbuffer.writepos;
     if (size <= bufferremain) {
         // 数据可以完全写入，不需要环绕
         std::copy(data, data + size,
