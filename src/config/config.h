@@ -55,6 +55,8 @@
 class XAudioEngin;
 class XPlayer;
 class XAuidoMixer;
+class XAudioEncoder;
+class XAudioDecoder;
 
 class Config {
     // 音频传输方式
@@ -79,6 +81,8 @@ class Config {
     friend XAudioEngin;
     friend XPlayer;
     friend XAuidoMixer;
+    friend XAudioEncoder;
+    friend XAudioDecoder;
 
     // 载入配置
     static void load(const std::string &config_file);

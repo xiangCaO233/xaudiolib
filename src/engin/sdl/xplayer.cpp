@@ -1,5 +1,6 @@
 #include "xplayer.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 
@@ -10,7 +11,7 @@ XPlayer::XPlayer() : paused(false), running(false) {
     // 环形缓冲区配置
     // 初始化内存
     rbuffer.bufferhead =
-        std::shared_ptr<float>(new float[Config::mix_buffer_size]);
+        std::shared_ptr<uint32_t>(new uint32_t[Config::mix_buffer_size]);
     // 缓冲区大小
     rbuffer.buffersize = Config::mix_buffer_size;
     // 读写位置
@@ -21,7 +22,7 @@ XPlayer::XPlayer() : paused(false), running(false) {
     // 播放采样率
     desired_spec.freq = Config::samplerate;
     // 浮点数据型(自动转换字节序大小端)
-    desired_spec.format = AUDIO_F32SYS;
+    desired_spec.format = AUDIO_S32SYS;
     // 声道数
     desired_spec.channels = Config::channel;
     // 播放缓冲区大小
@@ -87,7 +88,7 @@ void XPlayer::start() {
 };
 // 终止
 void XPlayer::stop() {
-    // TODO(xiang 2024-12-16): 停止播放器
+    // 停止播放器
     if (!running) return;
     running = false;
     // 唤起线程
@@ -95,18 +96,20 @@ void XPlayer::stop() {
     mixercv.notify_all();
     // 等待线程正常结束
     if (sdl_playthread.joinable()) sdl_playthread.join();
+    // 暂停sdl设备
+    SDL_PauseAudioDevice(device_id, 1);
     LOG_DEBUG("播放线程结束");
     if (mixer->mixthread.joinable()) mixer->mixthread.join();
     LOG_DEBUG("混音线程结束");
 };
 // 暂停
 void XPlayer::pause() {
-    // TODO(xiang 2024-12-16): 暂停
+    // 暂停
     paused = true;
 };
 // 继续
 void XPlayer::resume() {
-    // TODO(xiang 2024-12-16): 继续
+    // 继续
     paused = false;
     // 唤起线程
     cv.notify_all();
@@ -114,50 +117,44 @@ void XPlayer::resume() {
 };
 
 // 推送数据到环形缓冲区
-void XPlayer::push_data(const float* data, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
-        // 写数据
-        rbuffer.bufferhead.get()[rbuffer.writepos] = data[i];
-        // 更新写指针
-        rbuffer.writepos = (rbuffer.writepos + 1) % rbuffer.buffersize;
-        // 如果写指针追上读指针,丢弃最老的数据
-        if (rbuffer.writepos == rbuffer.readpos)
-            rbuffer.readpos = (rbuffer.readpos + 1) % rbuffer.buffersize;
-    }
+void XPlayer::push_data(const float* data, size_t size){
+    // 运行于混音线程
 };
 
 // sdl播放回调函数
 void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
+    // 运行于播放线程
     // 转换回播放器对象
     auto player = static_cast<XPlayer*>(userdata);
-    // 暂停或者缓冲区无数据,填充静音数据
-    if (player->paused || player->rbuffer.readpos == player->rbuffer.writepos) {
-        std::memset(stream, 0, len);
+    auto& rbuffer = player->rbuffer;
+    LOG_DEBUG("SDL读取音频数据...");
+    LOG_DEBUG("SDL请求长度:[" + std::to_string(len) + "]");
+    LOG_DEBUG("当前环形缓冲区-->{readpos:[" + std::to_string(rbuffer.readpos) +
+              "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
+    auto audiopcm = rbuffer.bufferhead;
+    // 环形缓冲区内可读的数据量
+    size_t pcmsize;
+    if (rbuffer.writepos >= rbuffer.readpos)
+        // 正常情况，写指针在读指针之后
+        pcmsize = rbuffer.writepos - rbuffer.readpos;
+    else
+        // 环绕情况，写指针已经回绕到缓冲区前面
+        pcmsize = rbuffer.buffersize - rbuffer.readpos + rbuffer.writepos;
+    // SDL请求样本数
+    size_t numSamples = len / sizeof(int32_t);
+
+    if (pcmsize <= int(floorf(Config::mix_buffer_size / 3.0))) {
+        // 数据不足,请求更新
         player->isrequested = true;
         player->mixercv.notify_all();
         return;
     }
-    // 获取缓冲区数据
-    int samples_requested = len / sizeof(float);
-    float* output = reinterpret_cast<float*>(stream);
-    for (int i = 0; i < samples_requested; ++i) {
-        if (player->rbuffer.readpos == player->rbuffer.writepos) {
-            // 缓冲区写完,输出静音
-            output[i] = 0.0f;
-        } else {
-            output[i] =
-                player->rbuffer.bufferhead.get()[player->rbuffer.readpos];
-            player->rbuffer.readpos =
-                (player->rbuffer.readpos + 1) % player->rbuffer.buffersize;
-        }
+
+    if (player->paused) {
+        // 播放暂停时填充0
+        std::memset(stream, 0, len);
+        return;
     }
-    LOG_DEBUG("检查缓冲区");
-    // 如果数据量少于一半，唤起混音器继续提供数据
-    if ((player->rbuffer.writepos - player->rbuffer.readpos +
-         player->rbuffer.buffersize) %
-            player->rbuffer.buffersize <
-        player->rbuffer.buffersize / 2) {
-        player->isrequested = true;
-        player->mixercv.notify_all();
-    }
+    std::memcpy(stream, audiopcm.get() + rbuffer.readpos,
+                numSamples * sizeof(int32_t));
 };

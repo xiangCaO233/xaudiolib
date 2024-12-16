@@ -11,7 +11,7 @@ const int Config::mix_buffer_size = 1024;
 // 播放音频时的声道数
 const int Config::channel = AUDIO_DOUBLE_CHANNEL;
 // 播放音频时的采样率
-const int Config::samplerate = AVMEDIA_SAMPLERATE;
+const int Config::samplerate = NYQUIST_SAMPLERATE;
 // 播放音频的缓冲区大小
 const int Config::play_buffer_size = 128;
 // 保存路径

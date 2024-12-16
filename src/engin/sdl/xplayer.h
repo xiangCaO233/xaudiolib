@@ -10,7 +10,7 @@
 
 struct ringbuffer {
     // 缓冲区物理头
-    std::shared_ptr<float> bufferhead;
+    std::shared_ptr<uint32_t> bufferhead;
     // 缓冲区写入位置
     int writepos;
     // 缓冲区读取位置

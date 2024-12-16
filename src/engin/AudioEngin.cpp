@@ -3,9 +3,11 @@
 #include <SDL.h>
 #include <SDL_audio.h>
 
+#include <cstring>
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "config/config.h"
 #include "engin/mix/mixer.h"
@@ -229,6 +231,22 @@ void XAudioEngin::setGlobalVolume(float volume) {
                  std::to_string(volume) + "]");
 };
 
+void audio_callback(void *userdata, uint8_t *stream, int len) {
+    LOG_DEBUG("请求数据[" + std::to_string(len) + "]");
+    auto audiopcm = static_cast<std::vector<int32_t> *>(userdata);
+    static size_t samplepos = 0;
+
+    if (samplepos >= audiopcm->size()) {
+        std::memset(stream, 0, len);  // 缓冲区为空时填充0
+        return;
+    }
+
+    size_t numSamples = len / sizeof(int32_t);
+    std::memcpy(stream, audiopcm->data() + samplepos,
+                numSamples * sizeof(int32_t));
+    samplepos += numSamples;
+};
+
 // 播放句柄
 void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     auto outdeviceit = outdevices.find(device_index);
@@ -255,6 +273,29 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
         LOG_INFO("成功创建位于输出设备索引[" + std::to_string(device_index) +
                  "]的播放器");
         playerit = players.find(device_index);
+        // 测试pcm数据
+        // SDL_AudioSpec desired_spec{}, obtained_spec{};
+        // sdl配置
+        // 播放采样率
+        // desired_spec.freq = Config::samplerate;
+        // 长整数据型(自动转换字节序大小端)
+        // desired_spec.format = AUDIO_S32SYS;
+        // 声道数
+        // desired_spec.channels = Config::channel;
+        // 播放缓冲区大小
+        // desired_spec.samples = Config::play_buffer_size;
+        // 设置回调
+        // desired_spec.callback = audio_callback;
+        // 用户数据
+        // desired_spec.userdata = &(audioit->second->pcm_data);
+        // auto did = SDL_OpenAudioDevice(
+        //    outdevices.at(device_index)->device_name.c_str(), false,
+        //    &desired_spec, &obtained_spec, 0);
+        // SDL_PauseAudioDevice(did, 0);
+
+        // LOG_DEBUG("实际采样率: " + std::to_string(obtained_spec.freq));
+        // LOG_DEBUG("实际声道数: " + std::to_string(obtained_spec.channels));
+
         // 启动播放器
         player->start();
     } else {
@@ -276,6 +317,7 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     // 继续播放
     audioit->second->pauseflag = false;
 };
+
 void XAudioEngin::play(const std::string &devicename, int audio_id, bool loop) {
     auto device_indexit = outdevice_indicies.find(devicename);
     if (device_indexit == outdevice_indicies.end()) {
