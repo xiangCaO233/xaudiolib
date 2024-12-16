@@ -1,16 +1,27 @@
 #include "config.h"
 
 // 音频传输方式
-int Config::audio_transfer_method = AUDIO_DATA_BUFFERED;
-// 音频解码线程数(max128)
-int Config::decode_thread_count = 4;
+const int Config::audio_transfer_method = AUDIO_DATA_BUFFERED;
+// 音频解码线程数
+const int Config::decode_thread_count = 4;
 // 混音方式
-int Config::mix_method = CPU_MIX_BY_OPENAL;
-// GPU混音时的环形缓冲区大小
-int Config::gpu_buffer_size = 512;
+const int Config::mix_method = CPU_MIX_BY_OPENAL;
+// 混音处理时的环形缓冲区大小
+const int Config::mix_buffer_size = 1024;
+// 播放音频时的声道数
+const int Config::channel = AUDIO_DOUBLE_CHANNEL;
+// 播放音频时的采样率
+const int Config::samplerate = AVMEDIA_SAMPLERATE;
 // 播放音频的缓冲区大小
-int Config::play_buffer_size = 128;
+const int Config::play_buffer_size = 512;
+// 保存路径
+std::string Config::config_file_path = "./config.json";
 
-Config::Config(std::string &config_file) {}
+void Config::load(const std::string &config_file) {
+    // TODO(xiang 2024-12-16): 读取配置文件
+    config_file_path = config_file;
+};
 
-Config::~Config() {}
+void Config::save() {
+    // TODO(xiang 2024-12-16): 保存配置文件
+}

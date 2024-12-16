@@ -52,7 +52,7 @@ void XAudioManager::setAudioVolume(int id, float v) {
     engin->setVolume(id, v);
 };
 // 设置全局音量
-float XAudioManager::getGlobalVolume() { return engin->globalVolume; };
+float XAudioManager::getGlobalVolume() { return engin->gVolume; };
 void XAudioManager::setGlobalAudioVolume(float volume){};
 
 // 播放和暂停音频

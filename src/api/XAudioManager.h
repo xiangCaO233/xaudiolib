@@ -58,7 +58,6 @@ class XAudioManager {
 
     // 获取全局音量
     float globalVolume();
-
     // 设置全局音量
     void setGlobalVolume(float volume);
 

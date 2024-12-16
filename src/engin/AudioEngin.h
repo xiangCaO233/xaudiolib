@@ -1,6 +1,7 @@
 #ifndef X_AUDIO_ENGIN_H
 #define X_AUDIO_ENGIN_H
 
+#include "engin/sdl/xplayer.h"
 #if defined(__APPLE__)
 // 苹果coreaudio库
 #include <AudioToolbox/AudioToolbox.h>
@@ -31,6 +32,8 @@ class XSound {
     int handle;
     // pcm声音数据
     std::vector<float> pcm_data;
+    // 暂停标识
+    bool pauseflag;
     // 播放速率
     float speed;
     // 音量
@@ -39,6 +42,7 @@ class XSound {
     // 未知常量
     static std::string unknown;
     static std::string unknown_path;
+
     friend XAudioManager;
     friend XAudioEngin;
 
@@ -46,7 +50,13 @@ class XSound {
     // 构造XSound
     XSound(int h, std::string n, std::string p,
            std::shared_ptr<AVFormatContext> f, float s, float vm)
-        : handle(h), name(n), path(p), audio_format(f), speed(s), volume(vm){};
+        : handle(h),
+          pauseflag(false),
+          name(n),
+          path(p),
+          audio_format(f),
+          speed(s),
+          volume(vm){};
     // 析构XSound
     virtual ~XSound() = default;
 
@@ -59,6 +69,8 @@ class XSound {
 };
 
 class XAudioEngin {
+    // 引擎接口
+    // 当前注册到的id
     static int currentid;
 
     // 后缀名-编解码器
@@ -69,16 +81,21 @@ class XAudioEngin {
     std::unordered_map<std::string, int> handles;
     // 全部音频
     std::unordered_map<int, std::shared_ptr<XSound>> audios;
+    // 音频循环标记
+    std::unordered_map<int, bool> loopflags;
 
     // 设备列表
     std::unordered_map<int, std::shared_ptr<XOutputDevice>> outdevices;
     std::unordered_map<int, std::shared_ptr<XInputDevice>> inputdevices;
 
     // 全局音量
-    float globalVolume{0.5f};
+    float gVolume{0.5f};
 
     // 混音器
     XAuidoMixer mixer;
+
+    // 播放器
+    XPlayer player;
 
     // 载入音频
     int load(const std::string &audio);
@@ -104,6 +121,16 @@ class XAudioEngin {
     // 设置音频音量
     void setVolume(const std::string &audio, float v);
     void setVolume(int id, float v);
+
+    // 设置全局音量
+    void setGlobalVolume(float volume);
+
+    // 播放句柄
+    void play(int audio_id, bool loop);
+    // 暂停音频句柄
+    void pause(int audio_id);
+    // 终止音频句柄
+    void stop(int audio_id);
 
     friend XAudioManager;
 

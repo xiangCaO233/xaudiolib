@@ -7,16 +7,19 @@
 #include <memory>
 #include <string>
 
+#include "config/config.h"
+#include "engin/sdl/xplayer.h"
 #include "logger/logger.h"
 
 std::string XSound::unknown = "unknown";
 std::string XSound::unknown_path = "unknown path";
 
+// 引擎实现
 int XAudioEngin::currentid = 0;
 
 XAudioEngin::XAudioEngin() {}
 
-XAudioEngin::~XAudioEngin() {}
+XAudioEngin::~XAudioEngin() { shutdown(); }
 
 std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     LOG_DEBUG("初始化音频引擎");
@@ -54,7 +57,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     return e;
 }
 
-void XAudioEngin::shutdown() {}
+void XAudioEngin::shutdown() { SDL_Quit(); }
 
 int XAudioEngin::load(const std::string &audio) {
     std::filesystem::path path(audio);
@@ -201,5 +204,59 @@ float XAudioEngin::volume(int id) {
         return -1.0f;
 };
 // 设置音量
-void XAudioEngin::setVolume(const std::string &audio, float v){};
-void XAudioEngin::setVolume(int id, float v){};
+void XAudioEngin::setVolume(const std::string &audio, float v) {
+    auto handelit = handles.find(audio);
+    if (handelit != handles.end())
+        setVolume(handelit->second, v);
+    else
+        LOG_WARN("设置失败,[" + audio + "]不存在");
+};
+void XAudioEngin::setVolume(int id, float v) {
+    auto audioit = audios.find(id);
+    if (audioit != audios.end()) {
+        audioit->second->volume = v;
+        LOG_INFO("已将句柄[" + std::to_string(id) + "]音量设置为[" +
+                 std::to_string(v) + "]");
+    } else
+        LOG_WARN("句柄[" + std::to_string(id) + "]不存在");
+};
+// 设置全局音量
+void XAudioEngin::setGlobalVolume(float volume) {
+    if (volume >= 0 && volume <= 1.0f)
+        gVolume = volume;
+    else
+        LOG_WARN("取消设置,音量只能介于[0.0]-[1.0],当前设置[" +
+                 std::to_string(volume) + "]");
+};
+
+// 播放句柄
+void XAudioEngin::play(int audio_id, bool loop) {
+    auto audioit = audios.find(audio_id);
+    if (audioit == audios.end()) {
+        LOG_ERROR("句柄[" + std::to_string(audio_id) + "]不存在,播放失败");
+        return;
+    }
+    loopflags[audio_id] = loop;
+    // TODO(xiang 2024-12-16): 加入混音器中
+};
+// 暂停音频句柄
+void XAudioEngin::pause(int audio_id) {
+    auto audioit = audios.find(audio_id);
+    if (audioit == audios.end()) {
+        LOG_ERROR("暂停失败,句柄[" + std::to_string(audio_id) + "]不存在");
+        return;
+    }
+    // 暂停对应的音频
+    audioit->second->pauseflag = true;
+};
+// 终止音频句柄
+void XAudioEngin::stop(int audio_id) {
+    auto loopflagit = loopflags.find(audio_id);
+    if (loopflagit == loopflags.end()) {
+        LOG_WARN("音频句柄[" + std::to_string(audio_id) + "]未播放");
+        return;
+    }
+    // 移除此标识
+    loopflags.erase(loopflagit);
+    // TODO(xiang 2024-12-16): 从混音器移除
+};

@@ -13,6 +13,25 @@
 #define AUDIO_DATA_STREAMED 2
 
 /*
+ *单声道
+ */
+#define AUDIO_SINGLE_CHANNEL 1
+/*
+ *单声道
+ */
+#define AUDIO_DOUBLE_CHANNEL 2
+
+/*
+ *奈奎斯特采样率标准(内存最小)
+ */
+#define NYQUIST_SAMPLERATE 44100
+
+/*
+ *数字音视频采样率标准(保证动态范围,后期处理方便)
+ */
+#define AVMEDIA_SAMPLERATE 48000
+
+/*
  * 直接在sdl回调函数中进行混音
  */
 #define CPU_MIX_BY_SDL 1
@@ -34,28 +53,35 @@
 #define GPU_MIX_BY_VULKAN 5
 
 class XAudioEngin;
+class XPlayer;
 
 class Config {
     // 音频传输方式
-    static int audio_transfer_method;
+    const static int audio_transfer_method;
     // 音频解码线程数(max128)
-    static int decode_thread_count;
+    const static int decode_thread_count;
     // 混音方式
-    static int mix_method;
-    // GPU混音时的环形缓冲区大小
-    static int gpu_buffer_size;
+    const static int mix_method;
+    // 混音处理时的环形缓冲区大小
+    const static int mix_buffer_size;
+    // 播放音频时的声道数
+    const static int channel;
+    // 播放音频时的采样率
+    const static int samplerate;
     // 播放音频的缓冲区大小
-    static int play_buffer_size;
+    const static int play_buffer_size;
+
+    // 保存路径
+    static std::string config_file_path;
 
     friend XAudioEngin;
+    friend XPlayer;
 
-   public:
-    // 构造Config
-    Config(std::string &config_file);
-    // 析构Config
-    virtual ~Config();
+    // 载入配置
+    static void load(const std::string &config_file);
 
-    void save();
+    // 保存配置
+    static void save();
 };
 
 #endif  // X_CONFIG_H
