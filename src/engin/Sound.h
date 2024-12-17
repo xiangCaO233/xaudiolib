@@ -40,6 +40,13 @@ class XSound {
     // 析构XSound
     virtual ~XSound() = default;
 
+    // 调整位置(按帧)
+    void locateframe(size_t frameindex);
+    // 调整位置(按采样)
+    void locatesample(size_t sampleindex);
+    // 调整位置(按时间)
+    void locatetime(size_t milliseconds);
+
     // 音频文件名
     const std::string name;
     // 音频路径

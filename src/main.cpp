@@ -33,6 +33,11 @@ int main(int argc, char* argv[]) {
                 quit = true;
                 break;
             }
+            case 's': {
+                manager->set_audio_time(1, 120000);
+                break;
+            }
+
             case 'p': {
                 if (manager->is_pause(devicename)) {
                     manager->resume(devicename);
@@ -50,7 +55,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             case '2': {
-                manager->play(devicename, 2, false);
+                manager->play(devicename, 2, true);
                 break;
             }
             case '3': {

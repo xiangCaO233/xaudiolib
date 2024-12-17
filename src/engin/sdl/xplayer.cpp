@@ -131,9 +131,9 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     if (rbuffer.readable() <= int(floorf(Config::mix_buffer_size / 3.0))) {
         // 数据不足,请求更新
         player->isrequested = true;
-        LOG_DEBUG("请求数据");
-        LOG_DEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) +
-                  "]");
+        // LOG_DEBUG("请求数据");
+        // LOG_DEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) +
+        //           "]");
         player->mixercv.notify_all();
     }
     // SDL请求样本数
@@ -143,7 +143,7 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     rbuffer.read(audiopcm, numSamples);
 
     if (!audiopcm || player->paused) {
-        LOG_DEBUG("播放静音");
+        // LOG_DEBUG("播放静音");
         // 播放暂停时填充0
         std::memset(stream, 0, len);
         return;

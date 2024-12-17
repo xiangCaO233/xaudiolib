@@ -1,5 +1,7 @@
 #include "mixer.h"
 
+#include <string>
+
 #include "../Sound.h"
 #include "../sdl/xplayer.h"
 #include "config/config.h"
@@ -23,18 +25,43 @@ void XAuidoMixer::send_pcm_thread() {
 
         // 播放器停止则混音线程也立刻停止
         if (!des_player->running) break;
+        bool shouldplay = false;
         for (auto& audioit : audio_orbits) {
             auto& audio = audioit.second;
             if (!audio->pauseflag) {
+                shouldplay = true;
+                if (des_player->paused) {
+                    // 需要播放,恢复播放线程
+                    des_player->resume();
+                }
                 auto size = int(floorf(Config::mix_buffer_size / 3.0f));
-                LOG_DEBUG("推送数据[" + std::to_string(size * 4) + "]bytes");
-                // 写入数据到环形缓冲区
+                if (audio->playpos > audio->pcm_data.size()) {
+                    audio->playpos = 0;
+                    auto loopit = audio_loopflags.find(audioit.first);
+                    if (loopit != audio_loopflags.end()) {
+                        LOG_WARN("缺少[" + std::to_string(audioit.first) +
+                                 "]循环标识");
+                        des_player->pause();
+                        return;
+                    } else {
+                        if (!loopit->second) {
+                            audio->pauseflag = true;
+                        }
+                    }
+                }
+                // LOG_DEBUG("推送数据[" + std::to_string(size * 4) + "]bytes");
+                //  写入数据到环形缓冲区
                 des_player->rbuffer.write(
                     audio->pcm_data.data() + audio->playpos, size);
-                LOG_DEBUG("推送数据完成");
+                LOG_DEBUG("当前播放到[" + std::to_string(audio->playpos) + "]");
+                // LOG_DEBUG("推送数据完成");
                 audio->playpos += size;
                 des_player->cv.notify_all();
             }
+        }
+        if (!shouldplay) {
+            // 没有需要播放的音频了
+            des_player->pause();
         }
         des_player->isrequested = false;
     }

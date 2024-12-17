@@ -4,8 +4,14 @@
 #include <cstddef>
 #include <cstdint>
 namespace xutil {
-int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate);
-size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate) {}
+inline int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate,
+                                   int channels) {
+    return pcmpos * 1000 / pcmsamplerate * 2;
+};
+inline size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
+                                  int channels) {
+    return milliseconds * pcmsamplerate / 1000 / 2;
+}
 }  // namespace xutil
 
 #endif  // X_AUDIO_UTILS_H

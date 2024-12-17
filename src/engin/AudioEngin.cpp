@@ -4,6 +4,7 @@
 #include <SDL_audio.h>
 
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "engin/mix/mixer.h"
 #include "engin/sdl/xplayer.h"
 #include "logger/logger.h"
+#include "util//utils.h"
 
 // 引擎实现
 int XAudioEngin::currentid = 0;
@@ -123,7 +125,7 @@ int XAudioEngin::load(const std::string &audio) {
                     sound->audio_format, streamindex, sound->pcm_data) >= 0) {
                 LOG_INFO("解码[" + sound->name + "]成功");
                 LOG_INFO("音频数据大小:[" +
-                         std::to_string(sound->pcm_data.size()) + "]bytes");
+                         std::to_string(sound->pcm_data.size()) + "]");
             } else {
                 LOG_ERROR("解码出现问题");
                 // TODO(xiang 2024-12-15): 清除前部分填充的数据
@@ -198,7 +200,10 @@ void XAudioEngin::pos(int id, int64_t time) {
         LOG_ERROR("句柄[" + std::to_string(id) + "]不存在");
         return;
     }
-    it->second->playpos = time;
+    auto pos =
+        xutil::milliseconds2pcmpos(time, Config::samplerate, Config::channel);
+    LOG_DEBUG("跳转位置:[" + std::to_string(pos) + "]");
+    it->second->playpos = pos;
 }
 
 // 获取音量
@@ -254,12 +259,9 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
         LOG_ERROR("句柄[" + std::to_string(audio_id) + "]不存在,播放失败");
         return;
     }
-
     // TODO(xiang 2024-12-16): 多设备播放同一音频可能出现问题
-
-    // 寻找此设备对应的播放器
-    auto &player = outdeviceit->second->device_player();
-    if (!player) {
+    // 检查此设备对应的播放器
+    if (!outdeviceit->second->player) {
         // 不存在此设备的播放器
         // 初始化播放器并加入播放器表
         if (outdeviceit->second->creat_player()) {
@@ -269,51 +271,30 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
             LOG_ERROR("创建播放器出错");
             return;
         }
-
-        // 测试pcm数据
-        // SDL_AudioSpec desired_spec{}, obtained_spec{};
-        // sdl配置
-        // 播放采样率
-        // desired_spec.freq = Config::samplerate;
-        // 长整数据型(自动转换字节序大小端)
-        // desired_spec.format = AUDIO_S32SYS;
-        // 声道数
-        // desired_spec.channels = Config::channel;
-        // 播放缓冲区大小
-        // desired_spec.samples = Config::play_buffer_size;
-        // 设置回调
-        // desired_spec.callback = audio_callback;
-        // 用户数据
-        // desired_spec.userdata = &(audioit->second->pcm_data);
-        // auto did = SDL_OpenAudioDevice(
-        //    outdevices.at(device_index)->device_name.c_str(), false,
-        //    &desired_spec, &obtained_spec, 0);
-        // SDL_PauseAudioDevice(did, 0);
-
-        // LOG_DEBUG("实际采样率: " + std::to_string(obtained_spec.freq));
-        // LOG_DEBUG("实际声道数: " + std::to_string(obtained_spec.channels));
-
         // 启动播放器
-        player->start();
+        outdeviceit->second->player->start();
     } else {
         LOG_INFO("已找到输出设备[" + std::to_string(device_index) +
                  "]上的播放器");
     }
-    if (!player->running) {
-        player->start();
+    if (!outdeviceit->second->player->running) {
+        outdeviceit->second->player->start();
         LOG_WARN("播放器状态异常,已重新启动");
     }
-    if (player->paused) {
+    if (outdeviceit->second->player->paused) {
         LOG_INFO("检测到播放器暂停,继续播放");
-        player->resume();
+        outdeviceit->second->player->resume();
     }
     // 找播放器绑定的混音器中是否存在此音频
-    auto mixer_audioit = player->mixer->audio_orbits.find(audio_id);
-    if (mixer_audioit == player->mixer->audio_orbits.end()) {
+    auto mixer_audioit =
+        outdeviceit->second->player->mixer->audio_orbits.find(audio_id);
+    if (mixer_audioit ==
+        outdeviceit->second->player->mixer->audio_orbits.end()) {
         LOG_INFO("音轨中不存在音频[" + std::to_string(audio_id) + "]");
         // 不存在
         // 加入此音频
-        player->mixer->audio_orbits.insert({audio_id, audioit->second});
+        outdeviceit->second->player->mixer->audio_orbits.insert(
+            {audio_id, audioit->second});
         LOG_INFO("已添加播放音频句柄[" + std::to_string(audio_id) + "]到音轨");
     } else {
         if (audioit->second->pauseflag) {
@@ -326,8 +307,12 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
             LOG_WARN("音频正在播放中");
         }
     }
+    // TODO(xiang 2024-12-18): 实际loopflags结果中没有数据
+    std::mutex mtx;
+    std::lock_guard<std::mutex> lock(mtx);
     // 更新循环标识
-    player->mixer->audio_loopflags[audio_id] = loop;
+    outdeviceit->second->player->mixer->audio_loopflags.insert(
+        {audio_id, loop});
 }
 
 void XAudioEngin::play(const std::string &devicename, int audio_id, bool loop) {
