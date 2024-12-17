@@ -51,6 +51,16 @@ class XAudioManager {
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
 
+    // 播放暂停停止设备上的播放器
+    void pauseDevice(int device_id);
+    void pauseDevice(const std::string &devicename);
+
+    void resumeDevice(int device_id);
+    void resumeDevice(const std::string &devicename);
+
+    void stopDevice(int device_id);
+    void stopDevice(const std::string &devicename);
+
    public:
     // 构造XAudioManager音频管理器
     XAudioManager();

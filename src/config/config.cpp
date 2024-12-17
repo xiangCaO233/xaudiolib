@@ -7,13 +7,13 @@ const int Config::decode_thread_count = 4;
 // 混音方式
 const int Config::mix_method = CPU_MIX_BY_OPENAL;
 // 混音处理时的环形缓冲区大小(至少为play_buffer_size 的32倍,否则影响音频)
-const int Config::mix_buffer_size = 2048;
+const int Config::mix_buffer_size = 16384;
 // 播放音频时的声道数
 const int Config::channel = AUDIO_DOUBLE_CHANNEL;
 // 播放音频时的采样率
 const int Config::samplerate = AVMEDIA_SAMPLERATE;
 // 播放音频的缓冲区大小
-const int Config::play_buffer_size = 64;
+const int Config::play_buffer_size = 256;
 // 保存路径
 std::string Config::config_file_path = "./config.json";
 

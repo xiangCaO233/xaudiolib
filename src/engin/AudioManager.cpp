@@ -85,3 +85,24 @@ void XAudioManager::pauseAudio(int device_index, const std::string &audioname) {
 void XAudioManager::pauseAudio(const std::string &device, int id) {
     engin->pause(device, id);
 };
+
+void XAudioManager::pauseDevice(int device_id) {
+    engin->pause_player(device_id);
+};
+void XAudioManager::pauseDevice(const std::string &devicename) {
+    engin->pause_player(devicename);
+};
+
+void XAudioManager::resumeDevice(int device_id) {
+    engin->resume_player(device_id);
+};
+void XAudioManager::resumeDevice(const std::string &devicename) {
+    engin->resume_player(devicename);
+};
+
+void XAudioManager::stopDevice(int device_id) {
+    engin->stop_player(device_id);
+};
+void XAudioManager::stopDevice(const std::string &devicename) {
+    engin->stop_player(devicename);
+};

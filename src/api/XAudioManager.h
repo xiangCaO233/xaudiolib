@@ -40,6 +40,15 @@ class XAudioManager {
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
 
+    void pauseDevice(int device_id);
+    void pauseDevice(const std::string &devicename);
+
+    void resumeDevice(int device_id);
+    void resumeDevice(const std::string &devicename);
+
+    void stopDevice(int device_id);
+    void stopDevice(const std::string &devicename);
+
    public:
     // 公开接口
     static std::shared_ptr<XAudioManager> newmanager();
@@ -85,6 +94,18 @@ class XAudioManager {
     void pause(const std::string &devicename, const std::string &audioname);
     void pause(int device_index, const std::string &audioname);
     void pause(const std::string &devicename, int audio_id);
+
+    // 暂停播放器
+    void pause(int device_id);
+    void pause(const std::string &devicename);
+
+    // 恢复播放器
+    void resume(int device_id);
+    void resume(const std::string &devicename);
+
+    // 终止播放器
+    void stop(int device_id);
+    void stop(const std::string &devicename);
 };
 
 #endif  // API_X_AUDIO_MANAGER_H

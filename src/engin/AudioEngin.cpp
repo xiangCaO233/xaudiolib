@@ -387,7 +387,7 @@ void XAudioEngin::pause(const std::string &devicename,
     pause(device_indexit->second, audioname);
 };
 // 终止音频句柄
-void XAudioEngin::stop(int audio_id) {
+void XAudioEngin::stop_audio(int audio_id) {
     auto loopflagit = loopflags.find(audio_id);
     if (loopflagit == loopflags.end()) {
         LOG_WARN("音频句柄[" + std::to_string(audio_id) + "]未播放");
@@ -397,3 +397,12 @@ void XAudioEngin::stop(int audio_id) {
     loopflags.erase(loopflagit);
     // TODO(xiang 2024-12-16): 从混音器移除
 };
+// 播放暂停停止设备上的播放器
+void XAudioEngin::pause_player(int device_id){};
+void XAudioEngin::pause_player(const std::string &devicename){};
+
+void XAudioEngin::resume_player(int device_id){};
+void XAudioEngin::resume_player(const std::string &devicename){};
+
+void XAudioEngin::stop_player(int device_id){};
+void XAudioEngin::stop_player(const std::string &devicename){};

@@ -1,11 +1,8 @@
 #include "mixer.h"
 
-#include <string>
-
 #include "../Sound.h"
 #include "../sdl/xplayer.h"
 #include "config/config.h"
-#include "logger/logger.h"
 
 XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {}
 
@@ -22,6 +19,7 @@ void XAuidoMixer::send_pcm_thread() {
             return (!des_player->paused && des_player->isrequested) ||
                    !des_player->running;
         });
+
         // 播放器停止则混音线程也立刻停止
         if (!des_player->running) break;
         for (auto& audioit : audio_orbits) {

@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
                 quit = true;
                 break;
             }
+            case 'p': {
+            }
             case '0': {
                 manager->play(devicename, 0, false);
                 break;
