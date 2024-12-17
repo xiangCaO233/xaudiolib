@@ -4,7 +4,7 @@
 #include "AudioEngin.h"
 
 class XAudioManager {
-   private:
+   public:
     // 引擎(唯一)
     std::unique_ptr<XAudioEngin> engin;
     // 音频的句柄

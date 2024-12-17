@@ -37,7 +37,7 @@ class XPlayer {
     // sdl音频规范(期望)
     SDL_AudioSpec desired_spec{};
     // 此播放器绑定的混音器
-    std::shared_ptr<XAuidoMixer> mixer;
+    std::unique_ptr<XAuidoMixer> mixer;
     // 输出设备索引
     int outdevice_index{-1};
     // 播放设备

@@ -11,6 +11,7 @@
 
 XPlayer::XPlayer()
     : paused(false), running(false), rbuffer(Config::mix_buffer_size) {
+    LOG_TRACE("初始化播放器");
     // sdl配置
     // 播放采样率
     desired_spec.freq = Config::samplerate;
@@ -24,14 +25,13 @@ XPlayer::XPlayer()
     desired_spec.callback = &XPlayer::audio_callback;
     // 用户数据
     desired_spec.userdata = this;
-
-    // 混音器初始化
-    mixer = std::make_shared<XAuidoMixer>(this);
+    mixer = std::make_unique<XAuidoMixer>(this);
 }
 
 XPlayer::~XPlayer() {
     // 确保资源释放
     stop();
+    LOG_TRACE("析构[" + std::to_string(outdevice_index) + "]设备播放器");
 }
 // 设置设备索引
 void XPlayer::set_device_index(int device_index) {
@@ -84,6 +84,7 @@ void XPlayer::start() {
     });
     sdl_playthread.detach();
     LOG_DEBUG("启动混音线程");
+
     mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
     mixer->mixthread.detach();
 };
@@ -107,6 +108,7 @@ void XPlayer::stop() {
 void XPlayer::pause() {
     // 暂停
     paused = true;
+    cv.notify_all();
 };
 // 继续
 void XPlayer::resume() {

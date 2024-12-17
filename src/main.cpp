@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "api/XAudioManager.h"
+#include "engin/AudioManager.h"
 
 int main(int argc, char* argv[]) {
     auto manager = XAudioManager::newmanager();
@@ -15,12 +15,12 @@ int main(int argc, char* argv[]) {
     std::string audio_path4 = "../resources/New story.mp3";
 
     // 载入音频
-    manager->load(audio_path);
-    manager->load(audio_path2);
-    manager->load(audio_path3);
-    manager->load(audio_path2);
-    manager->load(audio_path4);
-    manager->load(audio_path3);
+    manager->loadaudio(audio_path);
+    manager->loadaudio(audio_path2);
+    manager->loadaudio(audio_path3);
+    manager->loadaudio(audio_path2);
+    manager->loadaudio(audio_path4);
+    manager->loadaudio(audio_path3);
 
     std::string devicename = "External Headphones";
 
@@ -34,44 +34,44 @@ int main(int argc, char* argv[]) {
                 break;
             }
             case 's': {
-                manager->set_audio_time(1, 120000);
+                manager->set_audio_current_pos(1, 120000);
                 break;
             }
 
             case 'p': {
-                if (manager->is_pause(devicename)) {
-                    manager->resume(devicename);
+                if (manager->isDevicePause(devicename)) {
+                    manager->resumeDevice(devicename);
                 } else {
-                    manager->pause(devicename);
+                    manager->pauseDevice(devicename);
                 }
                 break;
             }
             case '0': {
-                manager->play(devicename, 0, false);
+                manager->playAudio(devicename, 0, false);
                 break;
             }
             case '1': {
-                manager->play(devicename, 1, false);
+                manager->playAudio(devicename, 1, false);
                 break;
             }
             case '2': {
-                manager->play(devicename, 2, true);
+                manager->playAudio(devicename, 2, false);
                 break;
             }
             case '3': {
-                manager->play(devicename, 3, false);
+                manager->playAudio(devicename, 3, false);
                 break;
             }
             case '4': {
-                manager->play(devicename, 4, false);
+                manager->playAudio(devicename, 4, false);
                 break;
             }
             case '5': {
-                manager->play(devicename, 5, false);
+                manager->playAudio(devicename, 5, false);
                 break;
             }
             case '6': {
-                manager->play(devicename, 6, false);
+                manager->playAudio(devicename, 6, false);
                 break;
             }
         }
@@ -81,10 +81,10 @@ int main(int argc, char* argv[]) {
     }
 
     // 卸载音频
-    manager->unload(0);
-    manager->unload(1);
-    manager->unload(2);
-    manager->unload(3);
+    manager->unloadaudio(0);
+    manager->unloadaudio(1);
+    manager->unloadaudio(2);
+    manager->unloadaudio(3);
 
     return 0;
 }

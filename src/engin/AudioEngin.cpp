@@ -55,7 +55,18 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
         auto outdevice = std::make_shared<XOutputDevice>(i, device_name_str);
         LOG_DEBUG("检测到输出设备:" + device_name_str);
         e->outdevice_indicies.insert({device_name_str, i});
+        LOG_DEBUG("outdevice_indicies size: " +
+                  std::to_string(e->outdevice_indicies.size()));
+        for (const auto &pair : e->outdevice_indicies) {
+            LOG_DEBUG("Key: " + pair.first +
+                      ", Value: " + std::to_string(pair.second));
+        }
         e->outdevices.insert({i, outdevice});
+        LOG_DEBUG("outdevice size: " + std::to_string(e->outdevices.size()));
+        for (const auto &pair : e->outdevices) {
+            LOG_DEBUG("Key: " + std::to_string(pair.first) +
+                      ", Value: " + pair.second->device_name);
+        }
     }
     return e;
 }
@@ -303,6 +314,7 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
                      "]");
             // 取消音频暂停标识
             audioit->second->pauseflag = false;
+            outdeviceit->second->player->resume();
         } else {
             LOG_WARN("音频正在播放中");
         }
