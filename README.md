@@ -28,3 +28,5 @@
 
 ### 样例
 ![sample](sample.jpg)
+### 播放示例
+![playsample](playsample.jpg)

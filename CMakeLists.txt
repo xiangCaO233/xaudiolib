@@ -10,7 +10,8 @@ set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
 set(MIXER_SOURCES src/engin/mix/mixer.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
-set(SDL_SOURCES src/engin/sdl/xmicrophone.cpp src/engin/sdl/xplayer.cpp)
+set(SDL_SOURCES src/engin/sdl/rbuffer.cpp src/engin/sdl/xmicrophone.cpp
+                src/engin/sdl/xplayer.cpp)
 
 set(ENGIN_SOURCES
     src/engin/AudioEngin.cpp

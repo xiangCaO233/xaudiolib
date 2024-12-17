@@ -1,9 +1,11 @@
+#include <sys/cdefs.h>
+
 #include <iostream>
 #include <string>
 
 #include "api/XAudioManager.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     auto manager = XAudioManager::newmanager();
 
     std::string audio_path = "../resources/Tensions - スキャンダル.mp3";

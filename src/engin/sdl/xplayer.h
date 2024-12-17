@@ -7,17 +7,7 @@
 #include <thread>
 
 #include "engin/mix/mixer.h"
-
-struct ringbuffer {
-    // 缓冲区物理头
-    std::shared_ptr<uint32_t> bufferhead;
-    // 缓冲区写入位置
-    int writepos;
-    // 缓冲区读取位置
-    int readpos;
-    // 缓冲区大小
-    int buffersize;
-};
+#include "rbuffer.h"
 
 class XPlayer {
     // 播放线程运行状态
@@ -41,7 +31,7 @@ class XPlayer {
     std::thread sdl_playthread;
 
     // 环形音频处理缓冲区
-    ringbuffer rbuffer{};
+    ringbuffer rbuffer;
     // sdl音频规范(期望)
     SDL_AudioSpec desired_spec{};
     // 此播放器绑定的混音器
