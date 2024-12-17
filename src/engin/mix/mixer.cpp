@@ -3,6 +3,7 @@
 #include "../Sound.h"
 #include "../sdl/xplayer.h"
 #include "config/config.h"
+#include "logger/logger.h"
 
 XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {}
 
@@ -26,9 +27,11 @@ void XAuidoMixer::send_pcm_thread() {
             auto& audio = audioit.second;
             if (!audio->pauseflag) {
                 auto size = int(floorf(Config::mix_buffer_size / 3.0f));
-                // LOG_DEBUG("推送数据[" + std::to_string(size * 4) + "]bytes");
-                des_player->push_data(audio->pcm_data.data() + audio->playpos,
-                                      size);
+                LOG_DEBUG("推送数据[" + std::to_string(size * 4) + "]bytes");
+                // 写入数据到环形缓冲区
+                des_player->rbuffer.write(
+                    audio->pcm_data.data() + audio->playpos, size);
+                LOG_DEBUG("推送数据完成");
                 audio->playpos += size;
                 des_player->cv.notify_all();
             }

@@ -67,9 +67,6 @@ class XPlayer {
     // 继续
     void resume();
 
-    // 推送数据到环形缓冲区
-    void push_data(const uint32_t* data, size_t size);
-
     // sdl播放回调函数
     static void audio_callback(void* userdata, uint8_t* stream, int len);
 };

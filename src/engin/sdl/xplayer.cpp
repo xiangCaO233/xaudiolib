@@ -117,14 +117,6 @@ void XPlayer::resume() {
     mixercv.notify_all();
 };
 
-// TODO(xiang 2024-12-17): 数据写入读取有问题,有杂音
-// 推送数据到环形缓冲区
-void XPlayer::push_data(const uint32_t* data, size_t size) {
-    // 写入数据到环形缓冲区
-    rbuffer.write(data, size);
-    LOG_DEBUG("推送数据完成");
-};
-
 // sdl播放回调函数
 void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     // 运行于播放线程
@@ -136,7 +128,6 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     // LOG_DEBUG("当前环形缓冲区-->{readpos:[" + std::to_string(rbuffer.readpos)
     // +
     //           "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
-
     if (rbuffer.readable() <= int(floorf(Config::mix_buffer_size / 3.0))) {
         // 数据不足,请求更新
         player->isrequested = true;
@@ -145,7 +136,6 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
                   "]");
         player->mixercv.notify_all();
     }
-
     // SDL请求样本数
     size_t numSamples = len / sizeof(int32_t);
     // 从缓冲区读取音频数据

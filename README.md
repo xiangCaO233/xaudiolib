@@ -30,3 +30,5 @@
 ![sample](sample.jpg)
 ### 播放示例
 ![playsample](playsample.jpg)
+### 性能(播放30s 75%以上时间消耗在解码和卸载音频)
+![profile1217](profile1217.jpg)
