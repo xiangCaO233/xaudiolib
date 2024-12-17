@@ -16,13 +16,13 @@ class ringbuffer {
     size_t writepos;
 
    public:
-    ringbuffer(size_t size);
+    explicit ringbuffer(size_t size);
     ~ringbuffer() = default;
 
     // 可读数据量
-    size_t readable() const;
+    [[nodiscard]] size_t readable() const;
     // 可写入容量
-    size_t available() const;
+    [[nodiscard]] size_t available() const;
     // 写数据
     bool write(const uint32_t* data, size_t size);
     // 读数据

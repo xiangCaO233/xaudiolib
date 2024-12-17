@@ -1,15 +1,20 @@
 #ifndef X_AUDIO_OUTDEVICE_H
 #define X_AUDIO_OUTDEVICE_H
 
+#include <memory>
 #include <string>
+#include <vector>
 
 class XAudioEngin;
+class XPlayer;
 
 class XOutputDevice {
     // 设备名称
     std::string device_name;
-    // 设备sdlid
+    // 设备sdlid(仅索引)
     int sdl_id;
+    // 播放器
+    std::shared_ptr<XPlayer> player;
 
     friend XAudioEngin;
 
@@ -18,6 +23,12 @@ class XOutputDevice {
     XOutputDevice(int id, std::string name);
     // 析构XOutputDevice
     virtual ~XOutputDevice();
+
+    // 获取该设备上活跃的播放器
+    inline std::shared_ptr<XPlayer>& device_player() { return player; };
+
+    // 创建一个位于该设备的播放器
+    bool creat_player();
 };
 
 #endif  // X_AUDIO_OUTDEVICE_H

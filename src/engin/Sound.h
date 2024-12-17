@@ -36,15 +36,7 @@ class XSound {
    public:
     // 构造XSound
     XSound(int h, std::string n, std::string p,
-           std::shared_ptr<AVFormatContext> f, float s, float vm)
-        : handle(h),
-          playpos(0),
-          pauseflag(false),
-          name(n),
-          path(p),
-          audio_format(f),
-          speed(s),
-          volume(vm){};
+           std::shared_ptr<AVFormatContext> f, float s, float vm);
     // 析构XSound
     virtual ~XSound() = default;
 

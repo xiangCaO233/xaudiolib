@@ -34,6 +34,12 @@ int main(int argc, char* argv[]) {
                 break;
             }
             case 'p': {
+                if (manager->is_pause(devicename)) {
+                    manager->resume(devicename);
+                } else {
+                    manager->pause(devicename);
+                }
+                break;
             }
             case '0': {
                 manager->play(devicename, 0, false);

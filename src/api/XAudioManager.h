@@ -40,6 +40,9 @@ class XAudioManager {
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
 
+    bool isDevicePause(int device_id);
+    bool isDevicePause(const std::string &devicename);
+
     void pauseDevice(int device_id);
     void pauseDevice(const std::string &devicename);
 
@@ -94,6 +97,10 @@ class XAudioManager {
     void pause(const std::string &devicename, const std::string &audioname);
     void pause(int device_index, const std::string &audioname);
     void pause(const std::string &devicename, int audio_id);
+
+    // 获取设备播放器状态
+    bool is_pause(int device_id);
+    bool is_pause(const std::string &devicename);
 
     // 暂停播放器
     void pause(int device_id);

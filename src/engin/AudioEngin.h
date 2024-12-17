@@ -27,16 +27,14 @@ class XAudioEngin {
     // 当前注册到的id
     static int currentid;
 
-    // 后缀名-编解码器
+    // 后缀名-编解码器池
     std::unordered_map<std::string, std::pair<XAudioDecoder, XAudioEncoder>>
         audio_codecs;
 
-    // 音频的句柄
+    // 音频句柄池
     std::unordered_map<std::string, int> handles;
-    // 全部音频
+    // 音频池
     std::unordered_map<int, std::shared_ptr<XSound>> audios;
-    // 音频循环标记
-    std::unordered_map<int, bool> loopflags;
 
     // 设备列表
     std::unordered_map<int, std::shared_ptr<XOutputDevice>> outdevices;
@@ -46,9 +44,6 @@ class XAudioEngin {
 
     // 全局音量
     float gVolume{0.5f};
-
-    // 播放器
-    std::unordered_map<int, std::shared_ptr<XPlayer>> players;
 
     // 载入音频
     int load(const std::string &audio);
@@ -93,6 +88,10 @@ class XAudioEngin {
     // 终止音频句柄
     void stop_audio(int audio_id);
 
+    // 获取设备播放器状态
+    bool is_pause(int device_id);
+    bool is_pause(const std::string &devicename);
+
     // 暂停播放器
     void pause(int device_id);
     void pause(const std::string &devicename);
@@ -102,11 +101,11 @@ class XAudioEngin {
     void resume(const std::string &devicename);
 
     // 播放暂停停止设备上的播放器
-    void pause_player(int device_id);
-    void pause_player(const std::string &devicename);
+    void pause_device(int device_id);
+    void pause_device(const std::string &devicename);
 
-    void resume_player(int device_id);
-    void resume_player(const std::string &devicename);
+    void resume_device(int device_id);
+    void resume_device(const std::string &devicename);
 
     void stop_player(int device_id);
     void stop_player(const std::string &devicename);

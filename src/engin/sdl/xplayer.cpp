@@ -57,7 +57,7 @@ void XPlayer::start() {
                                 &desired_spec, &obtained_spec, 0);
         if (!device_id) {
             auto error = SDL_GetError();
-            LOG_ERROR("启动设备时出错,请检查SDL设备索引,当前为[" +
+            LOG_ERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
                       std::to_string(outdevice_index) + "]");
             LOG_ERROR(error);
             return;

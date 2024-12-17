@@ -16,6 +16,8 @@ class XAuidoMixer {
     XPlayer* des_player;
     // 全部音轨(音频句柄-音频)
     std::unordered_map<int, std::shared_ptr<XSound>> audio_orbits;
+    // 音轨循环标识(句柄-循环标识)
+    std::unordered_map<int, bool> audio_loopflags;
 
     friend XAudioEngin;
     friend XPlayer;

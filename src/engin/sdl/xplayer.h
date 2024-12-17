@@ -9,13 +9,15 @@
 #include "engin/mix/mixer.h"
 #include "rbuffer.h"
 
+class XOutputDevice;
+
 class XPlayer {
     // 播放线程运行状态
     bool running;
     // 播放暂停状态
     bool paused;
     // 数据请求状态
-    bool isrequested;
+    bool isrequested{false};
 
     // 混音互斥锁
     std::mutex mix_mutex;
@@ -43,6 +45,7 @@ class XPlayer {
 
     friend XAudioEngin;
     friend XAuidoMixer;
+    friend XOutputDevice;
 
    public:
     // 构造XPlayer

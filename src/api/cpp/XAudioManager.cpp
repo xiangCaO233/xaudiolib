@@ -69,6 +69,12 @@ void XAudioManager::pause(int device_index, const std::string &audioname) {
 void XAudioManager::pause(const std::string &devicename, int audio_id) {
     pauseAudio(devicename, audio_id);
 }
+// 获取设备播放器状态
+bool XAudioManager::is_pause(int device_id) { return isDevicePause(device_id); }
+bool XAudioManager::is_pause(const std::string &devicename) {
+    return isDevicePause(devicename);
+}
+
 // 暂停播放器
 void XAudioManager::pause(int device_id) { pauseDevice(device_id); };
 void XAudioManager::pause(const std::string &devicename) {

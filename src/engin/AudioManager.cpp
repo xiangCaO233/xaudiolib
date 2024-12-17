@@ -4,6 +4,7 @@
 
 XAudioManager::XAudioManager() {
     XLogger::init();
+    LOG_TRACE("XAudioManager初始化");
     engin = XAudioEngin::init();
     if (engin) LOG_INFO("初始化引擎成功");
 }
@@ -86,18 +87,26 @@ void XAudioManager::pauseAudio(const std::string &device, int id) {
     engin->pause(device, id);
 };
 
+// 设备是否暂停
+bool XAudioManager::isDevicePause(int device_id) {
+    return engin->is_pause(device_id);
+}
+bool XAudioManager::isDevicePause(const std::string &devicename) {
+    return engin->is_pause(devicename);
+}
+
 void XAudioManager::pauseDevice(int device_id) {
-    engin->pause_player(device_id);
+    engin->pause_device(device_id);
 };
 void XAudioManager::pauseDevice(const std::string &devicename) {
-    engin->pause_player(devicename);
+    engin->pause_device(devicename);
 };
 
 void XAudioManager::resumeDevice(int device_id) {
-    engin->resume_player(device_id);
+    engin->resume_device(device_id);
 };
 void XAudioManager::resumeDevice(const std::string &devicename) {
-    engin->resume_player(devicename);
+    engin->resume_device(devicename);
 };
 
 void XAudioManager::stopDevice(int device_id) {
