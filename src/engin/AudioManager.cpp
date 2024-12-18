@@ -9,7 +9,7 @@ XAudioManager::XAudioManager() {
     if (engin) LOG_INFO("初始化引擎成功");
 }
 
-XAudioManager::~XAudioManager() = default;
+XAudioManager::~XAudioManager() { engin->shutdown(); };
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
     return std::make_shared<XAudioManager>();

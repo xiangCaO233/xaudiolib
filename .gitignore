@@ -2,7 +2,6 @@
 /.cache
 /.idea
 /cmake-build-debug
-/resources
 /subproject
 
 *.DS_Store
