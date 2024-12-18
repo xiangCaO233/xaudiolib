@@ -5,7 +5,7 @@ const int Config::audio_transfer_method = AUDIO_DATA_BUFFERED;
 // 音频解码线程数
 const int Config::decode_thread_count = 4;
 // 混音方式
-const int Config::mix_method = CPU_MIX_BY_OPENAL;
+const int Config::mix_method = CPU_MIX;
 // 混音处理时的环形缓冲区大小(至少为play_buffer_size 的32倍,否则影响音频)
 const int Config::mix_buffer_size = 16384;
 // 播放音频时的声道数

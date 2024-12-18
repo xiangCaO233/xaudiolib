@@ -75,6 +75,10 @@ int main(int argc, char* argv[]) {
                         o = STOPDEVICE;
                         break;
                     }
+                    case 'r': {
+                        o = RESUME;
+                        break;
+                    }
                     case 's': {
                         o = SETPOS;
                         break;

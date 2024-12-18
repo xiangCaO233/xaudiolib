@@ -16,6 +16,8 @@ class XPlayer {
     bool running;
     // 播放暂停状态
     bool paused;
+    // 全局音量
+    float global_volume;
     // 数据请求状态
     bool isrequested{false};
 
@@ -60,6 +62,8 @@ class XPlayer {
 
     // 设置设备索引
     void set_device_index(int device_index);
+    void set_player_volume(float v);
+
     // 开始
     void start();
     // 终止

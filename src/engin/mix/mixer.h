@@ -1,9 +1,11 @@
 #ifndef X_AUDIO_MIXER_H
 #define X_AUDIO_MIXER_H
 
+#include <list>
 #include <memory>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 class XSound;
 class XPlayer;
@@ -21,6 +23,10 @@ class XAuidoMixer {
 
     friend XAudioEngin;
     friend XPlayer;
+
+    // 混合音频
+    void mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
+             std::vector<uint32_t>& mixed_pcm, float global_volume);
 
     // 向播放器发送数据的线程函数
     void send_pcm_thread();

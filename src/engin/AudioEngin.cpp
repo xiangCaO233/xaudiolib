@@ -289,6 +289,8 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
             LOG_ERROR("创建播放器出错");
             return;
         }
+        // 设置全局音量
+        player->set_player_volume(gVolume);
         // 启动播放器
         player->start();
     } else {
@@ -397,12 +399,47 @@ void XAudioEngin::pause(const std::string &devicename,
     pause(device_indexit->second, audioname);
 }
 
-// 暂停
-void XAudioEngin::resume(int device_index, int audio_id) {}
-void XAudioEngin::resume(const std::string &devicename, int audio_id) {}
-void XAudioEngin::resume(int device_index, const std::string &audioname) {}
+// 恢复
+void XAudioEngin::resume(int device_index, int audio_id) {
+    auto outdeviceit = outdevices.find(device_index);
+    if (outdeviceit == outdevices.end()) {
+        LOG_ERROR("输出设备索引[" + std::to_string(device_index) + "]无设备");
+        return;
+    }
+    auto audioit = audios.find(audio_id);
+    if (audioit == audios.end()) {
+        LOG_ERROR("暂停失败,句柄[" + std::to_string(audio_id) + "]不存在");
+        return;
+    }
+    // 恢复对应的音频
+    audioit->second->pauseflag = false;
+    LOG_INFO("已恢复句柄[" + std::to_string(audio_id) + "]");
+}
+void XAudioEngin::resume(const std::string &devicename, int audio_id) {
+    auto device_indexit = outdevice_indicies.find(devicename);
+    if (device_indexit == outdevice_indicies.end()) {
+        LOG_ERROR("设备[" + devicename + "]不存在");
+        return;
+    }
+    resume(device_indexit->second, audio_id);
+}
+void XAudioEngin::resume(int device_index, const std::string &audioname) {
+    auto handelit = handles.find(audioname);
+    if (handelit == handles.end()) {
+        LOG_ERROR("不存在音频[" + audioname + "]");
+        return;
+    }
+    resume(device_index, handelit->second);
+}
 void XAudioEngin::resume(const std::string &devicename,
-                         const std::string &audioname) {}
+                         const std::string &audioname) {
+    auto device_indexit = outdevice_indicies.find(devicename);
+    if (device_indexit == outdevice_indicies.end()) {
+        LOG_ERROR("设备[" + devicename + "]不存在");
+        return;
+    }
+    resume(device_indexit->second, audioname);
+}
 
 // 终止音频
 void XAudioEngin::stop(int device_index, int audio_id) {

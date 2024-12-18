@@ -32,25 +32,17 @@
 #define AVMEDIA_SAMPLERATE 48000
 
 /*
- * 直接在sdl回调函数中进行混音
+ * 在CPU中进行混音
  */
-#define CPU_MIX_BY_SDL 1
-/*
- * 在OpenAL中进行混音
- */
-#define CPU_MIX_BY_OPENAL 2
+#define CPU_MIX 1
 /*
  * 在OpenCL中进行混音
  */
-#define GPU_MIX_BY_OPENCL 3
+#define GPU_MIX_BY_OPENCL 2
 /*
  * 在OpenGL中进行混音
  */
-#define GPU_MIX_BY_OPENGL 4
-/*
- * 在Vulkan中进行混音
- */
-#define GPU_MIX_BY_VULKAN 5
+#define GPU_MIX_BY_OPENGL 3
 
 class XAudioEngin;
 class XPlayer;

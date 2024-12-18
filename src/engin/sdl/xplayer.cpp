@@ -62,7 +62,7 @@ void XPlayer::player_thread() {
             // LOG_DEBUG("播放器已暂停,等待恢复");
             // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
             // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
-            //  暂停在此处等待
+            //   暂停在此处等待
             std::unique_lock<std::mutex> pauselock(player_mutex);
             cv.wait(pauselock, [this]() { return !paused || !running; });
         }
@@ -128,6 +128,13 @@ void XPlayer::resume() {
     cv.notify_all();
     mixercv.notify_all();
 };
+void XPlayer::set_player_volume(float v) {
+    if (v >= 0 && v <= 1.0f) {
+        global_volume = v;
+    } else {
+        LOG_WARN("非法音量值:[" + std::to_string(v) + "]");
+    }
+}
 
 // sdl播放回调函数
 void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
@@ -145,7 +152,7 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
         player->isrequested = true;
         // LOG_DEBUG("请求数据");
         // LOG_DEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) +
-        //           "]");
+        //          "]");
         player->mixercv.notify_all();
     }
     // SDL请求样本数
