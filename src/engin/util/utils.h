@@ -6,11 +6,11 @@
 namespace xutil {
 inline int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate,
                                    int channels) {
-    return pcmpos * 1000 / pcmsamplerate * 2;
+    return pcmpos * 1000 / pcmsamplerate / 2;
 };
 inline size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
                                   int channels) {
-    return milliseconds * pcmsamplerate / 1000 / 2;
+    return milliseconds * pcmsamplerate / 1000 * 2;
 }
 }  // namespace xutil
 
