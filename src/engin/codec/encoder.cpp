@@ -10,4 +10,4 @@ XAudioEncoder::XAudioEncoder(AVCodecID id) {
         LOG_INFO("成功创建编码器:[" + std::string(avcodec_get_name(id)) + "]");
 }
 
-XAudioEncoder::~XAudioEncoder() {}
+XAudioEncoder::~XAudioEncoder() = default;

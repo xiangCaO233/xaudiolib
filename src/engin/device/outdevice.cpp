@@ -1,13 +1,15 @@
 #include "outdevice.h"
 
 #include <memory>
+#include <utility>
 
 #include "../sdl/xplayer.h"
+#include "logger/logger.h"
 
 XOutputDevice::XOutputDevice(int id, std::string name)
-    : sdl_id(id), device_name(name) {}
+    : sdl_id(id), device_name(std::move(name)) {}
 
-XOutputDevice::~XOutputDevice() {}
+XOutputDevice::~XOutputDevice() {LOG_TRACE("销毁输出设备:["+device_name+"]")}
 
 // 创建一个位于该设备的播放器
 bool XOutputDevice::creat_player() {

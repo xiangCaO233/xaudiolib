@@ -15,7 +15,7 @@ class XSound {
     // 句柄(id)
     int handle;
     // 播放位置
-    int playpos;
+    size_t playpos;
     // pcm声音数据
     std::vector<float> pcm_data;
     // 暂停标识

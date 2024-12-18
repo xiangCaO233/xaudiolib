@@ -54,18 +54,18 @@ int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext> &format,
             while (avcodec_receive_frame(decoder_context, frame) == 0) {
                 uint8_t **out_buffer = nullptr;
                 int out_linesize = 0;
-                int out_samples = av_rescale_rnd(
+                auto out_samples = av_rescale_rnd(
                     swr_get_delay(resampler, out_sample_rate) +
                         frame->nb_samples,
                     out_sample_rate, decoder_context->sample_rate, AV_ROUND_UP);
                 if (av_samples_alloc_array_and_samples(
                         &out_buffer, &out_linesize, Config::channel,
-                        out_samples, out_sample_format, 0) < 0) {
+                        (int)out_samples, out_sample_format, 0) < 0) {
                     LOG_ERROR("分配输出采样数组时出现问题");
                     return -1;
                 }
                 int converted_samples = swr_convert(
-                    resampler, out_buffer, out_samples,
+                    resampler, out_buffer, (int)out_samples,
                     (const uint8_t **)frame->data, frame->nb_samples);
                 if (converted_samples < 0) {
                     LOG_ERROR("重采样时出现问题");

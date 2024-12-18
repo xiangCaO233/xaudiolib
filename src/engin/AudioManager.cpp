@@ -9,7 +9,7 @@ XAudioManager::XAudioManager() {
     if (engin) LOG_INFO("初始化引擎成功");
 }
 
-XAudioManager::~XAudioManager() { LOG_TRACE("销毁音频管理器"); };
+XAudioManager::~XAudioManager() { LOG_TRACE("销毁音频管理器"); }
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
     return std::make_shared<XAudioManager>();

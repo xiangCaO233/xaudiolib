@@ -17,7 +17,7 @@ class XAudioEncoder {
 
    public:
     // 构造XAudioEncoder
-    XAudioEncoder(AVCodecID id);
+    explicit XAudioEncoder(AVCodecID id);
     // 析构XAudioEncoder
     virtual ~XAudioEncoder();
 };

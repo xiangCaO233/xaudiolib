@@ -23,7 +23,7 @@ class XAudioDecoder {
 
    public:
     // 构造XAudioDecoder
-    XAudioDecoder(AVCodecID id);
+    explicit XAudioDecoder(AVCodecID id);
     // 析构XAudioDecoder
     virtual ~XAudioDecoder();
     // 解码整个音频

@@ -6,11 +6,9 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "config/config.h"
 #include "engin/mix/mixer.h"
-#include "engin/sdl/xplayer.h"
 #include "engin/util/ncm.h"
 #include "logger/logger.h"
 #include "util//utils.h"

@@ -130,7 +130,7 @@ class XAudioEngin {
     // 初始化引擎
     static std::unique_ptr<XAudioEngin> init();
     // 关闭引擎
-    void shutdown();
+    static void shutdown();
 };
 
 #endif  // X_AUDIO_ENGIN_H

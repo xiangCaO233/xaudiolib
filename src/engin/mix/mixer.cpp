@@ -17,7 +17,7 @@ XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {
 XAuidoMixer::~XAuidoMixer() {
     LOG_TRACE("析构[" + std::to_string(des_player->outdevice_index) +
               "]混音器");
-};
+}
 
 void XAuidoMixer::send_pcm_thread() {
     // 混音线程函数
@@ -35,7 +35,7 @@ void XAuidoMixer::send_pcm_thread() {
         // 播放器停止则混音线程也立刻停止
         if (!des_player->running) break;
         // 每次发送数据量
-        auto size = int(floorf(Config::mix_buffer_size / 3.0f));
+        auto size = int(floorf((float)Config::mix_buffer_size / 3.0f));
         // 混合数据
         std::vector<float> mixed_pcm(size, 0);
         // 记录需要混合的音频
@@ -106,4 +106,4 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
             audio->playpos += des_size;
         }
     }
-};
+}

@@ -12,8 +12,6 @@ class XAudioManager {
     void unloadaudio(const std::string &audio);
     void unloadaudio(int id);
 
-    void choose_device(const std::string &device_name, bool iscapture);
-
     const std::string &get_audio_name(int id);
     const std::string &get_audio_path(int id);
 
@@ -71,9 +69,6 @@ class XAudioManager {
     // 卸载音频
     void unload(const std::string &audio_name);
     void unload(int audio_id);
-
-    // 选择音频设备
-    void select_device(const std::string &device_name, bool iscapture);
 
     // 获取音频信息
     const std::string &audio_name(int audio_id);
