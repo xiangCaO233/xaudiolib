@@ -62,3 +62,6 @@
 ### 性能(播放 30s 75%以上时间消耗在解码和卸载音频(缓存模式只解码一遍))
 
 ![profile1217](profile1217.jpg)
+
+# 参考项目地址
+https://github.com/taurusxin/ncmdump
