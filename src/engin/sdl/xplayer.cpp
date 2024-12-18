@@ -5,7 +5,6 @@
 
 #include <cmath>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -27,7 +26,7 @@ XPlayer::XPlayer()
     // 播放缓冲区大小
     desired_spec.samples = Config::play_buffer_size;
     // 设置回调
-    desired_spec.callback = &XPlayer::audio_callback;
+    desired_spec.callback = &XPlayer::sdl_audio_callback;
     // 用户数据
     desired_spec.userdata = this;
     mixer = std::make_unique<XAuidoMixer>(this);
@@ -47,8 +46,6 @@ void XPlayer::player_thread() {
     // 打开设备
     device_id = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0),
                                     0, &desired_spec, &obtained_spec, 0);
-
-    std::cout << "实际打开:" << obtained_spec.format << std::endl;
     if (!device_id) {
         auto error = SDL_GetError();
         LOG_ERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
@@ -141,7 +138,7 @@ void XPlayer::set_player_volume(float v) {
 }
 
 // sdl播放回调函数
-void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
+void XPlayer::sdl_audio_callback(void* userdata, uint8_t* stream, int len) {
     // 运行于播放线程
     // 转换回播放器对象
     auto player = static_cast<XPlayer*>(userdata);
@@ -161,15 +158,15 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
     }
     // SDL请求样本数
     size_t numSamples = len / sizeof(float);
-    // 从缓冲区读取音频数据
     float* audiopcm;
+    // 从缓冲区读取音频数据
     rbuffer.read(audiopcm, numSamples);
-
-    if (!audiopcm || player->paused) {
+    if (!audiopcm) {
         // LOG_DEBUG("播放静音");
-        // 播放暂停时填充0
+        // 读取失败时填充0
         std::memset(stream, 0, len);
         return;
     }
+    // 写入sdl回调数据
     std::memcpy(stream, audiopcm, numSamples * sizeof(uint32_t));
 };

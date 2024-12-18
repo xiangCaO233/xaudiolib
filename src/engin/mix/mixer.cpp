@@ -49,32 +49,6 @@ void XAuidoMixer::send_pcm_thread() {
                 shouldplay = true;
                 // 加入待混音列表
                 sounds.push_back(audio);
-                // if (audio->playpos >= audio->pcm_data.size()) {
-                //     // 检查结尾
-                //     LOG_TRACE("[" + std::to_string(audio->handle) +
-                //               "]播放结束");
-                //     audio->playpos = 0;
-                //     auto loopit = audio_loopflags.find(audioit.first);
-                //     if (loopit == audio_loopflags.end()) {
-                //         // 检查循环标识
-                //         LOG_WARN("缺少[" + std::to_string(audioit.first) +
-                //                  "]循环标识");
-                //         des_player->pause();
-                //         continue;
-                //     } else if (!loopit->second)
-                //         audio->pauseflag = true;
-                // }
-                //// 对齐结尾
-                // if (audio->playpos + size >= audio->pcm_data.size())
-                //     size = audio->pcm_data.size() - audio->playpos;
-                //// LOG_DEBUG("写入数据[" + std::to_string(size * 4) +
-                ////"]bytes"); /  写入数据到环形缓冲区
-                // des_player->rbuffer.write(
-                //     audio->pcm_data.data() + audio->playpos, size);
-                //// LOG_DEBUG("当前播放到[" + std::to_string(audio->playpos) +
-                //// "]"); LOG_DEBUG("推送数据完成");
-                // audio->playpos += size;
-
                 if (des_player->paused) {
                     // 需要播放,恢复播放线程
                     des_player->resume();
@@ -84,6 +58,7 @@ void XAuidoMixer::send_pcm_thread() {
         if (!shouldplay) {
             // 没有需要播放的音频了
             LOG_DEBUG("全部音频播放结束,已暂停");
+            des_player->rbuffer.write(0.0f, des_player->rbuffer.available());
             des_player->pause();
         } else {
             mix(sounds, mixed_pcm, des_player->global_volume);
@@ -118,7 +93,7 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
         // 混合音频到目标
         for (int i = 0; i < des_size; ++i) {
             if (audio->playpos + i < audio->pcm_data.size()) {
-                // 简单相加所有的采样
+                // 相加所有的采样
                 mixed_pcm[i] += audio->pcm_data[audio->playpos + i] *
                                 audio->volume * global_volume;
             }

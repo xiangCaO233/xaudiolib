@@ -74,7 +74,7 @@ class XPlayer {
     void resume();
 
     // sdl播放回调函数
-    static void audio_callback(void* userdata, uint8_t* stream, int len);
+    static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
 };
 
 #endif  // X_AUDIO_PLAYER_H

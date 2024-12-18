@@ -182,15 +182,24 @@ int main(int argc, char* argv[]) {
             std::cout << "操作: " << line << std::endl;
             switch (o) {
                 case QUIT: {
+                    std::cout << "退出" << std::endl;
                     break;
                 }
                 case PLAY: {
-                    manager->play(deviceid, audioid, false);
+                    std::cout
+                        << "播放[" + std::to_string(deviceid) + "]设备上的[" +
+                               std::to_string(audioid) + "]音频"
+                        << std::endl;
+                    manager->play(deviceid, audioid, true);
                     break;
                 }
                     // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
                     // PAUSE, RESUME };
                 case SETPOS: {
+                    std::cout
+                        << "设置[" + std::to_string(deviceid) + "]设备上的[" +
+                               std::to_string(audioid) + "]音频到60000ms位置"
+                        << std::endl;
                     manager->set_audio_time(audioid, 60000);
                     break;
                 }
@@ -199,14 +208,24 @@ int main(int argc, char* argv[]) {
                     break;
                 }
                 case STOPDEVICE: {
+                    std::cout << "停止[" + std::to_string(deviceid) + "]设备"
+                              << std::endl;
                     manager->stop(deviceid);
                     break;
                 }
                 case PAUSE: {
+                    std::cout
+                        << "暂停[" + std::to_string(deviceid) + "]设备上的[" +
+                               std::to_string(audioid) + "]音频"
+                        << std::endl;
                     manager->pause(deviceid, audioid);
                     break;
                 }
                 case RESUME: {
+                    std::cout
+                        << "恢复[" + std::to_string(deviceid) + "]设备上的[" +
+                               std::to_string(audioid) + "]音频"
+                        << std::endl;
                     manager->resume(deviceid, audioid);
                     break;
                 }

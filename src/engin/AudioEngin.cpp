@@ -97,7 +97,7 @@ int XAudioEngin::load(const std::string &audio) {
             auto audioformat = std::shared_ptr<AVFormatContext>(format);
 
             auto sound = std::make_shared<XSound>(currentid, name, p,
-                                                  audioformat, 1.0f, 0.3f);
+                                                  audioformat, 1.0f, 0.5f);
             audios.insert({currentid, sound});
             handles[name] = currentid;
 

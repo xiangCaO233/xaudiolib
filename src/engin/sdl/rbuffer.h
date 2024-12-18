@@ -25,6 +25,7 @@ class ringbuffer {
     [[nodiscard]] size_t available() const;
     // 写数据
     bool write(const float* data, size_t size);
+    bool write(float value, size_t size);
     // 读数据
     bool read(float*& data, size_t size);
 };

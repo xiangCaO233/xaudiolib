@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(xaudiolib)
+project(xaudiolib LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE Debug)
@@ -93,7 +93,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
-    libxaudio
+    xaudio-dev
     PUBLIC spdlog::spdlog
            ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
@@ -111,8 +111,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                   PkgConfig::ffmpeg)
   target_link_libraries(
-    libxaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                     PkgConfig::ffmpeg)
+    xaudio-dev PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                      PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
@@ -122,8 +122,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                   PkgConfig::ffmpeg)
   target_link_libraries(
-    libxaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                     PkgConfig::ffmpeg)
+    xaudio-dev PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                      PkgConfig::ffmpeg)
 else()
   # 其他系统
   message(STATUS "当前系统: ${CMAKE_SYSTEM_NAME}")

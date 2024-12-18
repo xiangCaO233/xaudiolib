@@ -36,6 +36,18 @@ bool ringbuffer::write(const float* data, size_t size) {
     }
     return true;
 }
+bool ringbuffer::write(float value, size_t size) {
+    if (size > available()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < size; ++i) {
+        buffer.get()[writepos] = value;
+        // 环绕写指针
+        writepos = (writepos + 1) % buffersize;
+    }
+    return true;
+};
 
 // 读数据
 bool ringbuffer::read(float*& data, size_t size) {
