@@ -121,7 +121,8 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
         for (int i = 0; i < des_size; ++i) {
             if (audio->playpos + i < audio->pcm_data.size()) {
                 // 简单相加所有的采样
-                mixed_pcm[i] += audio->pcm_data[audio->playpos + i];
+                mixed_pcm[i] += audio->pcm_data[audio->playpos + i] *
+                                audio->volume * global_volume;
             }
         }
 

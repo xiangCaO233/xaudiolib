@@ -31,7 +31,7 @@ int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext> &format,
     AVChannelLayout out_channel_layout;
     av_channel_layout_default(&out_channel_layout, Config::channel);
     int out_sample_rate = Config::samplerate;
-    enum AVSampleFormat out_sample_format = AV_SAMPLE_FMT_DBL;
+    enum AVSampleFormat out_sample_format = AV_SAMPLE_FMT_FLT;
 
     int sampler_allocat_ret = swr_alloc_set_opts2(
         &resampler, &out_channel_layout, out_sample_format, out_sample_rate,
@@ -71,7 +71,7 @@ int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext> &format,
                     return -1;
                 }
 
-                auto buffer_ptr = reinterpret_cast<double *>(out_buffer[0]);
+                auto buffer_ptr = reinterpret_cast<float *>(out_buffer[0]);
                 pcm_data.insert(
                     pcm_data.end(), buffer_ptr,
                     buffer_ptr + converted_samples * Config::channel);
