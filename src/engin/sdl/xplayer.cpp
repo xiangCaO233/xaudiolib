@@ -1,9 +1,11 @@
 #include "xplayer.h"
 
+#include <SDL_audio.h>
 #include <unistd.h>
 
 #include <cmath>
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -19,7 +21,7 @@ XPlayer::XPlayer()
     // 播放采样率
     desired_spec.freq = Config::samplerate;
     // 浮点数据型(自动转换字节序大小端)
-    desired_spec.format = AUDIO_S32SYS;
+    desired_spec.format = AUDIO_F32;
     // 声道数
     desired_spec.channels = Config::channel;
     // 播放缓冲区大小
@@ -45,6 +47,8 @@ void XPlayer::player_thread() {
     // 打开设备
     device_id = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0),
                                     0, &desired_spec, &obtained_spec, 0);
+
+    std::cout << "实际打开:" << obtained_spec.format << std::endl;
     if (!device_id) {
         auto error = SDL_GetError();
         LOG_ERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
@@ -156,9 +160,9 @@ void XPlayer::audio_callback(void* userdata, uint8_t* stream, int len) {
         player->mixercv.notify_all();
     }
     // SDL请求样本数
-    size_t numSamples = len / sizeof(int32_t);
+    size_t numSamples = len / sizeof(float);
     // 从缓冲区读取音频数据
-    uint32_t* audiopcm;
+    float* audiopcm;
     rbuffer.read(audiopcm, numSamples);
 
     if (!audiopcm || player->paused) {

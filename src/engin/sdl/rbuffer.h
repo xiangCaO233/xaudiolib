@@ -5,9 +5,9 @@
 
 class ringbuffer {
     // 缓冲区本体
-    std::shared_ptr<uint32_t> buffer;
+    std::shared_ptr<float> buffer;
     // 读取缓冲区
-    std::shared_ptr<uint32_t> readbuffer;
+    std::shared_ptr<float> readbuffer;
     // 缓冲区大小（包含1个空闲单元）
     size_t buffersize;
     // 读取指针
@@ -24,9 +24,9 @@ class ringbuffer {
     // 可写入容量
     [[nodiscard]] size_t available() const;
     // 写数据
-    bool write(const uint32_t* data, size_t size);
+    bool write(const float* data, size_t size);
     // 读数据
-    bool read(uint32_t*& data, size_t size);
+    bool read(float*& data, size_t size);
 };
 
 #endif  // X_RINGBUFFER_H

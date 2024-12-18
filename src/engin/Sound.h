@@ -17,7 +17,7 @@ class XSound {
     // 播放位置
     int playpos;
     // pcm声音数据
-    std::vector<uint32_t> pcm_data;
+    std::vector<float> pcm_data;
     // 暂停标识
     bool pauseflag;
     // 播放速率

@@ -2,8 +2,8 @@
 
 ringbuffer::ringbuffer(size_t size)
     : buffersize(size + 1),
-      buffer(new uint32_t[size + 1]()),
-      readbuffer(new uint32_t[size]),
+      buffer(new float[size + 1]()),
+      readbuffer(new float[size]),
       readpos(0),
       writepos(0) {}
 
@@ -24,7 +24,7 @@ size_t ringbuffer::available() const {
 }
 
 // 写数据
-bool ringbuffer::write(const uint32_t* data, size_t size) {
+bool ringbuffer::write(const float* data, size_t size) {
     if (size > available()) {
         return false;
     }
@@ -38,7 +38,7 @@ bool ringbuffer::write(const uint32_t* data, size_t size) {
 }
 
 // 读数据
-bool ringbuffer::read(uint32_t*& data, size_t size) {
+bool ringbuffer::read(float*& data, size_t size) {
     if (size > readable()) {
         data = nullptr;
         return false;

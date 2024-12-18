@@ -1,5 +1,6 @@
 #include "mixer.h"
 
+#include <cmath>
 #include <iostream>
 #include <list>
 #include <memory>
@@ -38,8 +39,8 @@ void XAuidoMixer::send_pcm_thread() {
         // 每次发送数据量
         auto size = int(floorf(Config::mix_buffer_size / 3.0f));
         // 混合数据
-        std::vector<uint32_t> mixed_pcm(size, 0);
-        // 使用链表记录需要混合的音频
+        std::vector<float> mixed_pcm(size, 0);
+        // 记录需要混合的音频
         auto sounds = std::vector<std::shared_ptr<XSound>>();
 
         bool shouldplay = false;
@@ -94,58 +95,9 @@ void XAuidoMixer::send_pcm_thread() {
         des_player->isrequested = false;
     }
 }
-
-class Compressor {
-   private:
-    float threshold;  // 压缩阈值
-    float ratio;      // 压缩比率
-    float attack;     // 攻击时间
-    float release;    // 释放时间
-    float lastGain;   // 上一帧的增益（简化版本）
-   public:
-    Compressor(float threshold, float ratio, float attack, float release)
-        : threshold(threshold),
-          ratio(ratio),
-          attack(attack),
-          release(release),
-          lastGain(1.0f) {}
-    // 应用压缩
-    void process(std::vector<float>& signal) {
-        for (size_t i = 0; i < signal.size(); ++i) {
-            float sample = signal[i];
-            float absSample = std::fabs(sample);
-
-            // 判断是否超过阈值
-            if (absSample > threshold) {
-                // 计算压缩后的增益
-                float gain = std::pow(absSample / threshold, 1.0f - ratio);
-                sample *= gain;
-            }
-
-            // 更新增益
-            signal[i] = sample;
-        }
-    }
-};
-void mixAudioStreams(const std::vector<std::vector<float>>& audioStreams,
-                     std::vector<float>& mixedAudio,
-                     const std::vector<float>& weights) {
-    size_t numSamples = audioStreams[0].size();
-    mixedAudio.resize(numSamples, 0.0f);  // 初始化混合音频
-
-    for (size_t i = 0; i < audioStreams.size(); ++i) {
-        const std::vector<float>& stream = audioStreams[i];
-        float weight = weights[i];
-
-        for (size_t j = 0; j < numSamples; ++j) {
-            mixedAudio[j] += stream[j] * weight;
-        }
-    }
-}
-
 // 混合音频
 void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
-                      std::vector<uint32_t>& mixed_pcm, float global_volume) {
+                      std::vector<float>& mixed_pcm, float global_volume) {
     // LOG_DEBUG("开始混音");
     size_t des_size = mixed_pcm.size();
 
@@ -170,10 +122,6 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
             if (audio->playpos + i < audio->pcm_data.size()) {
                 // 简单相加所有的采样
                 mixed_pcm[i] += audio->pcm_data[audio->playpos + i];
-                // mixed_pcm[i] = std::min<uint32_t>(
-                //     mixed_pcm[i] + static_cast<uint32_t>(
-                //                        audio->pcm_data[audio->playpos + i]),
-                //     UINT32_MAX);
             }
         }
 

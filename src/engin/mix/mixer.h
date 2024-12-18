@@ -26,7 +26,7 @@ class XAuidoMixer {
 
     // 混合音频
     void mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
-             std::vector<uint32_t>& mixed_pcm, float global_volume);
+             std::vector<float>& mixed_pcm, float global_volume);
 
     // 向播放器发送数据的线程函数
     void send_pcm_thread();

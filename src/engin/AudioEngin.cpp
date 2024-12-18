@@ -413,6 +413,12 @@ void XAudioEngin::resume(int device_index, int audio_id) {
     }
     // 恢复对应的音频
     audioit->second->pauseflag = false;
+    if (outdeviceit->second->player) {
+        if (outdeviceit->second->player->paused) {
+            LOG_INFO("已恢复播放器");
+            outdeviceit->second->player->resume();
+        }
+    }
     LOG_INFO("已恢复句柄[" + std::to_string(audio_id) + "]");
 }
 void XAudioEngin::resume(const std::string &devicename, int audio_id) {
