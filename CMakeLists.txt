@@ -42,6 +42,8 @@ find_package(SDL2 REQUIRED)
 find_package(OpenAL REQUIRED)
 # OpenCL(GPU加速混音计算)
 find_package(OpenCL REQUIRED)
+# OpenGL(GPU使用gl渲染管线加速)
+find_package(OpenGL REQUIRED)
 # 包管理器
 find_package(PkgConfig REQUIRED)
 # ffmpeg
@@ -58,7 +60,7 @@ pkg_check_modules(
 add_executable(testxaudiolib ${SOURCES})
 
 # 静态库
-add_library(libxaudio STATIC ${LIB_SOURCES})
+add_library(xaudio-dev STATIC ${LIB_SOURCES})
 
 # 动态库
 add_library(xaudio SHARED ${LIB_SOURCES})

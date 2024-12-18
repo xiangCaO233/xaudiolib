@@ -1,7 +1,6 @@
 #ifndef X_AUDIO_MIXER_H
 #define X_AUDIO_MIXER_H
 
-#include <list>
 #include <memory>
 #include <thread>
 #include <unordered_map>

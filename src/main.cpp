@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <string>
-#include <strstream>
 
 #include "api/XAudioManager.h"
 
