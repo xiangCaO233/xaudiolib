@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+
 namespace xutil {
 inline int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate,
                                    int channels) {

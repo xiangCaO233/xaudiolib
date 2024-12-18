@@ -40,6 +40,11 @@ class XAudioManager {
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
 
+    void resumeAudio(int device_index, int id);
+    void resumeAudio(const std::string &device, const std::string &audioname);
+    void resumeAudio(int device_index, const std::string &audioname);
+    void resumeAudio(const std::string &device, int id);
+
     void stopAudio(int device_index, int id);
     void stopAudio(const std::string &device, const std::string &audioname);
     void stopAudio(int device_index, const std::string &audioname);
@@ -103,6 +108,12 @@ class XAudioManager {
     void pause(const std::string &devicename, const std::string &audioname);
     void pause(int device_index, const std::string &audioname);
     void pause(const std::string &devicename, int audio_id);
+
+    // 恢复音频句柄
+    void resume(int device_index, int audio_id);
+    void resume(const std::string &devicename, const std::string &audioname);
+    void resume(int device_index, const std::string &audioname);
+    void resume(const std::string &devicename, int audio_id);
 
     // 停止音频句柄
     void stop(int device_index, int audio_id);

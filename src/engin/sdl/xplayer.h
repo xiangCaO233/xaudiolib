@@ -43,6 +43,8 @@ class XPlayer {
     // 播放设备
     SDL_AudioDeviceID device_id{};
 
+    void player_thread();
+
     friend XAudioEngin;
     friend XAuidoMixer;
     friend XOutputDevice;

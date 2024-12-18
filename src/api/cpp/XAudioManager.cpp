@@ -70,6 +70,21 @@ void XAudioManager::pause(const std::string &devicename, int audio_id) {
     pauseAudio(devicename, audio_id);
 }
 
+// 恢复音频句柄
+void XAudioManager::resume(int device_index, int audio_id) {
+    resumeAudio(device_index, audio_id);
+}
+void XAudioManager::resume(const std::string &devicename,
+                           const std::string &audioname) {
+    resumeAudio(devicename, audioname);
+}
+void XAudioManager::resume(int device_index, const std::string &audioname) {
+    resumeAudio(device_index, audioname);
+}
+void XAudioManager::resume(const std::string &devicename, int audio_id) {
+    resumeAudio(devicename, audio_id);
+}
+
 // 停止音频句柄
 void XAudioManager::stop(int device_index, int audio_id) {
     stopAudio(device_index, audio_id);

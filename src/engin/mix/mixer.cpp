@@ -21,6 +21,7 @@ void XAuidoMixer::send_pcm_thread() {
     while (des_player->running) {
         // LOG_DEBUG("混音线程运行...");
         std::unique_lock<std::mutex> lock(des_player->mix_mutex);
+        // LOG_DEBUG("等待播放器请求数据");
         // 等待播放器请求数据
         des_player->mixercv.wait(lock, [this]() {
             // 等待数据请求或播放器停止
@@ -35,10 +36,12 @@ void XAuidoMixer::send_pcm_thread() {
         for (auto& audioit : audio_orbits) {
             auto& audio = audioit.second;
             if (!audio->pauseflag) {
+                // LOG_DEBUG("检测到需要播放的音频");
                 shouldplay = true;
-                if (des_player->paused)
+                if (des_player->paused) {
                     // 需要播放,恢复播放线程
                     des_player->resume();
+                }
                 auto size = int(floorf(Config::mix_buffer_size / 3.0f));
                 if (audio->playpos >= audio->pcm_data.size()) {
                     // 检查结尾
@@ -62,16 +65,15 @@ void XAuidoMixer::send_pcm_thread() {
                 //  写入数据到环形缓冲区
                 des_player->rbuffer.write(
                     audio->pcm_data.data() + audio->playpos, size);
-                LOG_DEBUG("当前播放到[" + std::to_string(audio->playpos) + "]");
-                // LOG_DEBUG("推送数据完成");
+                // LOG_DEBUG("当前播放到[" + std::to_string(audio->playpos) +
+                // "]"); LOG_DEBUG("推送数据完成");
                 audio->playpos += size;
                 des_player->cv.notify_all();
             }
         }
-        // TODO(xiang 2024-12-18): 最后一个音频播放完时会重复暂停播放器
         if (!shouldplay) {
             // 没有需要播放的音频了
-            LOG_DEBUG("全部音频播放结束,已暂停");
+            // LOG_DEBUG("全部音频播放结束,已暂停");
             des_player->pause();
         }
         des_player->isrequested = false;

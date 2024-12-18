@@ -79,11 +79,18 @@ class XAudioEngin {
     void play(int device_index, const std::string &audioname, bool loop);
     void play(const std::string &devicename, const std::string &audioname,
               bool loop);
+
     // 暂停
     void pause(int device_index, int audio_id);
     void pause(const std::string &devicename, int audio_id);
     void pause(int device_index, const std::string &audioname);
     void pause(const std::string &devicename, const std::string &audioname);
+
+    // 恢复
+    void resume(int device_index, int audio_id);
+    void resume(const std::string &devicename, int audio_id);
+    void resume(int device_index, const std::string &audioname);
+    void resume(const std::string &devicename, const std::string &audioname);
 
     // 终止
     void stop(int device_index, int audio_id);

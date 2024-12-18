@@ -4,7 +4,6 @@
 #include <SDL_audio.h>
 
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "config/config.h"
 #include "engin/mix/mixer.h"
 #include "engin/sdl/xplayer.h"
+#include "engin/util/ncm.h"
 #include "logger/logger.h"
 #include "util//utils.h"
 
@@ -55,18 +55,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
         auto outdevice = std::make_shared<XOutputDevice>(i, device_name_str);
         LOG_DEBUG("检测到输出设备:" + device_name_str);
         e->outdevice_indicies.insert({device_name_str, i});
-        LOG_DEBUG("outdevice_indicies size: " +
-                  std::to_string(e->outdevice_indicies.size()));
-        for (const auto &pair : e->outdevice_indicies) {
-            LOG_DEBUG("Key: " + pair.first +
-                      ", Value: " + std::to_string(pair.second));
-        }
         e->outdevices.insert({i, outdevice});
-        LOG_DEBUG("outdevice size: " + std::to_string(e->outdevices.size()));
-        for (const auto &pair : e->outdevices) {
-            LOG_DEBUG("Key: " + std::to_string(pair.first) +
-                      ", Value: " + pair.second->device_name);
-        }
     }
     return e;
 }
@@ -76,6 +65,18 @@ void XAudioEngin::shutdown() { SDL_Quit(); }
 int XAudioEngin::load(const std::string &audio) {
     std::filesystem::path path(audio);
     auto extension = path.extension().string();
+    if (extension == ".ncm") {
+        // 调用ncmdump
+        std::string desdirpath;
+        xutil::convert_music(audio, desdirpath);
+        // 取最后一个音频输出
+        for (const auto &entry :
+             std::filesystem::directory_iterator(desdirpath)) {
+            // 更新路径
+            path = entry.path();
+            extension = path.extension().string();
+        }
+    }
     auto p = std::filesystem::absolute(path).string();
     auto name = path.filename().string();
     auto handelit = handles.find(name);
@@ -87,8 +88,8 @@ int XAudioEngin::load(const std::string &audio) {
         LOG_DEBUG("正在打开音频[" + audio + "]");
         // 添加句柄
         AVFormatContext *format = nullptr;
-        if (avformat_open_input(&format, audio.c_str(), nullptr, nullptr) >=
-            0) {
+        if (avformat_open_input(&format, path.string().c_str(), nullptr,
+                                nullptr) >= 0) {
             LOG_INFO("打开[" + audio + "]成功,句柄[" +
                      std::to_string(currentid) + "]");
             // 初始化
@@ -243,9 +244,14 @@ void XAudioEngin::setVolume(const std::string &audio, float v) {
 void XAudioEngin::setVolume(int id, float v) {
     auto audioit = audios.find(id);
     if (audioit != audios.end()) {
-        audioit->second->volume = v;
-        LOG_INFO("已将句柄[" + std::to_string(id) + "]音量设置为[" +
-                 std::to_string(v) + "]");
+        if (v >= 0 && v <= 1.0f) {
+            audioit->second->volume = v;
+            LOG_INFO("已将句柄[" + std::to_string(id) + "]音量设置为[" +
+                     std::to_string(v) + "]");
+        } else {
+            LOG_WARN("取消设置,音量只能介于[0.0]-[1.0]之间,当前设置[" +
+                     std::to_string(v) + "]");
+        }
     } else
         LOG_WARN("句柄[" + std::to_string(id) + "]不存在");
 }
@@ -254,7 +260,7 @@ void XAudioEngin::setGlobalVolume(float volume) {
     if (volume >= 0 && volume <= 1.0f)
         gVolume = volume;
     else
-        LOG_WARN("取消设置,音量只能介于[0.0]-[1.0],当前设置[" +
+        LOG_WARN("取消设置,音量只能介于[0.0]-[1.0]之间,当前设置[" +
                  std::to_string(volume) + "]");
 }
 
@@ -290,35 +296,36 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
                  "]上的播放器");
     }
     if (!player->running) {
-        outdeviceit->second->player->start();
+        player->start();
         LOG_WARN("播放器为关闭状态,已重新启动");
     }
-    if (player->paused) {
-        LOG_INFO("检测到播放器暂停,继续播放");
-        outdeviceit->second->player->resume();
-    }
     // 找播放器绑定的混音器中是否存在此音频
-    auto mixer_audioit = player->mixer->audio_orbits.find(audio_id);
+    auto &mixer = player->mixer;
+    auto mixer_audioit = mixer->audio_orbits.find(audio_id);
     if (mixer_audioit == player->mixer->audio_orbits.end()) {
         LOG_INFO("音轨中不存在音频[" + std::to_string(audio_id) + "]");
         // 不存在
         // 加入此音频
-        player->mixer->audio_orbits.insert({audio_id, audioit->second});
+        mixer->audio_orbits.insert({audio_id, audioit->second});
         LOG_INFO("已添加播放音频句柄[" + std::to_string(audio_id) + "]到音轨");
     } else {
         if (audioit->second->pauseflag) {
             // 存在
             LOG_INFO("检测到音频暂停,继续播放句柄[" + std::to_string(audio_id) +
                      "]");
-            // 取消音频暂停标识
+            // 更新音频暂停标识
             audioit->second->pauseflag = false;
             player->resume();
         } else {
-            LOG_WARN("音频正在播放中");
+            LOG_WARN("音频已正在播放中");
         }
     }
+    if (player->paused) {
+        LOG_INFO("检测到播放器暂停,继续播放");
+        player->resume();
+    }
     // 更新循环标识([]运算符自动添加)
-    player->mixer->audio_loopflags[audio_id] = loop;
+    mixer->audio_loopflags[audio_id] = loop;
 }
 
 void XAudioEngin::play(const std::string &devicename, int audio_id, bool loop) {
@@ -389,6 +396,14 @@ void XAudioEngin::pause(const std::string &devicename,
     }
     pause(device_indexit->second, audioname);
 }
+
+// 暂停
+void XAudioEngin::resume(int device_index, int audio_id) {}
+void XAudioEngin::resume(const std::string &devicename, int audio_id) {}
+void XAudioEngin::resume(int device_index, const std::string &audioname) {}
+void XAudioEngin::resume(const std::string &devicename,
+                         const std::string &audioname) {}
+
 // 终止音频
 void XAudioEngin::stop(int device_index, int audio_id) {
     auto outdeviceit = outdevices.find(device_index);
@@ -502,6 +517,10 @@ void XAudioEngin::stop_player(int device_id) {
     auto outdeviceit = outdevices.find(device_id);
     if (outdeviceit == outdevices.end()) {
         LOG_ERROR("不存在设备索引[" + std::to_string(device_id) + "]");
+        return;
+    }
+    if (!outdeviceit->second->player) {
+        LOG_WARN("此设备上还没有初始化播放器");
         return;
     }
     // 停止此设备上的播放器

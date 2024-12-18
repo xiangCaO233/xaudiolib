@@ -32,6 +32,9 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(src)
 
+# openssl
+find_package(OpenSSL REQUIRED)
+# 日志
 find_package(spdlog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)

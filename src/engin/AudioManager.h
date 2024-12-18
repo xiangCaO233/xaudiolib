@@ -39,7 +39,7 @@ class XAudioManager {
     float getGlobalVolume();
     void setGlobalAudioVolume(float volume);
 
-    // 播放暂停停止音频
+    // 播放暂停恢复停止音频
     void playAudio(int device_index, int id, bool isloop);
     void playAudio(const std::string &device, const std::string &audioname,
                    bool isloop);
@@ -50,6 +50,11 @@ class XAudioManager {
     void pauseAudio(const std::string &device, const std::string &audioname);
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
+
+    void resumeAudio(int device_index, int id);
+    void resumeAudio(const std::string &device, const std::string &audioname);
+    void resumeAudio(int device_index, const std::string &audioname);
+    void resumeAudio(const std::string &device, int id);
 
     void stopAudio(int device_index, int id);
     void stopAudio(const std::string &device, const std::string &audioname);

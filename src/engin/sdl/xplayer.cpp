@@ -1,10 +1,13 @@
 #include "xplayer.h"
 
+#include <unistd.h>
+
 #include <cmath>
 #include <cstring>
 #include <memory>
 #include <mutex>
 #include <string>
+#include <thread>
 
 #include "config/config.h"
 #include "logger/logger.h"
@@ -38,6 +41,44 @@ void XPlayer::set_device_index(int device_index) {
     outdevice_index = device_index;
 };
 
+void XPlayer::player_thread() {
+    // 打开设备
+    device_id = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0),
+                                    0, &desired_spec, &obtained_spec, 0);
+    if (!device_id) {
+        auto error = SDL_GetError();
+        LOG_ERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
+                  std::to_string(outdevice_index) + "]");
+        LOG_ERROR(error);
+        return;
+    } else {
+        LOG_INFO("成功打开设备[" + std::to_string(outdevice_index) + "]");
+    }
+    // 开始播放
+    SDL_PauseAudioDevice(device_id, 0);
+
+    while (running) {
+        {
+            // LOG_DEBUG("播放器已暂停,等待恢复");
+            // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
+            // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
+            //  暂停在此处等待
+            std::unique_lock<std::mutex> pauselock(player_mutex);
+            cv.wait(pauselock, [this]() { return !paused || !running; });
+        }
+        // LOG_DEBUG("播放器播放中,等待暂停或终止");
+        // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
+        // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
+        //  LOG_DEBUG("等待数据或继续播放");
+        //  播放中在此等待
+        //  等待数据推送或暂停恢复
+        std::unique_lock<std::mutex> lock(player_mutex);
+        cv.wait(lock, [this]() { return paused || !running; });
+    }
+
+    SDL_CloseAudioDevice(device_id);
+}
+
 // 开始
 void XPlayer::start() {
     // TODO(xiang 2024-12-16): 启动播放器
@@ -48,43 +89,12 @@ void XPlayer::start() {
         return;
     }
     running = true;
-    LOG_DEBUG("启动播放线程...");
     // 启动线程
-    sdl_playthread = std::thread([this]() {
-        // 打开设备
-        device_id =
-            SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0), 0,
-                                &desired_spec, &obtained_spec, 0);
-        if (!device_id) {
-            auto error = SDL_GetError();
-            LOG_ERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
-                      std::to_string(outdevice_index) + "]");
-            LOG_ERROR(error);
-            return;
-        } else {
-            LOG_INFO("成功打开设备[" + std::to_string(outdevice_index) + "]");
-        }
-        // 开始播放
-        SDL_PauseAudioDevice(device_id, 0);
-
-        while (running) {
-            {
-                // 暂停在此处等待
-                std::unique_lock<std::mutex> pauselock(player_mutex);
-                cv.wait(pauselock, [this]() { return !paused || !running; });
-            }
-            // LOG_DEBUG("等待数据或继续播放");
-            // 播放中在此等待
-            // 等待数据推送或暂停恢复
-            std::unique_lock<std::mutex> lock(player_mutex);
-            cv.wait(lock, [this]() { return paused || !running; });
-        }
-
-        SDL_CloseAudioDevice(device_id);
-    });
+    LOG_DEBUG("启动播放线程...");
+    sdl_playthread = std::thread(&XPlayer::player_thread, this);
     sdl_playthread.detach();
-    LOG_DEBUG("启动混音线程");
 
+    LOG_DEBUG("启动混音线程");
     mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
     mixer->mixthread.detach();
 };
