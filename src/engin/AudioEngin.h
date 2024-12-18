@@ -28,7 +28,8 @@ class XAudioEngin {
     static int currentid;
 
     // 后缀名-编解码器池
-    std::unordered_map<std::string, std::pair<XAudioDecoder, XAudioEncoder>>
+    std::unordered_map<std::string, std::pair<std::shared_ptr<XAudioDecoder>,
+                                              std::shared_ptr<XAudioEncoder>>>
         audio_codecs;
 
     // 音频句柄池

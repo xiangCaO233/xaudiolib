@@ -1,11 +1,14 @@
 #include "rbuffer.h"
 
+#include "logger/logger.h"
+
 ringbuffer::ringbuffer(size_t size)
     : buffersize(size + 1),
       buffer(new float[size + 1]()),
       readbuffer(new float[size]),
       readpos(0),
       writepos(0) {}
+ringbuffer::~ringbuffer() { LOG_TRACE("销毁环形缓冲区"); };
 
 // 可读数据量
 size_t ringbuffer::readable() const {

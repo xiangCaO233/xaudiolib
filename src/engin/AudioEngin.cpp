@@ -20,7 +20,10 @@ int XAudioEngin::currentid = 0;
 
 XAudioEngin::XAudioEngin() { LOG_TRACE("XAudioEngin初始化"); }
 
-XAudioEngin::~XAudioEngin() { shutdown(); }
+XAudioEngin::~XAudioEngin() {
+    shutdown();
+    LOG_TRACE("引擎已关闭");
+}
 
 std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     LOG_DEBUG("初始化音频引擎");
@@ -100,9 +103,6 @@ int XAudioEngin::load(const std::string &audio) {
                                                   audioformat, 1.0f, 0.5f);
             audios.insert({currentid, sound});
             handles[name] = currentid;
-
-            // 获取编解码器
-            auto codecit = audio_codecs.find(extension);
             // 获取流信息
             if (avformat_find_stream_info(format, nullptr) < 0) {
                 LOG_ERROR("获取流信息失败");
@@ -114,17 +114,19 @@ int XAudioEngin::load(const std::string &audio) {
 
                 return -1;
             }
+            // 获取编解码器
+            auto codecit = audio_codecs.find(extension);
             int streamindex = -1;
             if (codecit == audio_codecs.end()) {
                 LOG_WARN("未找到[" + extension + "]编解码器");
                 streamindex = av_find_best_stream(format, AVMEDIA_TYPE_AUDIO,
                                                   -1, -1, nullptr, -1);
+                auto decoder = std::make_shared<XAudioDecoder>(
+                    format->streams[streamindex]->codecpar->codec_id);
+                auto encoder = std::make_shared<XAudioEncoder>(
+                    format->streams[streamindex]->codecpar->codec_id);
                 // 直接在表中分配
-                audio_codecs.emplace(
-                    extension,
-                    std::pair<XAudioDecoder, XAudioEncoder>(
-                        {format->streams[streamindex]->codecpar->codec_id,
-                         format->streams[streamindex]->codecpar->codec_id}));
+                audio_codecs.insert({extension, {decoder, encoder}});
             } else {
                 LOG_INFO("找到解码器:[" + extension + "]");
             }
@@ -133,7 +135,7 @@ int XAudioEngin::load(const std::string &audio) {
                                                   -1, -1, nullptr, -1);
             codecit = audio_codecs.find(extension);
             // 解码数据(直接填充到表所处内存中)
-            if (codecit->second.first.decode_audio(
+            if (codecit->second.first->decode_audio(
                     sound->audio_format, streamindex, sound->pcm_data) >= 0) {
                 LOG_INFO("解码[" + sound->name + "]成功");
                 LOG_INFO("音频数据大小:[" +

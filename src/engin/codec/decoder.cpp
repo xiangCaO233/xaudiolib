@@ -6,7 +6,7 @@
 #include "config/config.h"
 #include "logger/logger.h"
 
-XAudioDecoder::XAudioDecoder(AVCodecID id) {
+XAudioDecoder::XAudioDecoder(AVCodecID id) : decoder_id_name(id) {
     decoder = avcodec_find_decoder(id);
     if (!decoder)
         LOG_ERROR("创建解码器失败");
@@ -16,7 +16,10 @@ XAudioDecoder::XAudioDecoder(AVCodecID id) {
     }
 }
 
-XAudioDecoder::~XAudioDecoder() {}
+XAudioDecoder::~XAudioDecoder() {
+    LOG_TRACE("销毁解码器[" + std::string(avcodec_get_name(decoder_id_name)) +
+              "]");
+}
 
 int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext> &format,
                                 int streamIndex, std::vector<float> &pcm_data) {

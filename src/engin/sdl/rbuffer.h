@@ -17,7 +17,7 @@ class ringbuffer {
 
    public:
     explicit ringbuffer(size_t size);
-    ~ringbuffer() = default;
+    ~ringbuffer();
 
     // 可读数据量
     [[nodiscard]] size_t readable() const;
