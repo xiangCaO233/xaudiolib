@@ -54,9 +54,9 @@
 
 ![sample](ncmdecode.jpg)
 
-### 播放示例
+### 播放示例(多设备同时播放不同音频并混音)
 
-![playsample](playsample.jpg)
+![playsample](multidevice.png)
 
 ### 性能(播放 30s 75%以上时间消耗在解码和卸载音频(缓存模式只解码一遍))
 
