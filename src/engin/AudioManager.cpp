@@ -86,6 +86,19 @@ void XAudioManager::pauseAudio(int device_index, const std::string &audioname) {
 void XAudioManager::pauseAudio(const std::string &device, int id) {
     engin->pause(device, id);
 };
+void XAudioManager::stopAudio(int device_index, int id) {
+    engin->stop(device_index, id);
+};
+void XAudioManager::stopAudio(const std::string &device,
+                              const std::string &audioname) {
+    engin->stop(device, audioname);
+};
+void XAudioManager::stopAudio(int device_index, const std::string &audioname) {
+    engin->stop(device_index, audioname);
+};
+void XAudioManager::stopAudio(const std::string &device, int id) {
+    engin->stop(device, id);
+};
 
 // 设备是否暂停
 bool XAudioManager::isDevicePause(int device_id) {

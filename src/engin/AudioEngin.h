@@ -85,8 +85,11 @@ class XAudioEngin {
     void pause(int device_index, const std::string &audioname);
     void pause(const std::string &devicename, const std::string &audioname);
 
-    // 终止音频句柄
-    void stop_audio(int audio_id);
+    // 终止
+    void stop(int device_index, int audio_id);
+    void stop(const std::string &devicename, int audio_id);
+    void stop(int device_index, const std::string &audioname);
+    void stop(const std::string &devicename, const std::string &audioname);
 
     // 获取设备播放器状态
     bool is_pause(int device_id);

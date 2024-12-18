@@ -24,9 +24,6 @@ class XOutputDevice {
     // 析构XOutputDevice
     virtual ~XOutputDevice();
 
-    // 获取该设备上活跃的播放器
-    inline std::shared_ptr<XPlayer>& device_player() { return player; };
-
     // 创建一个位于该设备的播放器
     bool creat_player();
 };

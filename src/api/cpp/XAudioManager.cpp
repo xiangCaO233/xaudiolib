@@ -69,6 +69,22 @@ void XAudioManager::pause(int device_index, const std::string &audioname) {
 void XAudioManager::pause(const std::string &devicename, int audio_id) {
     pauseAudio(devicename, audio_id);
 }
+
+// 停止音频句柄
+void XAudioManager::stop(int device_index, int audio_id) {
+    stopAudio(device_index, audio_id);
+};
+void XAudioManager::stop(const std::string &devicename,
+                         const std::string &audioname) {
+    stopAudio(devicename, audioname);
+};
+void XAudioManager::stop(int device_index, const std::string &audioname) {
+    stopAudio(device_index, audioname);
+};
+void XAudioManager::stop(const std::string &devicename, int audio_id) {
+    stopAudio(devicename, audio_id);
+};
+
 // 获取设备播放器状态
 bool XAudioManager::is_pause(int device_id) { return isDevicePause(device_id); }
 bool XAudioManager::is_pause(const std::string &devicename) {
@@ -86,6 +102,7 @@ void XAudioManager::resume(int device_id) { resumeDevice(device_id); };
 void XAudioManager::resume(const std::string &devicename) {
     resumeDevice(devicename);
 }
+
 // 终止播放器
 void XAudioManager::stop(int device_id) { stopDevice(device_id); };
 void XAudioManager::stop(const std::string &devicename) {

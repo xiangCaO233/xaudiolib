@@ -4,7 +4,7 @@
 #include "AudioEngin.h"
 
 class XAudioManager {
-   public:
+   private:
     // 引擎(唯一)
     std::unique_ptr<XAudioEngin> engin;
     // 音频的句柄
@@ -39,7 +39,7 @@ class XAudioManager {
     float getGlobalVolume();
     void setGlobalAudioVolume(float volume);
 
-    // 播放和暂停音频
+    // 播放暂停停止音频
     void playAudio(int device_index, int id, bool isloop);
     void playAudio(const std::string &device, const std::string &audioname,
                    bool isloop);
@@ -50,6 +50,11 @@ class XAudioManager {
     void pauseAudio(const std::string &device, const std::string &audioname);
     void pauseAudio(int device_index, const std::string &audioname);
     void pauseAudio(const std::string &device, int id);
+
+    void stopAudio(int device_index, int id);
+    void stopAudio(const std::string &device, const std::string &audioname);
+    void stopAudio(int device_index, const std::string &audioname);
+    void stopAudio(const std::string &device, int id);
 
     // 设备是否暂停
     bool isDevicePause(int device_id);
