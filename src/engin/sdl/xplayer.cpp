@@ -63,16 +63,16 @@ void XPlayer::player_thread() {
             // LOG_DEBUG("播放器已暂停,等待恢复");
             // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
             // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
-            //   暂停在此处等待
+            //    暂停在此处等待
             std::unique_lock<std::mutex> pauselock(player_mutex);
             cv.wait(pauselock, [this]() { return !paused || !running; });
         }
         // LOG_DEBUG("播放器播放中,等待暂停或终止");
         // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
         // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
-        //  LOG_DEBUG("等待数据或继续播放");
-        //  播放中在此等待
-        //  等待数据推送或暂停恢复
+        //   LOG_DEBUG("等待数据或继续播放");
+        //   播放中在此等待
+        //   等待数据推送或暂停恢复
         std::unique_lock<std::mutex> lock(player_mutex);
         cv.wait(lock, [this]() { return paused || !running; });
     }
@@ -82,7 +82,6 @@ void XPlayer::player_thread() {
 
 // 开始
 void XPlayer::start() {
-    // TODO(xiang 2024-12-16): 启动播放器
     // 防止重复启动
     if (running) return;
     if (outdevice_index < 0) {

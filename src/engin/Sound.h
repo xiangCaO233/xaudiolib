@@ -14,16 +14,8 @@ struct AVFormatContext;
 class XSound {
     // 句柄(id)
     int handle;
-    // 播放位置
-    size_t playpos;
     // pcm声音数据
     std::vector<float> pcm_data;
-    // 暂停标识
-    bool pauseflag;
-    // 播放速率
-    float speed;
-    // 音量
-    float volume;
 
     // 未知常量
     static std::string unknown;
@@ -36,7 +28,7 @@ class XSound {
    public:
     // 构造XSound
     XSound(int h, std::string n, std::string p,
-           std::shared_ptr<AVFormatContext> f, float s, float vm);
+           std::shared_ptr<AVFormatContext> f);
     // 析构XSound
     virtual ~XSound() = default;
 

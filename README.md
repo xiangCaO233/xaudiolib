@@ -58,6 +58,9 @@
 
 ![playsample](multidevice.png)
 
+### 控制示例
+![controllsample](controllsample.jpg)
+
 ### 性能(播放 30s 75%以上时间消耗在解码和卸载音频(缓存模式只解码一遍))
 
 ![profile1217](profile1217.jpg)

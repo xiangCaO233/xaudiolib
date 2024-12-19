@@ -33,24 +33,54 @@ const std::string &XAudioManager ::get_audio_path(int id) {
     return engin->path(id);
 }
 // 设置音频当前播放到的位置
-void XAudioManager::set_audio_current_pos(const std::string &auido,
+void XAudioManager::set_audio_current_pos(int device_id, int id, int64_t time) {
+    engin->pos(device_id, id, time);
+};
+void XAudioManager::set_audio_current_pos(int device_id,
+                                          const std::string &auido,
                                           int64_t time) {
-    engin->pos(auido, time);
-}
-void XAudioManager::set_audio_current_pos(int id, int64_t time) {
-    engin->pos(id, time);
-}
+    engin->pos(device_id, auido, time);
+};
+void XAudioManager::set_audio_current_pos(const std::string &device, int id,
+                                          int64_t time) {
+    engin->pos(device, id, time);
+};
+void XAudioManager::set_audio_current_pos(const std::string &device,
+                                          const std::string &auido,
+                                          int64_t time) {
+    engin->pos(device, auido, time);
+};
 
-// 获取音量
-float XAudioManager::getVolume(const std::string &audio) {
-    return engin->volume(audio);
+// 获取音频音量
+float XAudioManager::getVolume(int deviceid, int id) {
+    return engin->volume(deviceid, id);
 }
-float XAudioManager::getVolume(int id) { return engin->volume(id); }
-// 设置音量
-void XAudioManager::setAudioVolume(const std::string &audio, float v) {
-    engin->setVolume(audio, v);
+float XAudioManager::getVolume(int deviceid, const std::string &audioname) {
+    return engin->volume(deviceid, audioname);
 }
-void XAudioManager::setAudioVolume(int id, float v) { engin->setVolume(id, v); }
+float XAudioManager::getVolume(const std::string &devicename, int id) {
+    return engin->volume(devicename, id);
+}
+float XAudioManager::getVolume(const std::string &devicename,
+                               const std::string &audio) {
+    return engin->volume(devicename, audio);
+}
+// 设置音频音量
+void XAudioManager::setAudioVolume(int deviceid, int id, float v) {
+    engin->setVolume(deviceid, id, v);
+}
+void XAudioManager::setAudioVolume(int deviceid, const std::string &audioname,
+                                   float v) {
+    engin->setVolume(deviceid, audioname, v);
+}
+void XAudioManager::setAudioVolume(const std::string &devicename, int id,
+                                   float v) {
+    engin->setVolume(devicename, id, v);
+}
+void XAudioManager::setAudioVolume(const std::string &devicename,
+                                   const std::string &audio, float v) {
+    engin->setVolume(devicename, audio, v);
+}
 // 设置全局音量
 float XAudioManager::getGlobalVolume() { return engin->gVolume; }
 void XAudioManager::setGlobalAudioVolume(float volume) {}

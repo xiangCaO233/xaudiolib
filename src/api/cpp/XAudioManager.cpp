@@ -11,11 +11,19 @@ void XAudioManager::unload(const std::string &audio_path) {
 
 void XAudioManager::unload(int audio_id) { unloadaudio(audio_id); }
 
-float XAudioManager::volume(const std::string &audio_name) {
-    return getVolume(audio_name);
+float XAudioManager::volume(int deviceid, int id) {
+    return getVolume(deviceid, id);
 }
-
-float XAudioManager::volume(int audio_id) { return getVolume(audio_id); }
+float XAudioManager::volume(int deviceid, const std::string &audioname) {
+    return getVolume(deviceid, audioname);
+}
+float XAudioManager::volume(const std::string &devicename, int id) {
+    return getVolume(devicename, id);
+}
+float XAudioManager::volume(const std::string &devicename,
+                            const std::string &audio) {
+    return getVolume(devicename, audio);
+}
 
 const std::string &XAudioManager::audio_name(int audio_id) {
     return get_audio_name(audio_id);
@@ -24,13 +32,21 @@ const std::string &XAudioManager::audio_name(int audio_id) {
 const std::string &XAudioManager::audio_path(int audio_id) {
     return get_audio_path(audio_id);
 }
-// 设置播放时间
-void XAudioManager::set_audio_time(const std::string &audio_name,
-                                   int64_t time) {
-    set_audio_current_pos(audio_name, time);
+
+// 设置音频音量
+void XAudioManager::setVolume(int deviceid, int id, float v) {
+    setAudioVolume(deviceid, id, v);
 }
-void XAudioManager::set_audio_time(int audio_id, int64_t time) {
-    set_audio_current_pos(audio_id, time);
+void XAudioManager::setVolume(int deviceid, const std::string &audioname,
+                              float v) {
+    setAudioVolume(deviceid, audioname, v);
+}
+void XAudioManager::setVolume(const std::string &devicename, int id, float v) {
+    setAudioVolume(devicename, id, v);
+}
+void XAudioManager::setVolume(const std::string &devicename,
+                              const std::string &audio, float v) {
+    setAudioVolume(devicename, audio, v);
 }
 // 获取全局音量
 float XAudioManager::globalVolume() { return getGlobalVolume(); };
@@ -98,6 +114,23 @@ void XAudioManager::stop(int device_index, const std::string &audioname) {
 };
 void XAudioManager::stop(const std::string &devicename, int audio_id) {
     stopAudio(devicename, audio_id);
+};
+
+// 设置播放时间
+void XAudioManager::set_audio_time(int device_id, int id, int64_t time) {
+    set_audio_current_pos(device_id, id, time);
+};
+void XAudioManager::set_audio_time(int device_id, const std::string &auido,
+                                   int64_t time) {
+    set_audio_current_pos(device_id, auido, time);
+};
+void XAudioManager::set_audio_time(const std::string &device, int id,
+                                   int64_t time) {
+    set_audio_current_pos(device, id, time);
+};
+void XAudioManager::set_audio_time(const std::string &device,
+                                   const std::string &auido, int64_t time) {
+    set_audio_current_pos(device, auido, time);
 };
 
 // 获取设备播放器状态

@@ -7,8 +7,6 @@ class XAudioManager {
    private:
     // 引擎(唯一)
     std::unique_ptr<XAudioEngin> engin;
-    // 音频的句柄
-    std::unordered_map<std::string, int> handles;
 
     // 载入音频
     int loadaudio(const std::string &audio);
@@ -24,16 +22,25 @@ class XAudioManager {
     const std::string &get_audio_path(int id);
 
     // 设置音频当前播放到的位置
-    void set_audio_current_pos(const std::string &auido, int64_t time);
-    void set_audio_current_pos(int id, int64_t time);
+    void set_audio_current_pos(int device_id, int id, int64_t time);
+    void set_audio_current_pos(int device_id, const std::string &auido,
+                               int64_t time);
+    void set_audio_current_pos(const std::string &device, int id, int64_t time);
+    void set_audio_current_pos(const std::string &device,
+                               const std::string &auido, int64_t time);
 
     // 获取音频音量
-    float getVolume(const std::string &audio);
-    float getVolume(int id);
+    float getVolume(int deviceid, int id);
+    float getVolume(int deviceid, const std::string &audioname);
+    float getVolume(const std::string &devicename, int id);
+    float getVolume(const std::string &devicename, const std::string &audio);
 
     // 设置音频音量
-    void setAudioVolume(const std::string &audio, float v);
-    void setAudioVolume(int id, float v);
+    void setAudioVolume(int deviceid, int id, float v);
+    void setAudioVolume(int deviceid, const std::string &audioname, float v);
+    void setAudioVolume(const std::string &devicename, int id, float v);
+    void setAudioVolume(const std::string &devicename, const std::string &audio,
+                        float v);
 
     // 设置全局音量
     float getGlobalVolume();

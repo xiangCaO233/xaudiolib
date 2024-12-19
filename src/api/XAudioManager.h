@@ -15,14 +15,16 @@ class XAudioManager {
     const std::string &get_audio_name(int id);
     const std::string &get_audio_path(int id);
 
-    void set_audio_current_pos(const std::string &auido, int64_t time);
-    void set_audio_current_pos(int id, int64_t time);
+    float getVolume(int deviceid, int id);
+    float getVolume(int deviceid, const std::string &audioname);
+    float getVolume(const std::string &devicename, int id);
+    float getVolume(const std::string &devicename, const std::string &audio);
 
-    float getVolume(const std::string &audio);
-    float getVolume(int id);
-
-    void setAudioVolume(const std::string &audio);
-    void setAudioVolume(int id);
+    void setAudioVolume(int deviceid, int id, float v);
+    void setAudioVolume(int deviceid, const std::string &audioname, float v);
+    void setAudioVolume(const std::string &devicename, int id, float v);
+    void setAudioVolume(const std::string &devicename, const std::string &audio,
+                        float v);
 
     float getGlobalVolume();
     void setGlobalAudioVolume(float volume);
@@ -47,6 +49,13 @@ class XAudioManager {
     void stopAudio(const std::string &device, const std::string &audioname);
     void stopAudio(int device_index, const std::string &audioname);
     void stopAudio(const std::string &device, int id);
+
+    void set_audio_current_pos(int device_id, int id, int64_t time);
+    void set_audio_current_pos(int device_id, const std::string &auido,
+                               int64_t time);
+    void set_audio_current_pos(const std::string &device, int id, int64_t time);
+    void set_audio_current_pos(const std::string &device,
+                               const std::string &auido, int64_t time);
 
     bool isDevicePause(int device_id);
     bool isDevicePause(const std::string &devicename);
@@ -74,17 +83,18 @@ class XAudioManager {
     const std::string &audio_name(int audio_id);
     const std::string &audio_path(int audio_id);
 
-    // 设置播放时间
-    void set_audio_time(const std::string &audio_name, int64_t time);
-    void set_audio_time(int audio_id, int64_t time);
-
     // 获取音频音量
-    float volume(const std::string &audio_name);
-    float volume(int audio_id);
+    float volume(int deviceid, int id);
+    float volume(int deviceid, const std::string &audioname);
+    float volume(const std::string &devicename, int id);
+    float volume(const std::string &devicename, const std::string &audio);
 
     // 设置音频音量
-    void setVolume(const std::string &audio_name, float volume);
-    void setVolume(int audio_id, float volume);
+    void setVolume(int deviceid, int id, float v);
+    void setVolume(int deviceid, const std::string &audioname, float v);
+    void setVolume(const std::string &devicename, int id, float v);
+    void setVolume(const std::string &devicename, const std::string &audio,
+                   float v);
 
     // 获取全局音量
     float globalVolume();
@@ -115,6 +125,13 @@ class XAudioManager {
     void stop(const std::string &devicename, const std::string &audioname);
     void stop(int device_index, const std::string &audioname);
     void stop(const std::string &devicename, int audio_id);
+
+    // 设置播放时间
+    void set_audio_time(int device_id, int id, int64_t time);
+    void set_audio_time(int device_id, const std::string &auido, int64_t time);
+    void set_audio_time(const std::string &device, int id, int64_t time);
+    void set_audio_time(const std::string &device, const std::string &auido,
+                        int64_t time);
 
     // 获取设备播放器状态
     bool is_pause(int device_id);

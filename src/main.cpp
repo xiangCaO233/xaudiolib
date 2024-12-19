@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
                         << "设置[" + std::to_string(deviceid) + "]设备上的[" +
                                std::to_string(audioid) + "]音频到60000ms位置"
                         << std::endl;
-                    manager->set_audio_time(audioid, 60000);
+                    manager->set_audio_time(deviceid, audioid, 60000);
                     break;
                 }
                 case STOPAUDIO: {

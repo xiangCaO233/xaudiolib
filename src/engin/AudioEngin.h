@@ -60,16 +60,24 @@ class XAudioEngin {
     const std::string &path(int id);
 
     // 设置音频当前播放到的位置
-    void pos(const std::string &auido, int64_t time);
-    void pos(int id, int64_t time);
+    void pos(int deviceid, int id, int64_t time);
+    void pos(int deviceid, const std::string &audio, int64_t time);
+    void pos(const std::string &devicename, int id, int64_t time);
+    void pos(const std::string &devicename, const std::string &audioname,
+             int64_t time);
 
     // 获取音频音量
-    float volume(const std::string &audio);
-    float volume(int id);
+    float volume(int deviceid, int id);
+    float volume(int deviceid, const std::string &audioname);
+    float volume(const std::string &devicename, int id);
+    float volume(const std::string &devicename, const std::string &audio);
 
     // 设置音频音量
-    void setVolume(const std::string &audio, float v);
-    void setVolume(int id, float v);
+    void setVolume(int deviceid, int id, float v);
+    void setVolume(int deviceid, const std::string &audioname, float v);
+    void setVolume(const std::string &devicename, int id, float v);
+    void setVolume(const std::string &devicename, const std::string &audio,
+                   float v);
 
     // 设置全局音量
     void setGlobalVolume(float volume);
