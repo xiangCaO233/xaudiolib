@@ -1,5 +1,6 @@
 #include "mixer.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -154,9 +155,9 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
         // 混合音频到目标
         for (int i = 0; i < des_size; ++i) {
             if (playpos + i < audio->pcm_data.size()) {
-                // 相加所有的采样
-                mixed_pcm[i] +=
-                    audio->pcm_data[p.playpos + i] * p.volume * global_volume;
+                // 相加所有的采样(限制最大值)
+                mixed_pcm[i] = mixed_pcm[i] + audio->pcm_data[p.playpos + i] *
+                                                  p.volume * global_volume;
             }
         }
 

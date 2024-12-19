@@ -94,7 +94,7 @@ void XPlayer::start() {
     sdl_playthread = std::thread(&XPlayer::player_thread, this);
     sdl_playthread.detach();
 
-    LOG_DEBUG("启动混音线程");
+    LOG_DEBUG("启动混音线程...");
     mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
     mixer->mixthread.detach();
 };
@@ -148,7 +148,7 @@ void XPlayer::sdl_audio_callback(void* userdata, uint8_t* stream, int len) {
     // +
     //           "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
     if (rbuffer.readable() <= int(floorf(Config::mix_buffer_size / 3.0))) {
-        // 数据不足,请求更新
+        // 数据即将使用完,请求更新
         player->isrequested = true;
         // LOG_DEBUG("请求数据");
         // LOG_DEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) +
@@ -158,7 +158,7 @@ void XPlayer::sdl_audio_callback(void* userdata, uint8_t* stream, int len) {
     // SDL请求样本数
     size_t numSamples = len / sizeof(float);
     float* audiopcm;
-    // 从缓冲区读取音频数据
+    // 从环形缓冲区读取音频数据
     rbuffer.read(audiopcm, numSamples);
     if (!audiopcm) {
         // LOG_DEBUG("播放静音");
