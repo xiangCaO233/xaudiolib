@@ -41,7 +41,7 @@ class XAuidoMixer {
     // 添加音频轨道
     void add_orbit(std::shared_ptr<XSound>& orbit);
     // 移除音频轨道
-    void remove_orbit(std::shared_ptr<XSound>& orbit);
+    bool remove_orbit(std::shared_ptr<XSound>& orbit);
     // 设置循环标识
     void setloop(int audio_handle, bool isloop);
 

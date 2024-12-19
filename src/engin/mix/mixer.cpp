@@ -39,20 +39,21 @@ void XAuidoMixer::add_orbit(std::shared_ptr<XSound>& orbit) {
     prop.volume = 1.0f;
 };
 // 移除音频轨道
-void XAuidoMixer::remove_orbit(std::shared_ptr<XSound>& orbit) {
+bool XAuidoMixer::remove_orbit(std::shared_ptr<XSound>& orbit) {
     auto orbitit = audio_orbits.find(orbit->handle);
     if (orbitit == audio_orbits.end()) {
-        LOG_WARN("此设备上不存在音轨" + orbit->name + "]");
-        return;
+        LOG_WARN("此混音器不存在音轨[" + orbit->name + "]");
+        return false;
     }
     audio_orbits.erase(orbitit);
     auto propit = orbit_properties.find(orbit->handle);
     if (propit == orbit_properties.end()) {
-        LOG_WARN("此设备上不存在音轨" + orbit->name + "]");
-        return;
+        LOG_WARN("此混音器不存在音轨[" + orbit->name + "]");
+        return false;
     }
     orbit_properties.erase(propit);
-    LOG_INFO("已移除音轨");
+    LOG_INFO("已移除音轨[" + std::to_string(orbit->handle) + "]");
+    return true;
 };
 // 设置循环标识
 void XAuidoMixer::setloop(int audio_handle, bool isloop) {

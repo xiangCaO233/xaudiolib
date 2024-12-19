@@ -2,41 +2,32 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "api/XAudioManager.h"
 
 int main(int argc, char* argv[]) {
     auto manager = XAudioManager::newmanager();
 
-    std::string audio_path = "../resources/Tensions - スキャンダル.mp3";
-    std::string audio_path2 =
-        "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac";
-    std::string audio_path3 = "../resources/combobreak.wav";
-    std::string audio_path4 = "../resources/New story.mp3";
-    std::string audio_path5 =
-        "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac";
-    std::string audio_path6 =
-        "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3";
-    std::string audio_path7 = "../resources/音莉飴 - りんごと君.ncm";
-    std::string audio_path8 =
-        "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac";
-    std::string audio_path9 = "../resources/花鋏キョウ - Behavior.ncm";
+    std::vector<std::string> audio_paths;
+    audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
+    audio_paths.push_back(
+        "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
+    audio_paths.push_back("../resources/combobreak.wav");
+    audio_paths.push_back("../resources/New story.mp3");
+    audio_paths.push_back(
+        "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
+    audio_paths.push_back(
+        "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+    audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
+    audio_paths.push_back(
+        "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+    audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
 
     // 载入音频
-    manager->load(audio_path);
-    manager->load(audio_path2);
-    manager->load(audio_path3);
-    manager->load(audio_path2);
-    manager->load(audio_path2);
-    manager->load(audio_path5);
-    manager->load(audio_path6);
-    manager->load(audio_path5);
-    manager->load(audio_path7);
-    manager->load(audio_path4);
-    manager->load(audio_path3);
-    manager->load(audio_path8);
-    manager->load(audio_path6);
-    manager->load(audio_path9);
+    for (auto& var : audio_paths) {
+        manager->load(var);
+    }
 
     std::string devicename = "External Headphones";
 
@@ -204,6 +195,10 @@ int main(int argc, char* argv[]) {
                     break;
                 }
                 case STOPAUDIO: {
+                    std::cout
+                        << "移除[" + std::to_string(deviceid) + "]设备上的[" +
+                               std::to_string(audioid) + "]音频"
+                        << std::endl;
                     manager->stop(deviceid, audioid);
                     break;
                 }
@@ -237,16 +232,9 @@ int main(int argc, char* argv[]) {
     }
 
     // 卸载音频
-    manager->unload(0);
-    manager->unload(1);
-    manager->unload(2);
-    manager->unload(3);
-    manager->unload(4);
-    manager->unload(5);
-    manager->unload(6);
-    manager->unload(7);
-    manager->unload(8);
-    manager->unload(9);
+    for (int i = 0; i < 10; i++) {
+        manager->unload(i);
+    }
 
     return 0;
 }
