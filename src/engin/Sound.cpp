@@ -4,8 +4,6 @@
 
 #include "logger/logger.h"
 
-std::string XSound::unknown = "unknown";
-std::string XSound::unknown_path = "unknown path";
 XSound::XSound(int h, std::string n, std::string p,
                std::shared_ptr<AVFormatContext> f)
     : handle(h),

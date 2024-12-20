@@ -17,10 +17,6 @@ class XSound {
     // pcm声音数据
     std::vector<float> pcm_data;
 
-    // 未知常量
-    static std::string unknown;
-    static std::string unknown_path;
-
     friend XAudioManager;
     friend XAudioEngin;
     friend XAuidoMixer;
