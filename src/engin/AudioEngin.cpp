@@ -26,11 +26,14 @@ XAudioEngin::~XAudioEngin() {
 std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     LOG_DEBUG("初始化音频引擎");
     auto e = std::make_unique<XAudioEngin>();
+
     auto sdl_init_ret = SDL_Init(SDL_INIT_AUDIO);
+
     if (sdl_init_ret < 0) {
         LOG_ERROR("sdl初始化失败");
         return nullptr;
     }
+
     auto inputs = SDL_GetNumAudioDevices(true);
     if (inputs < 0) {
         LOG_ERROR("获取输入设备失败");
@@ -104,8 +107,9 @@ int XAudioEngin::load(const std::string &audio) {
         return currentid;
     } else {
         LOG_DEBUG("正在打开音频[" + audio + "]");
-        // 添加句柄
+        // 创建ffmpef音频格式
         AVFormatContext *format = nullptr;
+        // 添加句柄
         if (avformat_open_input(&format, path.string().c_str(), nullptr,
                                 nullptr) >= 0) {
             LOG_INFO("打开[" + audio + "]成功,句柄[" +
@@ -113,11 +117,10 @@ int XAudioEngin::load(const std::string &audio) {
             // 初始化
             // 包装为智能指针
             auto audioformat = std::shared_ptr<AVFormatContext>(format);
-
             auto sound =
                 std::make_shared<XSound>(currentid, name, p, audioformat);
-            audios.insert({currentid, sound});
             handles[name] = currentid;
+            audios.insert({currentid, sound});
             // 获取流信息
             if (avformat_find_stream_info(format, nullptr) < 0) {
                 LOG_ERROR("获取流信息失败");
@@ -126,7 +129,6 @@ int XAudioEngin::load(const std::string &audio) {
                 handles.erase(handelit);
                 auto audioit = audios.find(currentid);
                 audios.erase(audioit);
-
                 return -1;
             }
             // 获取编解码器
@@ -162,7 +164,6 @@ int XAudioEngin::load(const std::string &audio) {
                 auto audioit = audios.find(currentid);
                 audios.erase(audioit);
                 audio_codecs.erase(codecit);
-
                 return -1;
             }
         } else {

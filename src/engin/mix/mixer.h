@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+// #include "../../gpu/gl/shader/shader.h"
+
 class XSound;
 class XPlayer;
 class XAudioEngin;
@@ -33,7 +35,14 @@ class XAuidoMixer {
     std::unordered_map<int, std::shared_ptr<XSound>> audio_orbits;
     // 轨道属性(句柄-属性)
     std::unordered_map<int, OrbitProps> orbit_properties;
+    // 未知属性
     OrbitProps unknown_prop;
+    // 着色器程序
+    // Shader* shader;
+    // 顶点着色器源代码
+    static const char* vertexshader_source;
+    // 片段着色器源代码
+    static const char* fragmentshader_source;
 
     friend XAudioEngin;
     friend XPlayer;

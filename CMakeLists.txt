@@ -8,7 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
-set(MIXER_SOURCES src/engin/mix/mixer.cpp)
+set(MIXER_SOURCES # src/gpu/gl/shader/shader.cpp
+    src/engin/mix/mixer.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
 set(SDL_SOURCES src/engin/sdl/rbuffer.cpp src/engin/sdl/xmicrophone.cpp
                 src/engin/sdl/xplayer.cpp)
@@ -32,13 +33,13 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(src)
 
-# openssl
-find_package(OpenSSL REQUIRED)
+# json库
+find_package(jsoncpp REQUIRED)
 # 日志
 find_package(spdlog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
-# OpenAL(CPU混音计算)
+# OpenAL(播放api)
 find_package(OpenAL REQUIRED)
 # OpenCL(GPU加速混音计算)
 find_package(OpenCL REQUIRED)
@@ -80,6 +81,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -90,6 +92,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -100,6 +103,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")

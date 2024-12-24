@@ -11,6 +11,26 @@
 #include "config/config.h"
 #include "logger/logger.h"
 
+// 顶点着色器源代码
+const char* XAuidoMixer::vertexshader_source = R"(
+#version 410 core
+
+void main() {
+	
+}
+
+)";
+
+// 片段着色器源代码
+const char* XAuidoMixer::fragmentshader_source = R"(
+#version 410 core
+
+void main() {
+	
+}
+
+)";
+
 XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {
     LOG_TRACE("初始化混音器");
     unknown_prop.sound = nullptr;
@@ -19,6 +39,12 @@ XAuidoMixer::XAuidoMixer(XPlayer* player) : des_player(player) {
     unknown_prop.paused = false;
     unknown_prop.volume = -1.0f;
     unknown_prop.speed = -1.0f;
+    // if (Config::mix_method == GPU_MIX_BY_OPENGL) {
+    //     // 使用opengl api进行并行混音
+    //     LOG_DEBUG("当前使用OpenGL进行混音");
+    //     shader = new Shader(vertexshader_source, fragmentshader_source,
+    //     true);
+    // }
 }
 
 XAuidoMixer::~XAuidoMixer() {
@@ -134,6 +160,7 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
 
     for (auto& audio : src_sounds) {
         auto& p = prop(audio->handle);
+
         if (!p.sound) {
             LOG_ERROR("音频轨道属性出错");
             // 暂时静音
@@ -154,12 +181,20 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
 
         // 混合音频到目标
         for (int i = 0; i < des_size; ++i) {
+            auto scale = std::log(global_volume);
             if (playpos + i < audio->pcm_data.size()) {
+                // TODO(tan 2024-12-24): 获取音频数据并实现变速写入混音结果
                 // 相加所有的采样(限制最大值)
-                mixed_pcm[i] = mixed_pcm[i] + audio->pcm_data[p.playpos + i] *
-                                                  p.volume * global_volume;
+                mixed_pcm[i] =
+                    std::clamp(mixed_pcm[i] + audio->pcm_data[p.playpos + i] *
+                                                  p.volume * scale,
+                               -0.9f, 0.9f);
             }
         }
+        // for (int i = 0; i < 50; i++) {
+        //     std::cout << mixed_pcm[i] << ',';
+        // }
+        // std::cout << std::endl;
 
         if (playpos + des_size >= audio->pcm_data.size()) {
             // 修正结尾

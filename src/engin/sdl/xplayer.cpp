@@ -167,5 +167,5 @@ void XPlayer::sdl_audio_callback(void* userdata, uint8_t* stream, int len) {
         return;
     }
     // 写入sdl回调数据
-    std::memcpy(stream, audiopcm, numSamples * sizeof(uint32_t));
+    std::memcpy(stream, audiopcm, numSamples * sizeof(float));
 };

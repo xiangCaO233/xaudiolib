@@ -36,17 +36,18 @@ class XAudioEngin {
 
     // 音频句柄池
     std::unordered_map<std::string, int> handles;
-    // 音频池
+    // 音频池{int-sound}
     std::unordered_map<int, std::shared_ptr<XSound>> audios;
 
     // 设备列表
     std::unordered_map<int, std::shared_ptr<XOutputDevice>> outdevices;
     std::unordered_map<std::string, int> outdevice_indicies;
+
     std::unordered_map<int, std::shared_ptr<XInputDevice>> inputdevices;
     std::unordered_map<std::string, int> inputdevice_indicies;
 
     // 全局音量
-    float gVolume{0.5f};
+    float gVolume{0.2f};
 
     // 载入音频
     int load(const std::string &audio);

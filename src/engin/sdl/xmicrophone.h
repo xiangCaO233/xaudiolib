@@ -6,6 +6,7 @@
 class XMicrophone {
     // 录制线程
     std::thread recording_thread;
+    // TODO(xiang 2024-12-24): 实现麦克风
 
    public:
     // 构造XMicrophone

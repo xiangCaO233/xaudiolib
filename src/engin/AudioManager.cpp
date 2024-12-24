@@ -3,10 +3,15 @@
 #include "logger/logger.h"
 
 XAudioManager::XAudioManager() {
+    // 初始化日志系统
     XLogger::init();
     LOG_TRACE("XAudioManager初始化");
+    // 初始化引擎
     engin = XAudioEngin::init();
-    if (engin) LOG_INFO("初始化引擎成功");
+    if (engin)
+        LOG_INFO("初始化引擎成功");
+    else
+        LOG_ERROR("初始化引擎失败");
 }
 
 XAudioManager::~XAudioManager() { LOG_TRACE("销毁音频管理器"); }

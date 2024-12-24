@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
     auto manager = XAudioManager::newmanager();
 
     std::vector<std::string> audio_paths;
+
     audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
     audio_paths.push_back(
         "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
