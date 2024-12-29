@@ -28,53 +28,53 @@
 #endif
 
 class CustomFormatter : public spdlog::formatter {
-   public:
-    void format(const spdlog::details::log_msg &msg,
-                spdlog::memory_buf_t &dest) override;
+ public:
+  void format(const spdlog::details::log_msg &msg,
+              spdlog::memory_buf_t &dest) override;
 
-    std::unique_ptr<spdlog::formatter> clone() const override;
+  std::unique_ptr<spdlog::formatter> clone() const override;
 };
 
 class XLogger {
-    static std::shared_ptr<spdlog::logger> _logger;
+  static std::shared_ptr<spdlog::logger> _logger;
 
-    // 自定义每个日志级别的颜色代码
-    static std::string get_level_color(spdlog::level::level_enum level);
+  // 自定义每个日志级别的颜色代码
+  static std::string get_level_color(spdlog::level::level_enum level);
 
-    // 包装的日志函数，带有调用者信息
-    static void log(spdlog::level::level_enum level,
-                    const spdlog::source_loc &loc, const std::string &msg);
+  // 包装的日志函数，带有调用者信息
+  static void log(spdlog::level::level_enum level,
+                  const spdlog::source_loc &loc, const std::string &msg);
 
-   public:
-    // 获取文件名
-    inline static const char *get_relative_file_path(const char *full_path) {
-        std::string path(full_path);
-        thread_local std::string relative_path =
-            std::filesystem::path(path).filename().string();
-        return relative_path.c_str();
-    }
+ public:
+  // 获取文件名
+  inline static const char *get_relative_file_path(const char *full_path) {
+    std::string path(full_path);
+    thread_local std::string relative_path =
+        std::filesystem::path(path).filename().string();
+    return relative_path.c_str();
+  }
 
-    static void init();
+  static void init();
 
-    // 包装器的日志类型函数
-    static void trace(const spdlog::source_loc &loc, const std::string &msg);
+  // 包装器的日志类型函数
+  static void trace(const spdlog::source_loc &loc, const std::string &msg);
 
-    static void debug(const spdlog::source_loc &loc, const std::string &msg);
+  static void debug(const spdlog::source_loc &loc, const std::string &msg);
 
-    static void info(const spdlog::source_loc &loc, const std::string &msg);
+  static void info(const spdlog::source_loc &loc, const std::string &msg);
 
-    static void warn(const spdlog::source_loc &loc, const std::string &msg);
+  static void warn(const spdlog::source_loc &loc, const std::string &msg);
 
-    static void error(const spdlog::source_loc &loc, const std::string &msg);
+  static void error(const spdlog::source_loc &loc, const std::string &msg);
 
-    static void critical(const spdlog::source_loc &loc, const std::string &msg);
+  static void critical(const spdlog::source_loc &loc, const std::string &msg);
 };
 
 // 定义自定义的 LOG_LOC 宏
-#define LOG_LOC                                                           \
-    spdlog::source_loc {                                                  \
-        XLogger::get_relative_file_path(__FILE__), __LINE__, __FUNCTION__ \
-    }
+#define LOG_LOC                                                       \
+  spdlog::source_loc {                                                \
+    XLogger::get_relative_file_path(__FILE__), __LINE__, __FUNCTION__ \
+  }
 // 每种日志类型的宏，用于自动捕获调用者的信息
 #define LOG_TRACE(msg) XLogger::trace(LOG_LOC, msg)
 #define LOG_DEBUG(msg) XLogger::debug(LOG_LOC, msg)

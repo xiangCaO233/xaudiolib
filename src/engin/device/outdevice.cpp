@@ -9,11 +9,13 @@
 XOutputDevice::XOutputDevice(int id, std::string name)
     : sdl_id(id), device_name(std::move(name)) {}
 
-XOutputDevice::~XOutputDevice() {LOG_TRACE("销毁输出设备:["+device_name+"]");}
+XOutputDevice::~XOutputDevice() {
+  LOG_TRACE("销毁输出设备:[" + device_name + "]");
+}
 
 // 创建一个位于该设备的播放器
 bool XOutputDevice::creat_player() {
-    player = std::make_shared<XPlayer>();
-    player->set_device_index(sdl_id);
-    return player != nullptr;
+  player = std::make_shared<XPlayer>();
+  player->set_device_index(sdl_id);
+  return player != nullptr;
 };
