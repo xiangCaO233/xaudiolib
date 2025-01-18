@@ -32,6 +32,11 @@
 #define AVMEDIA_SAMPLERATE 48000
 
 /*
+ *无损采样
+ */
+#define LOSSLESS_SAMPLERATE 96000
+
+/*
  * 在CPU中进行混音
  */
 #define CPU_MIX 1

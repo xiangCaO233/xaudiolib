@@ -125,7 +125,6 @@ int XAudioEngin::load(const std::string &audio) {
         handles.erase(handelit);
         auto audioit = audios.find(currentid);
         audios.erase(audioit);
-
         return -1;
       }
       // 获取编解码器
