@@ -1,5 +1,3 @@
-#include <engin/util/ncm.h>
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -19,10 +17,10 @@ int main(int argc, char* argv[]) {
         "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
     audio_paths.push_back(
         "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-    audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
+    // audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
     audio_paths.push_back(
         "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-    audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
+    // audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
 
     // 载入音频
     for (auto& var : audio_paths) {

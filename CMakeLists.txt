@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.28)
 
 project(xaudiolib LANGUAGES CXX)
 
@@ -23,19 +23,14 @@ set(ENGIN_SOURCES
     ${MIXER_SOURCES}
     ${SDL_SOURCES})
 
-set(LOG_SOURCE src/logger/logger.cpp)
 set(API_SOURCES src/api/cpp/XAudioManager.cpp)
 
-set(LIB_SOURCES ${LOG_SOURCE} ${API_SOURCES} ${ENGIN_SOURCES})
+set(LIB_SOURCES ${API_SOURCES} ${ENGIN_SOURCES})
 
 set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(src)
 
-# openssl
-find_package(OpenSSL REQUIRED)
-# 日志
-find_package(spdlog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
 # OpenAL(CPU混音计算)
@@ -74,7 +69,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
   target_link_libraries(
     testxaudiolib
-    PUBLIC spdlog::spdlog
+    PUBLIC 
            ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
@@ -84,7 +79,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC spdlog::spdlog
+    PUBLIC 
            ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
@@ -94,7 +89,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC spdlog::spdlog
+    PUBLIC 
            ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
@@ -105,24 +100,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
   target_link_libraries(
-    testxaudiolib PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL
+    testxaudiolib PUBLIC  OpenAL::OpenAL OpenCL::OpenCL
                          SDL2::SDL2 PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                   PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio-dev PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio-dev PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                       PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
-    testxaudiolib PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL
+    testxaudiolib PUBLIC  OpenAL::OpenAL OpenCL::OpenCL
                          SDL2::SDL2 PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                   PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio-dev PUBLIC spdlog::spdlog OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio-dev PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                       PkgConfig::ffmpeg)
 else()
   # 其他系统

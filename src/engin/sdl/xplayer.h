@@ -5,6 +5,8 @@
 
 #include <memory>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include "engin/mix/mixer.h"
 #include "rbuffer.h"
