@@ -3,9 +3,8 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <iostream>
 #include <string>
-
-#include "logger/logger.h"
 
 namespace xutil {
 inline static void convert_music(const std::string& path,
@@ -32,14 +31,14 @@ inline static void convert_music(const std::string& path,
   auto filename = srcpath.filename().stem().string();
   desdirpath = absolutedesdir + filename;
 
-  LOG_DEBUG("输出路径:[" + desdirpath + "]");
+  std::cout << "输出路径:[" + desdirpath + "]" << std::endl;
 
   // 判断是否已经转换过(目标文件夹是否有同名文件)
   if (std::filesystem::is_directory(desdirpath) &&
       std::filesystem::directory_iterator(desdirpath) !=
           std::filesystem::end(
               std::filesystem::directory_iterator(desdirpath))) {
-    LOG_INFO("检测到输出路径非空");
+    std::cout << "检测到输出路径非空" << std::endl;
     // 目标文件夹是文件夹且不为空
     for (const auto& entry : std::filesystem::directory_iterator(desdirpath)) {
       // 判断是否是普通文件
@@ -48,7 +47,7 @@ inline static void convert_music(const std::string& path,
         // 检查文件名是否存在
         if (ffileName == filename) {
           // 存在,不需要再转换
-          LOG_DEBUG("[" + ffileName + "]已转换过,跳过");
+          std::cout << "[" + ffileName + "]已转换过,跳过" << std::endl;
           return;
         }
       }
@@ -59,7 +58,7 @@ inline static void convert_music(const std::string& path,
   desdirpath.insert(desdirpath.begin(), '\'');
   desdirpath.append("\'");
 
-#ifdef __APPLE__
+#ifdef __unix
   std::string command =
       std::string("../lib/ncmdump ") + absolutesrcpath + " -o " + desdirpath;
   // 执行命令
@@ -67,7 +66,7 @@ inline static void convert_music(const std::string& path,
   filename = srcpath.filename().replace_extension("").string();
   absolutesrcpath = std::filesystem::absolute(srcpath).string();
   desdirpath = absolutedesdir + filename;
-#endif  //__APPLE__
+#endif  //__unix
 }
 }  // namespace xutil
 
