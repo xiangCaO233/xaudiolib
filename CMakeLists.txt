@@ -40,6 +40,8 @@ find_package(OpenAL REQUIRED)
 find_package(OpenCL REQUIRED)
 # OpenGL(GPU使用gl渲染管线加速)
 find_package(OpenGL REQUIRED)
+# GLEW(opengl驱动接口)
+find_package(GLEW REQUIRED)
 # 包管理器
 find_package(PkgConfig REQUIRED)
 # ffmpeg
@@ -70,58 +72,56 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
   target_link_libraries(
     testxaudiolib
-    PUBLIC 
-           ${COREAUDIO_LIBRARY}
+    PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           GLEW::GLEW
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC 
-           ${COREAUDIO_LIBRARY}
+    PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           GLEW::GLEW
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC 
-           ${COREAUDIO_LIBRARY}
+    PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
            OpenAL::OpenAL
            OpenCL::OpenCL
+           GLEW::GLEW
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
   target_link_libraries(
-    testxaudiolib PUBLIC  OpenAL::OpenAL OpenCL::OpenCL
-                         SDL2::SDL2 PkgConfig::ffmpeg)
+    testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
+                         PkgConfig::ffmpeg)
+  target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+                                      GLEW::GLEW PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                  PkgConfig::ffmpeg)
-  target_link_libraries(
-    xaudio-dev PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
                       PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
-    testxaudiolib PUBLIC  OpenAL::OpenAL OpenCL::OpenCL
-                         SDL2::SDL2 PkgConfig::ffmpeg)
+    testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew SDL2::SDL2
+                         PkgConfig::ffmpeg)
+  target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew
+                                      SDL2::SDL2 PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                  PkgConfig::ffmpeg)
-  target_link_libraries(
-    xaudio-dev PUBLIC  OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
+    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew SDL2::SDL2
                       PkgConfig::ffmpeg)
 else()
   # 其他系统
