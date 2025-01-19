@@ -58,15 +58,19 @@ inline static void convert_music(const std::string& path,
   desdirpath.insert(desdirpath.begin(), '\'');
   desdirpath.append("\'");
 
-#ifdef __unix
-  std::string command =
-      std::string("../lib/ncmdump ") + absolutesrcpath + " -o " + desdirpath;
+#ifdef __APPLE__
+  std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
+                        " -o " + desdirpath;
+#endif  //__APPLE__
+#ifdef __linux__
+  std::string command = std::string("../lib/ncmdump-linux ") + absolutesrcpath +
+                        " -o " + desdirpath;
+#endif  //__linux__
   // 执行命令
   std::system(command.c_str());
   filename = srcpath.filename().replace_extension("").string();
   absolutesrcpath = std::filesystem::absolute(srcpath).string();
   desdirpath = absolutedesdir + filename;
-#endif  //__unix
 }
 }  // namespace xutil
 
