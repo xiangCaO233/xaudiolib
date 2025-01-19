@@ -10,6 +10,28 @@
 #include "../Sound.h"
 #include "../sdl/xplayer.h"
 #include "config/config.h"
+#include "gpu/gl/shader/shader.h"
+
+// 顶点着色器
+const char *XAuidoMixer::vsource = R"(
+#version 410 core
+
+
+void main(){
+
+}
+
+)";
+
+// 片段着色器
+const char *XAuidoMixer::fsource = R"(
+#version 410 core
+
+void main(){
+
+}
+
+)";
 
 XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   std::cout << "初始化混音器" << std::endl;
@@ -19,6 +41,8 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   unknown_prop.paused = false;
   unknown_prop.volume = -1.0f;
   unknown_prop.speed = -1.0f;
+  std::cout << "初始化opengl着色器" << std::endl;
+  glshader = new Shader(vsource, fsource);
 }
 
 XAuidoMixer::~XAuidoMixer() {
@@ -128,6 +152,7 @@ void XAuidoMixer::send_pcm_thread() {
     des_player->isrequested = false;
   }
 }
+
 // 混合音频
 void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
                       std::vector<float> &mixed_pcm, float global_volume) {
