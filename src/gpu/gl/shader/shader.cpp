@@ -3,143 +3,177 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <string>
 
-#include "../../../logger/logger.h"
+// 读取文件
+Shader::Shader(const std::string& vsfile, const std::string& fsfile) {
+  std::ifstream vsfstream, fsfstream;
+  vsfstream.open(vsfile);
+  fsfstream.open(fsfile);
 
-Shader::Shader(const char *verglslfile, const char *fragglslfile,
-               bool is_code) {
-  const char *vertex_source;
-  const char *fragment_source;
-  if (!is_code) {
-    std::ifstream vsource_file;
-    std::ifstream fsource_file;
+  std::stringstream vsstream, fsstream;
+  vsstream << vsfstream.rdbuf();
+  fsstream << fsfstream.rdbuf();
 
-    std::stringstream vsstr, fsstr;
+  auto vstring = vsstream.str();
+  auto fstring = fsstream.str();
 
-    vsource_file.open(verglslfile);
-    fsource_file.open(fragglslfile);
+  Shader(vstring.c_str(), fstring.c_str());
+}
+Shader::Shader(const std::string& vsfile, const std::string& gsfile,
+               const std::string& fsfile) {
+  std::ifstream vsfstream, gsfstram, fsfstream;
+  vsfstream.open(vsfile);
+  gsfstram.open(gsfile);
+  fsfstream.open(fsfile);
 
-    LOG_INFO("读取顶点着色器文件[" + std::string(verglslfile) + "]");
-    vsstr << vsource_file.rdbuf();
-    LOG_INFO("读取片段着色器文件[" + std::string(fragglslfile) + "]");
-    fsstr << fsource_file.rdbuf();
+  std::stringstream vsstream, gsstream, fsstream;
+  vsstream << vsfstream.rdbuf();
+  gsstream << gsfstram.rdbuf();
+  fsstream << fsfstream.rdbuf();
 
-    vsource_file.close();
-    fsource_file.close();
+  auto vstring = vsstream.str();
+  auto gstring = gsstream.str();
+  auto fstring = fsstream.str();
 
-    std::string vstr = vsstr.str();
-    std::string fstr = fsstr.str();
-    vertex_source = vstr.c_str();
-    fragment_source = fstr.c_str();
-  } else {
-    // 直接赋值
-    vertex_source = verglslfile;
-    fragment_source = fragglslfile;
+  Shader(vstring.c_str(), gstring.c_str(), fstring.c_str());
+}
+
+// 创建着色器
+Shader::Shader(const char* vssource, const char* fssource) {
+  auto vshader = glCreateShader(GL_VERTEX_SHADER);
+  auto fshader = glCreateShader(GL_FRAGMENT_SHADER);
+
+  // 注入源代码
+  glShaderSource(vshader, 1, &vssource, nullptr);
+  glShaderSource(fshader, 1, &fssource, nullptr);
+
+  glCompileShader(vshader);
+  // 检查编译错误
+  int success;
+  char infoLog[512];
+  glGetShaderiv(vshader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(vshader, 512, NULL, infoLog);
+    std::cout << "顶点着色器编译出错:\n" << infoLog << std::endl;
   }
 
-  GLuint vertex_shader;
-  GLuint fragment_shader;
+  glCompileShader(fshader);
+  // 检查编译错误
+  glGetShaderiv(fshader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(fshader, 512, NULL, infoLog);
+    std::cout << "片段着色器编译出错:\n" << infoLog << std::endl;
+  }
+  // 链接着色器
+  program = glCreateProgram();
+  glAttachShader(program, vshader);
+  glAttachShader(program, fshader);
+  glLinkProgram(program);
+  // 检查链接错误
+  glGetProgramiv(program, GL_LINK_STATUS, &success);
+  if (!success) {
+    glGetProgramInfoLog(program, 512, NULL, infoLog);
+    std::cout << "链接着色器出错:\n" << infoLog << std::endl;
+  }
+  // 释放着色器
+  glDeleteShader(vshader);
+  glDeleteShader(fshader);
+}
+Shader::Shader(const char* vssource, const char* gssource,
+               const char* fssource) {
+  auto vshader = glCreateShader(GL_VERTEX_SHADER);
+  auto gshader = glCreateShader(GL_GEOMETRY_SHADER);
+  auto fshader = glCreateShader(GL_FRAGMENT_SHADER);
 
-  vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &(vertex_source), nullptr);
-  LOG_INFO("开始编译顶点着色器");
-  glCompileShader(vertex_shader);
-  // check for shader compile errors
-  check_error(vertex_shader, SType::SHADER_COMPILE);
+  // 注入源代码
+  glShaderSource(vshader, 1, &vssource, nullptr);
+  glShaderSource(gshader, 1, &gssource, nullptr);
+  glShaderSource(fshader, 1, &fssource, nullptr);
 
-  fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &(fragment_source), nullptr);
-  LOG_INFO("开始编译片段着色器");
-  glCompileShader(fragment_shader);
-  // check for shader compile errors
-  check_error(fragment_shader, SType::SHADER_COMPILE);
+  glCompileShader(vshader);
+  // 检查编译错误
+  int success;
+  char infoLog[512];
+  glGetShaderiv(vshader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(vshader, 512, NULL, infoLog);
+    std::cout << "顶点着色器编译出错:\n" << infoLog << std::endl;
+  }
 
-  shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-  // check for linking errors
-  check_error(shader_program, SType::PROGRAM_LINK);
+  glCompileShader(gshader);
+  // 检查编译错误
+  glGetShaderiv(gshader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(gshader, 512, NULL, infoLog);
+    std::cout << "几何着色器编译出错:\n" << infoLog << std::endl;
+  }
 
-  // clear shaders
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
+  glCompileShader(fshader);
+  // 检查编译错误
+  glGetShaderiv(fshader, GL_COMPILE_STATUS, &success);
+  if (!success) {
+    glGetShaderInfoLog(fshader, 512, NULL, infoLog);
+    std::cout << "片段着色器编译出错:\n" << infoLog << std::endl;
+  }
+  // 链接着色器
+  program = glCreateProgram();
+  glAttachShader(program, vshader);
+  glAttachShader(program, gshader);
+  glAttachShader(program, fshader);
+  glLinkProgram(program);
+  // 检查链接错误
+  glGetProgramiv(program, GL_LINK_STATUS, &success);
+  if (!success) {
+    glGetProgramInfoLog(program, 512, NULL, infoLog);
+    std::cout << "链接着色器出错:\n" << infoLog << std::endl;
+  }
+  // 释放着色器
+  glDeleteShader(vshader);
+  glDeleteShader(fshader);
 }
 
 Shader::~Shader() {
-  // free shader program
-  glDeleteProgram(shader_program);
+  // 释放着色器
+  glDeleteProgram(program);
 }
 
-void Shader::check_error(GLuint val, SType error_type) {
-  int success;
-  char infoLog[1024];
-  switch (error_type) {
-    case SHADER_COMPILE: {
-      glGetShaderiv(val, GL_COMPILE_STATUS, &success);
-      if (!success) {
-        glGetShaderInfoLog(val, 1024, nullptr, infoLog);
-        LOG_ERROR("着色器编译失败");
-        LOG_ERROR(infoLog);
-      }
-      break;
-    }
-    case PROGRAM_LINK: {
-      glGetProgramiv(val, GL_LINK_STATUS, &success);
-      if (!success) {
-        glGetProgramInfoLog(val, 1024, nullptr, infoLog);
-        LOG_ERROR("着色器链接失败");
-        LOG_ERROR(infoLog);
-      }
-      break;
-    }
-  }
-}
+// 使用着色器(主)
+void Shader::use() { glUseProgram(program); }
+void Shader::unuse() { glUseProgram(0); }
 
-GLint Shader::uniform_loc(const char *name) {
-  auto it = uniform_locs.find(name);
-  if (it != uniform_locs.end()) {
-    return (int)uniform_locs[name];
-  }
-  auto loc = glGetUniformLocation(shader_program, name);
-  uniform_locs[name] = loc;
+// 获取统一变量location
+GLint Shader::uniform_loc(const std::string& name) {
+  auto it = uniformLocationCache.find(name);
+  if (it != uniformLocationCache.end()) return (int)uniformLocationCache[name];
+  auto loc = glGetUniformLocation(program, name.c_str());
+  uniformLocationCache[name] = loc;
   return loc;
 }
 
-void Shader::set_sampler(const char *name, int value) const {
-  glUniform1i(glGetUniformLocation(shader_program, name), value);
+// 设置uniform变量
+void Shader::set_sampler(const std::string& name, int value) const {
+  glUniform1i(glGetUniformLocation(program, name.c_str()), value);
 }
-
-void Shader::set_unfm1f(const char *name, float value) {
+void Shader::set_unfm1f(const std::string& name, float value) {
   glUniform1f(uniform_loc(name), value);
 }
-
-void Shader::set_unfm1i(const char *name, int value) {
+void Shader::set_unfm1i(const std::string& name, int value) {
   glUniform1i(uniform_loc(name), value);
 }
-
-void Shader::set_unfm2f(const char *name, float value1, float value2) {
+void Shader::set_unfm2f(const std::string& name, float value1, float value2) {
   glUniform2f(uniform_loc(name), value1, value2);
 }
-
-void Shader::set_unfm2i(const char *name, int value1, int value2) {
+void Shader::set_unfm2i(const std::string& name, int value1, int value2) {
   glUniform2i(uniform_loc(name), value1, value2);
 }
-
-void Shader::set_unfm3f(const char *name, float value1, float value2,
+void Shader::set_unfm3f(const std::string& name, float value1, float value2,
                         float value3) {
   glUniform3f(uniform_loc(name), value1, value2, value3);
 }
-
-void Shader::set_unfm3i(const char *name, int value1, int value2, int value3) {
+void Shader::set_unfm3i(const std::string& name, int value1, int value2,
+                        int value3) {
   glUniform3i(uniform_loc(name), value1, value2, value3);
 }
-
-void Shader::set_unfmat4f(const char *name, glm::mat4 &mat) {
+void Shader::set_unfmat4f(const std::string& name, glm::mat4& mat) {
   glUniformMatrix4fv(uniform_loc(name), 1, GL_FALSE, &mat[0][0]);
 }
-
-void Shader::use() const { glUseProgram(shader_program); }
-
-void Shader::unuse() const { glUseProgram(0); }
