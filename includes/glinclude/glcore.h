@@ -3,7 +3,6 @@
 
 #include <GL/glew.h>
 
-#include "../src/logger/logger.h"
 #include "gls.h"
 
 #endif  // GLCORE_H
