@@ -12,6 +12,10 @@
 #include "config/config.h"
 #include "gpu/gl/shader/shader.h"
 
+// 是否已初始化gl上下文
+bool XAuidoMixer::isglinitialized = false;
+Shader *XAuidoMixer::glshader;
+
 // 顶点着色器
 const char *XAuidoMixer::vsource = R"(
 #version 410 core
@@ -41,8 +45,44 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   unknown_prop.paused = false;
   unknown_prop.volume = -1.0f;
   unknown_prop.speed = -1.0f;
-  std::cout << "初始化opengl着色器" << std::endl;
-  glshader = new Shader(vsource, fsource);
+  if (!isglinitialized) {
+    std::cout << "gl上下文未初始化" << std::endl;
+    std::cout << "正在初始化gl上下文" << std::endl;
+    if (glfwInit()) {
+      std::cout << "glfw初始化成功" << std::endl;
+      // 配置glfw参数
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+      // Apple平台前向适配
+      std::cout << "当前为Apple平台,启用opengl前向兼容" << std::endl;
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+      auto w = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+      glfwHideWindow(w);
+      glfwPollEvents();
+      if (w) {
+        glfwMakeContextCurrent(w);
+        if (glewInit() == GLEW_OK) {
+          std::cout << "glew初始化成功" << std::endl;
+          std::cout << "初始化opengl着色器" << std::endl;
+          glshader = new Shader(vsource, fsource);
+          isglinitialized = true;
+          // 终止glfw,防止未响应
+          glfwTerminate();
+        } else {
+          std::cout << "glew初始化失败" << std::endl;
+          glfwTerminate();
+        }
+      } else {
+        std::cout << "glfw窗体上下文初始化失败" << std::endl;
+        glfwTerminate();
+      }
+    } else {
+      std::cout << "glfw初始化失败" << std::endl;
+    }
+  }
 }
 
 XAuidoMixer::~XAuidoMixer() {

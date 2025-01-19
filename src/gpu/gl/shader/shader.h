@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "../../../../includes/glinclude/glcore.h"
+#include "../glheaders.h"
 
 class Shader {
   // shader程序程序

@@ -29,7 +29,7 @@ set(LIB_SOURCES ${API_SOURCES} ${ENGIN_SOURCES})
 
 set(SOURCES src/main.cpp ${LIB_SOURCES})
 
-include_directories(src)
+include_directories(includes src)
 
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
@@ -41,6 +41,8 @@ find_package(OpenCL REQUIRED)
 find_package(OpenGL REQUIRED)
 # GLEW(opengl驱动接口)
 find_package(GLEW REQUIRED)
+# GLFW(opengl上下文)
+find_package(glfw3 REQUIRED)
 # 包管理器
 find_package(PkgConfig REQUIRED)
 # ffmpeg
@@ -77,6 +79,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
+           glfw
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
@@ -88,6 +91,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
+           glfw
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
@@ -99,6 +103,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
+           glfw
            OpenGL::GL
            SDL2::SDL2
            PkgConfig::ffmpeg)
@@ -106,21 +111,21 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
   target_link_libraries(
     testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
-                         PkgConfig::ffmpeg)
+                         glfw PkgConfig::ffmpeg)
   target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                                      GLEW::GLEW PkgConfig::ffmpeg)
+                                      glfw::glfw GLEW::GLEW PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
+    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2 glfw
                       PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
     testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew SDL2::SDL2
-                         PkgConfig::ffmpeg)
+                         glfw PkgConfig::ffmpeg)
   target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew
-                                      SDL2::SDL2 PkgConfig::ffmpeg)
+                                      glfw SDL2::SDL2 PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew SDL2::SDL2
+    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::glew SDL2::SDL2 glfw
                       PkgConfig::ffmpeg)
 else()
   # 其他系统

@@ -29,8 +29,10 @@ struct OrbitProps {
 class XAuidoMixer {
   // 混音线程
   std::thread mixthread;
+  // 是否已初始化gl上下文
+  static bool isglinitialized;
   // 着色器(opengl)
-  Shader* glshader;
+  static Shader* glshader;
   // 着色器源代码
   static const char *vsource, *fsource;
   // 目标播放器指针(仅传递方便访问,不释放,其他地方已管理)
