@@ -86,8 +86,7 @@ void XPlayer::player_thread() {
 // 开始
 void XPlayer::start() {
   // 防止重复启动
-  if (running)
-    return;
+  if (running) return;
   if (outdevice_index < 0) {
     std::cout << "尚未选择设备,播放器启动失败" << std::endl;
     return;
@@ -105,20 +104,17 @@ void XPlayer::start() {
 // 终止
 void XPlayer::stop() {
   // 停止播放器
-  if (!running)
-    return;
+  if (!running) return;
   running = false;
   // 唤起线程
   cv.notify_all();
   mixercv.notify_all();
   // 等待线程正常结束
-  if (sdl_playthread.joinable())
-    sdl_playthread.join();
+  if (sdl_playthread.joinable()) sdl_playthread.join();
   // 暂停sdl设备
   SDL_PauseAudioDevice(device_id, 1);
   std::cout << "播放线程结束" << std::endl;
-  if (mixer->mixthread.joinable())
-    mixer->mixthread.join();
+  if (mixer->mixthread.joinable()) mixer->mixthread.join();
   std::cout << "混音线程结束" << std::endl;
 };
 // 暂停

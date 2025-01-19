@@ -7,20 +7,18 @@
 int main(int argc, char* argv[]) {
   auto manager = XAudioManager::newmanager();
 
-    std::vector<std::string> audio_paths;
-    audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-    audio_paths.push_back(
-        "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-    audio_paths.push_back("../resources/combobreak.wav");
-    audio_paths.push_back("../resources/New story.mp3");
-    audio_paths.push_back(
-        "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-    audio_paths.push_back(
-        "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-    // audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
-    audio_paths.push_back(
-        "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-    // audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
+  std::vector<std::string> audio_paths;
+  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.push_back(
+      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
+  audio_paths.push_back("../resources/combobreak.wav");
+  audio_paths.push_back("../resources/New story.mp3");
+  audio_paths.push_back(
+      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
+  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  // audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
+  audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+  // audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
 
   audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
   audio_paths.push_back(

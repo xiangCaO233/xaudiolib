@@ -3,10 +3,10 @@
 
 #include <SDL_audio.h>
 
-#include <memory>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <thread>
 
 #include "engin/mix/mixer.h"
 #include "rbuffer.h"

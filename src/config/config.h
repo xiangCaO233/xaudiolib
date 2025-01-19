@@ -56,36 +56,36 @@ class XAudioEncoder;
 class XAudioDecoder;
 
 class Config {
-    // 音频传输方式
-    const static int audio_transfer_method;
-    // 音频解码线程数(max128)
-    const static int decode_thread_count;
-    // 混音方式
-    const static int mix_method;
-    // 混音处理时的环形缓冲区大小(设备性能越低这个需要越大)
-    // 越大时可能会增加延迟
-    const static int mix_buffer_size;
-    // 播放音频时的声道数
-    const static int channel;
-    // 播放音频时的采样率
-    const static int samplerate;
-    // 播放音频的缓冲区大小
-    const static int play_buffer_size;
+  // 音频传输方式
+  const static int audio_transfer_method;
+  // 音频解码线程数(max128)
+  const static int decode_thread_count;
+  // 混音方式
+  const static int mix_method;
+  // 混音处理时的环形缓冲区大小(设备性能越低这个需要越大)
+  // 越大时可能会增加延迟
+  const static int mix_buffer_size;
+  // 播放音频时的声道数
+  const static int channel;
+  // 播放音频时的采样率
+  const static int samplerate;
+  // 播放音频的缓冲区大小
+  const static int play_buffer_size;
 
-    // 保存路径
-    static std::string config_file_path;
+  // 保存路径
+  static std::string config_file_path;
 
-    friend XAudioEngin;
-    friend XPlayer;
-    friend XAuidoMixer;
-    friend XAudioEncoder;
-    friend XAudioDecoder;
+  friend XAudioEngin;
+  friend XPlayer;
+  friend XAuidoMixer;
+  friend XAudioEncoder;
+  friend XAudioDecoder;
 
-    // 载入配置
-    static void load(const std::string &config_file);
+  // 载入配置
+  static void load(const std::string &config_file);
 
-    // 保存配置
-    static void save();
+  // 保存配置
+  static void save();
 };
 
 #endif  // X_CONFIG_H

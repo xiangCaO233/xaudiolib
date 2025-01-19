@@ -1,11 +1,11 @@
 #include "AudioManager.h"
+
 #include <iostream>
 
 XAudioManager::XAudioManager() {
   std::cout << "XAudioManager初始化" << std::endl;
   engin = XAudioEngin::init();
-  if (engin)
-    std::cout << "初始化引擎成功" << std::endl;
+  if (engin) std::cout << "初始化引擎成功" << std::endl;
 }
 
 XAudioManager::~XAudioManager() { std::cout << "销毁音频管理器" << std::endl; }

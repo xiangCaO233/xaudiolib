@@ -5,7 +5,9 @@
 
 XSound::XSound(int h, std::string n, std::string p,
                std::shared_ptr<AVFormatContext> f)
-    : handle(h), name(std::move(n)), path(std::move(p)),
+    : handle(h),
+      name(std::move(n)),
+      path(std::move(p)),
       audio_format(std::move(f)) {
   std::cout << "XSound初始化" << std::endl;
 }

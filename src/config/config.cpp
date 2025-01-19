@@ -11,17 +11,17 @@ const int Config::mix_buffer_size = 16384;
 // 播放音频时的声道数
 const int Config::channel = AUDIO_DOUBLE_CHANNEL;
 // 播放音频时的采样率
-const int Config::samplerate = LOSSLESS_SAMPLERATE;
+const int Config::samplerate = AVMEDIA_SAMPLERATE;
 // 播放音频的缓冲区大小(有下限)
 const int Config::play_buffer_size = 256;
 // 保存路径
 std::string Config::config_file_path = "./config.json";
 
 void Config::load(const std::string &config_file) {
-    // TODO(xiang 2024-12-16): 读取配置文件
-    config_file_path = config_file;
+  // TODO(xiang 2024-12-16): 读取配置文件
+  config_file_path = config_file;
 };
 
 void Config::save() {
-    // TODO(xiang 2024-12-16): 保存配置文件
+  // TODO(xiang 2024-12-16): 保存配置文件
 }

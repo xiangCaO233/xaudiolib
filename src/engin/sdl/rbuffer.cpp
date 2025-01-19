@@ -3,8 +3,11 @@
 #include <iostream>
 
 ringbuffer::ringbuffer(size_t size)
-    : buffersize(size + 1), buffer(new float[size + 1]()),
-      readbuffer(new float[size]), readpos(0), writepos(0) {}
+    : buffersize(size + 1),
+      buffer(new float[size + 1]()),
+      readbuffer(new float[size]),
+      readpos(0),
+      writepos(0) {}
 ringbuffer::~ringbuffer() { std::cout << "销毁环形缓冲区" << std::endl; };
 
 // 可读数据量

@@ -1,6 +1,5 @@
 #include "mixer.h"
 
-#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -93,8 +92,7 @@ void XAuidoMixer::send_pcm_thread() {
     });
 
     // 播放器停止则混音线程也立刻停止
-    if (!des_player->running)
-      break;
+    if (!des_player->running) break;
     // 每次发送数据量
     auto size = int(floorf((float)Config::mix_buffer_size / 3.0f));
     // 混合数据
@@ -154,8 +152,7 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
                 << std::endl;
       playpos = 0;
       auto &loop = p.loop;
-      if (!loop)
-        loop = true;
+      if (!loop) loop = true;
     }
 
     // 混合音频到目标

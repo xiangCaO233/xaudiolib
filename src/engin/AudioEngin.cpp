@@ -260,9 +260,8 @@ const bool XAudioEngin::is_outdevice_exist(const std::string &devicename,
   device_index = deviceindexit->second;
   return true;
 }
-const bool
-XAudioEngin::is_outdevice_exist(int device_index,
-                                std::shared_ptr<XOutputDevice> &res) {
+const bool XAudioEngin::is_outdevice_exist(
+    int device_index, std::shared_ptr<XOutputDevice> &res) {
   auto deviceit = outdevices.find(device_index);
   if (device_index == -1 || deviceit == outdevices.end()) {
     std::cout << "输出设备索引[" + std::to_string(device_index) + "]不存在"
