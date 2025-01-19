@@ -111,11 +111,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
   target_link_libraries(
     testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
-                         glfw PkgConfig::ffmpeg)
+		glfw OpenGL::GL PkgConfig::ffmpeg)
   target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
-                                      glfw::glfw GLEW::GLEW PkgConfig::ffmpeg)
+                                      glfw OpenGL::GL GLEW::GLEW PkgConfig::ffmpeg)
   target_link_libraries(
-    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2 glfw
+    xaudio-dev PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2 OpenGL::GL glfw
                       PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
