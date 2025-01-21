@@ -4,6 +4,7 @@
 
 XAudioManager::XAudioManager() {
   std::cout << "XAudioManager初始化" << std::endl;
+  if (engin) return;
   engin = XAudioEngin::init();
   if (engin) std::cout << "初始化引擎成功" << std::endl;
 }
