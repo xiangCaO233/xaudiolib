@@ -25,7 +25,7 @@ set(ENGIN_SOURCES
 
 set(API_SOURCES src/api/cpp/XAudioManager.cpp)
 
-set(LIB_SOURCES ${API_SOURCES} ${ENGIN_SOURCES})
+set(LIB_SOURCES src/log/colorful_log.cpp ${API_SOURCES} ${ENGIN_SOURCES})
 
 set(SOURCES src/main.cpp ${LIB_SOURCES})
 
@@ -109,8 +109,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # linux
+# 日志
+find_package(glog REQUIRED)
   target_link_libraries(
-    testxaudiolib PUBLIC OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
+    testxaudiolib PUBLIC glog::glog OpenAL::OpenAL OpenCL::OpenCL GLEW::GLEW SDL2::SDL2
 		glfw OpenGL::GL PkgConfig::ffmpeg)
   target_link_libraries(xaudio PUBLIC OpenAL::OpenAL OpenCL::OpenCL SDL2::SDL2
                                       glfw OpenGL::GL GLEW::GLEW PkgConfig::ffmpeg)

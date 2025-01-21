@@ -1,10 +1,17 @@
+#include <glog/logging.h>
+
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include "api/XAudioManager.h"
+#include "log/colorful-log.h"
 
 int main(int argc, char* argv[]) {
+  GLogger::init(argv[0]);
+  LOG(INFO) << argv[0] << "启动";
+  LOG(WARNING) << "warn";
+  LOG(ERROR) << "error";
   auto manager = XAudioManager::newmanager();
 
   std::vector<std::string> audio_paths;
@@ -33,6 +40,7 @@ int main(int argc, char* argv[]) {
   audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
   audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
   audio_paths.push_back("../resources/233.mp3");
+
 #endif  //__linux__
 #ifdef __APPLE__
   audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
@@ -266,5 +274,6 @@ int main(int argc, char* argv[]) {
     manager->unload(i);
   }
 
+  GLogger::destroy();
   return 0;
 }
