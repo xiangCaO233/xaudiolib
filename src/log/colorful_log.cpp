@@ -77,8 +77,10 @@ ColorfulLogSink* GLogger::sink;
 void GLogger::init(const char* name) {
   // 初始化glog
   FLAGS_minloglevel = 0;
-  // FLAGS_logtostderr = true;
+  FLAGS_logtostderr = false;
   FLAGS_alsologtostderr = false;
+  // 禁用默认的日志前缀
+  FLAGS_log_prefix = false;
   google::InitGoogleLogging(name);
   // 捕获 SIGSEGV 等信号
   google::InstallFailureSignalHandler();
