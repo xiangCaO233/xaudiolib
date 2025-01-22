@@ -1,6 +1,10 @@
-#include <iostream>
+#include <glog/logging.h>
 
 #include "colorful-log.h"
+
+void ColorfulLogSink::setFunctionName(const std::string& func) {
+  current_function_ = func;
+}
 
 void ColorfulLogSink::send(google::LogSeverity severity, const char* filename,
                            const char* base_filename, int line,
@@ -11,7 +15,7 @@ void ColorfulLogSink::send(google::LogSeverity severity, const char* filename,
   const std::string BOLD = "\033[1m";
   const std::string BLACK_BG = "\033[40m";
 
-  const std::string BLUE_FG = "\033[34m";
+  const std::string CYAN_FG = "\033[36m";
   const std::string GREEN_FG = "\033[32m";
   const std::string YELLOW_FG = "\033[33m";
   const std::string RED_FG = "\033[31m";
@@ -48,24 +52,21 @@ void ColorfulLogSink::send(google::LogSeverity severity, const char* filename,
       break;
   }
 
-  // 分隔符样式
-  std::string divider_style = BLACK_BG + WHITE_FG + BOLD;
-
   // 输出格式
-  std::cerr << BLACK_BG + BLUE_FG + BOLD << "[" << time_buffer << "]" << RESET
-            << " " << severity_style << "["
+  std::cerr << BLACK_BG + WHITE_FG + BOLD << "[" << CYAN_FG << time_buffer
+            << WHITE_FG << "]" << " " << "[" << severity_style
             << (severity == google::INFO      ? "INFO"
                 : severity == google::WARNING ? "WARN"
                 : severity == google::ERROR   ? "ERROR"
                                               : "FATAL")
-            << "/" << base_filename << ":" << line << "]" << RESET
-            << divider_style << ": " << RESET << message_style
-            << std::string(message, message_len) << RESET;
+            << WHITE_FG << "/" << PURPLE_FG << current_function_ << WHITE_FG
+            << "]" << ": " << RESET << message_style
+            << std::string(message, message_len) << " " << RESET;
 
   // 如果是 WARNING 或以上级别，附加文件名和行号
   if (severity >= google::WARNING) {
-    std::cerr << " " << BLACK_BG + PURPLE_FG + BOLD << "[" << base_filename
-              << ":" << line << "]" << RESET;
+    std::cerr << BLACK_BG + PURPLE_FG + BOLD << "[" << base_filename << ":"
+              << line << "]" << RESET;
   }
 
   std::cerr << std::endl;
@@ -76,12 +77,17 @@ ColorfulLogSink* GLogger::sink;
 // 初始化GLogger
 void GLogger::init(const char* name) {
   // 初始化glog
-  FLAGS_minloglevel = 0;
   FLAGS_logtostderr = false;
   FLAGS_alsologtostderr = false;
-  // 禁用默认的日志前缀
-  FLAGS_log_prefix = false;
+  FLAGS_logtostdout = false;
+  FLAGS_colorlogtostdout = false;
+  FLAGS_colorlogtostderr = false;
+  FLAGS_log_dir = "";
+  FLAGS_stderrthreshold = 5;
+
+  FLAGS_minloglevel = 0;
   google::InitGoogleLogging(name);
+
   // 捕获 SIGSEGV 等信号
   google::InstallFailureSignalHandler();
 

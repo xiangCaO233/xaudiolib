@@ -9,9 +9,11 @@
 
 int main(int argc, char* argv[]) {
   GLogger::init(argv[0]);
-  LOG(INFO) << argv[0] << "启动";
+
+  LOGINFO << argv[0] << "启动";
   LOG(WARNING) << "warn";
   LOG(ERROR) << "error";
+  LOG(FATAL) << "error";
   auto manager = XAudioManager::newmanager();
 
   std::vector<std::string> audio_paths;
