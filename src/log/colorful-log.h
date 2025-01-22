@@ -3,32 +3,23 @@
 
 #include <glog/logging.h>
 
-#include <iostream>
+// 定义日志宏(传递函数名)
 
-// 自定义日志宏
-#define LOGINFO                                                            \
-  [&](const std::string& func_name) {                                      \
-    GLogger::sink->setFunctionName(func_name);                             \
-    return google::LogMessage("", __LINE__, google::GLOG_##INFO).stream(); \
-  }(__FUNCTION__)
+#define LOGINFO(msg)                            \
+  GLogger::sink->setFunctionName(__FUNCTION__); \
+  LOG(INFO) << msg;
 
-#define LOGWARN                                                               \
-  [&](const std::string& func_name) {                                         \
-    GLogger::sink->setFunctionName(func_name);                                \
-    return google::LogMessage("", __LINE__, google::GLOG_##WARNING).stream(); \
-  }(__FUNCTION__)
+#define LOGWARN(msg)                            \
+  GLogger::sink->setFunctionName(__FUNCTION__); \
+  LOG(WARNING) << msg;
 
-#define LOGERROR                                                            \
-  [&](const std::string& func_name) {                                       \
-    GLogger::sink->setFunctionName(func_name);                              \
-    return google::LogMessage("", __LINE__, google::GLOG_##ERROR).stream(); \
-  }(__FUNCTION__)
+#define LOGERROR(msg)                           \
+  GLogger::sink->setFunctionName(__FUNCTION__); \
+  LOG(ERROR) << msg;
 
-#define LOGFATAL                                                            \
-  [&](const std::string& func_name) {                                       \
-    GLogger::sink->setFunctionName(func_name);                              \
-    return google::LogMessage("", __LINE__, google::GLOG_##FATAL).stream(); \
-  }(__FUNCTION__)
+#define LOGFATAL(msg)                           \
+  GLogger::sink->setFunctionName(__FUNCTION__); \
+  LOG(FATAL) << msg;
 
 class ColorfulLogSink : public google::LogSink {
   std::string current_function_;
