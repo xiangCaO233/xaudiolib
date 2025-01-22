@@ -31,6 +31,8 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(includes src)
 
+# 日志
+find_package(glog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
 # OpenAL(播放api)
@@ -111,8 +113,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            SDL2::SDL2
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  # linux 日志
-  find_package(glog REQUIRED)
   target_link_libraries(
     testxaudiolib
     PUBLIC glog::glog
@@ -125,7 +125,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC OpenAL::OpenAL
+    PUBLIC glog::glog
+           OpenAL::OpenAL
            OpenCL::OpenCL
            SDL2::SDL2
            glfw
@@ -134,7 +135,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC OpenAL::OpenAL
+    PUBLIC glog::glog
+           OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
            SDL2::SDL2
