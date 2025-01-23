@@ -1,4 +1,4 @@
-#ifndef X_RINGBUFFER_H
+﻿#ifndef X_RINGBUFFER_H
 #define X_RINGBUFFER_H
 
 #include <memory>

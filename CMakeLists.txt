@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+﻿cmake_minimum_required(VERSION 3.28)
 
 project(xaudiolib LANGUAGES CXX)
 
@@ -23,29 +23,29 @@ set(ENGIN_SOURCES
     ${MIXER_SOURCES}
     ${SDL_SOURCES})
 
-set(API_SOURCES src/api/cpp/XAudioManager.cpp)
-
-set(LIB_SOURCES src/log/colorful_log.cpp ${API_SOURCES} ${ENGIN_SOURCES})
+set(LIB_SOURCES src/log/colorful_log.cpp ${ENGIN_SOURCES})
 
 set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(includes src)
 
-# 日志
+# 鏃ュ織
 find_package(glog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
-# OpenAL(播放api)
+# OpenAL(鎾斁api)
 find_package(OpenAL REQUIRED)
-# OpenCL(GPU加速混音计算)
+# OpenCL(GPU鍔犻€熸贩闊宠绠?
 find_package(OpenCL REQUIRED)
-# OpenGL(GPU使用gl渲染管线加速)
+# OpenGL(GPU浣跨敤gl娓叉煋绠＄嚎鍔犻€?
 find_package(OpenGL REQUIRED)
-# GLEW(opengl驱动接口)
+#glm
+find_package(glm REQUIRED)
+# GLEW(opengl椹卞姩鎺ュ彛)
 find_package(GLEW REQUIRED)
-# GLFW(opengl上下文)
+# GLFW(opengl涓婁笅鏂?
 find_package(glfw3 REQUIRED)
-# 包管理器
+# 鍖呯鐞嗗櫒
 find_package(PkgConfig REQUIRED)
 # ffmpeg
 pkg_check_modules(
@@ -57,18 +57,18 @@ pkg_check_modules(
   libavcodec
   libavformat)
 
-# 可执行
+# 鍙墽琛?
 add_executable(testxaudiolib ${SOURCES})
 
-# 静态库
+# 闈欐€佸簱
 add_library(xaudio-dev STATIC ${LIB_SOURCES})
 
-# 动态库
+# 鍔ㄦ€佸簱
 add_library(xaudio SHARED ${LIB_SOURCES})
 
-# 链接其他库
+# 閾炬帴鍏朵粬搴?
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  # macos macos 查找 Core Audio 框架
+  # macos macos 鏌ユ壘 Core Audio 妗嗘灦
   find_library(COREAUDIO_LIBRARY CoreAudio)
   find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
   find_library(AUDIOUNIT_LIBRARY AudioUnit)
@@ -152,6 +152,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            GLEW::glew
            SDL2::SDL2
            glog::glog
+           OpenGL::GL
+           glm::glm
            glfw
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -160,6 +162,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenCL::OpenCL
            GLEW::glew
            glog::glog
+           OpenGL::GL
+           glm::glm
            glfw
            SDL2::SDL2
            PkgConfig::ffmpeg)
@@ -169,10 +173,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenCL::OpenCL
            GLEW::glew
            SDL2::SDL2
+           OpenGL::GL
+           glm::glm
            glfw
            glog::glog
            PkgConfig::ffmpeg)
 else()
-  # 其他系统
+  # 其它系统
   message(STATUS "当前系统: ${CMAKE_SYSTEM_NAME}")
 endif()

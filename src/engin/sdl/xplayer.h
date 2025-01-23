@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_PLAYER_H
+﻿#ifndef X_AUDIO_PLAYER_H
 #define X_AUDIO_PLAYER_H
 
 #include <SDL_audio.h>

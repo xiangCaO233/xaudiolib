@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_DECODER_H
+﻿#ifndef X_AUDIO_DECODER_H
 #define X_AUDIO_DECODER_H
 
 #include <memory>
@@ -15,9 +15,9 @@ class XAudioDecoder {
   // 解码器(ffmpeg 自动管理)
   const AVCodec* decoder;
   // 解码器上下文
-  AVCodecContext* decoder_context;
+  AVCodecContext* decoder_context{nullptr};
   // decoderid
-  AVCodecID decoder_id_name;
+  AVCodecID decoder_id_name{AVCodecID::AV_CODEC_ID_MP3};
   // 重采样器
   SwrContext* resampler{nullptr};
 

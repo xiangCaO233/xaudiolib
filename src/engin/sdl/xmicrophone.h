@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_MICROPHONE
+﻿#ifndef X_AUDIO_MICROPHONE
 #define X_AUDIO_MICROPHONE
 
 #include <thread>

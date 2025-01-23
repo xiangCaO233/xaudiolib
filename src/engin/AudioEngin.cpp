@@ -1,10 +1,11 @@
-#include "AudioEngin.h"
+﻿#include "AudioEngin.h"
 
 #include <SDL.h>
 #include <SDL_audio.h>
 
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -59,6 +60,9 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     auto device_name_str = std::string(output_device_name);
     auto outdevice = std::make_shared<XOutputDevice>(i, device_name_str);
     std::cout << "检测到输出设备:" + device_name_str << std::endl;
+		std::ofstream out("device_name.txt", std::ios::app);
+		out << output_device_name << std::endl;
+		out.close();
     e->outdevice_indicies.insert({device_name_str, i});
     e->outdevices.insert({i, outdevice});
   }
@@ -581,6 +585,10 @@ void XAudioEngin::resume(int device_index, int audio_id) {
   std::cout << "已恢复音频句柄[" + std::to_string(audio_id) + "]" << std::endl;
 }
 
+// 播放或暂停全部此设备
+void XAudioEngin::resume(int device_id) {}
+void XAudioEngin::pause(int device_id) {}
+
 // 终止音频
 void XAudioEngin::stop(int device_index, int audio_id) {
   std::shared_ptr<XOutputDevice> outdevice;
@@ -627,6 +635,7 @@ bool XAudioEngin::is_pause(int device_id) {
   }
   return player->paused;
 }
+
 
 // 播放暂停停止设备上的播放器
 void XAudioEngin::pause_device(int device_id) {

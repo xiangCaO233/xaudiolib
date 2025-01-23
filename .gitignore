@@ -1,7 +1,9 @@
-/build
+﻿/build
 /.cache
 /.idea
+/.vs
 /cmake-build-debug
 /subproject
+/out
 
 *.DS_Store

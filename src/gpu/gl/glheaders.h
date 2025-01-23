@@ -1,4 +1,4 @@
-#ifndef XGL3D_GLHEADERS_H
+﻿#ifndef XGL3D_GLHEADERS_H
 #define XGL3D_GLHEADERS_H
 
 // 用于包装 OpenGL 调用并检查错误

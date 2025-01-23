@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_INDEVICE
+﻿#ifndef X_AUDIO_INDEVICE
 #define X_AUDIO_INDEVICE
 
 #include <string>

@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_MANAGER_H
+﻿#ifndef X_AUDIO_MANAGER_H
 #define X_AUDIO_MANAGER_H
 
 #include "AudioEngin.h"
@@ -8,9 +8,11 @@ class XAudioManager {
   // 引擎(唯一)
   std::unique_ptr<XAudioEngin> engin;
 
-  // 载入音频
-  int loadaudio(const std::string &audio);
 
+public:
+  // 载入音频
+
+  int loadaudio(const std::string &audio);
   // 卸载音频
   void unloadaudio(const std::string &audio);
   void unloadaudio(int id);

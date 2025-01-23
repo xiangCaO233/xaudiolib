@@ -1,4 +1,4 @@
-#include "config.h"
+﻿#include "config.h"
 
 // 音频传输方式
 const int Config::audio_transfer_method = AUDIO_DATA_BUFFERED;
@@ -17,7 +17,7 @@ const int Config::play_buffer_size = 256;
 // 保存路径
 std::string Config::config_file_path = "./config.json";
 
-void Config::load(const std::string &config_file) {
+void Config::load(const std::string& config_file) {
   // TODO(xiang 2024-12-16): 读取配置文件
   config_file_path = config_file;
 };

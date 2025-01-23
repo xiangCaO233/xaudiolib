@@ -1,4 +1,4 @@
-#include "outdevice.h"
+﻿#include "outdevice.h"
 
 #include <iostream>
 #include <memory>

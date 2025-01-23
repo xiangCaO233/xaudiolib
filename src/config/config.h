@@ -1,4 +1,4 @@
-#ifndef X_CONFIG_H
+﻿#ifndef X_CONFIG_H
 #define X_CONFIG_H
 
 #include <string>
@@ -7,46 +7,46 @@
  *缓存式
  */
 #define AUDIO_DATA_BUFFERED 1
-/*
- *流式
- */
+ /*
+  *流式
+  */
 #define AUDIO_DATA_STREAMED 2
 
-/*
- *单声道
- */
+  /*
+   *单声道
+   */
 #define AUDIO_SINGLE_CHANNEL 1
-/*
- *单声道
- */
+   /*
+  *单声道
+  */
 #define AUDIO_DOUBLE_CHANNEL 2
 
-/*
- *奈奎斯特采样率标准(内存最小)
- */
+  /*
+   *奈奎斯特采样率标准(内存最小)
+   */
 #define NYQUIST_SAMPLERATE 44100
 
-/*
- *数字音视频采样率标准(保证动态范围,后期处理方便)
- */
+   /*
+    *数字音视频采样率标准(保证动态范围,后期处理方便)
+    */
 #define AVMEDIA_SAMPLERATE 48000
 
-/*
- *无损采样
- */
+    /*
+     *无损采样
+     */
 #define LOSSLESS_SAMPLERATE 96000
 
-/*
- * 在CPU中进行混音
- */
+     /*
+    * 在CPU中进行混音
+    */
 #define CPU_MIX 1
-/*
- * 在OpenCL中进行混音
- */
+    /*
+     * 在OpenCL中进行混音
+     */
 #define GPU_MIX_BY_OPENCL 2
-/*
- * 在OpenGL中进行混音
- */
+     /*
+      * 在OpenGL中进行混音
+      */
 #define GPU_MIX_BY_OPENGL 3
 
 class XAudioEngin;
@@ -82,7 +82,7 @@ class Config {
   friend XAudioDecoder;
 
   // 载入配置
-  static void load(const std::string &config_file);
+  static void load(const std::string& config_file);
 
   // 保存配置
   static void save();

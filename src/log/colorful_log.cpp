@@ -1,4 +1,4 @@
-#include <glog/logging.h>
+﻿#include <glog/logging.h>
 
 #include <chrono>
 #include <iomanip>
@@ -44,19 +44,19 @@ void ColorfulLogSink::send(google::LogSeverity severity, const char* filename,
   std::string severity_style;
   std::string message_style;
   switch (severity) {
-    case google::INFO:
+    case google::GLOG_INFO:
       severity_style = BLACK_BG + GREEN_FG + BOLD;
       message_style = severity_style;
       break;
-    case google::WARNING:
+    case google::GLOG_WARNING:
       severity_style = BLACK_BG + YELLOW_FG + BOLD;
       message_style = severity_style;
       break;
-    case google::ERROR:
+    case google::GLOG_ERROR:
       severity_style = BLACK_BG + RED_FG + BOLD;
       message_style = severity_style;
       break;
-    case google::FATAL:
+    case google::GLOG_FATAL:
       severity_style = RED_BG + WHITE_FG + BOLD;
       message_style = severity_style;
       break;
@@ -71,17 +71,17 @@ void ColorfulLogSink::send(google::LogSeverity severity, const char* filename,
             << WHITE_FG << "]"
             << " "
             << "[" << severity_style
-            << (severity == google::INFO      ? "INFO"
-                : severity == google::WARNING ? "WARN"
-                : severity == google::ERROR   ? "ERROR"
+            << (severity == google::GLOG_INFO      ? "INFO"
+                : severity == google::GLOG_WARNING ? "WARN"
+                : severity == google::GLOG_ERROR   ? "ERROR"
                                               : "FATAL")
-            << WHITE_FG << (severity == google::FATAL ? BLACK_BG : "") << "/"
+            << WHITE_FG << (severity == google::GLOG_FATAL ? BLACK_BG : "") << "/"
             << GREEN_FG << current_function_ << WHITE_FG << "]"
             << ": " << RESET << message_style
             << std::string(message, message_len) << BLACK_BG << " " << RESET;
 
   // 如果是 WARNING 或以上级别，附加文件名和行号
-  if (severity >= google::WARNING) {
+  if (severity >= google::GLOG_WARNING) {
     std::cerr << BLACK_BG + PURPLE_FG + BOLD << "[" << base_filename << ":"
               << line << "]" << RESET;
   }

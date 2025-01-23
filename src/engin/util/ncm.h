@@ -1,4 +1,4 @@
-#ifndef X_NCM_H
+﻿#ifndef X_NCM_H
 #define X_NCM_H
 
 #include <cstdlib>
@@ -66,6 +66,10 @@ inline static void convert_music(const std::string& path,
   std::string command = std::string("../lib/ncmdump-linux ") + absolutesrcpath +
                         " -o " + desdirpath;
 #endif  //__linux__
+#ifdef _WIN32
+  std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
+                        " -o " + desdirpath;
+#endif  //_WIN32
   // 执行命令
   std::system(command.c_str());
   filename = srcpath.filename().replace_extension("").string();

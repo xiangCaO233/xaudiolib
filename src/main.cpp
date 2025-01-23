@@ -1,19 +1,22 @@
-#include <glog/logging.h>
+﻿#include <glog/logging.h>
+#include <windows.h>
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "api/XAudioManager.h"
+#include "engin/AudioManager.h"
 #include "log/colorful-log.h"
 
 int main(int argc, char* argv[]) {
+	SetConsoleOutputCP(CP_UTF8);
   GLogger::init(argv[0]);
 
   LOGINFO("info");
   LOGWARN("warn");
   LOGERROR("error");
-  LOGFATAL("fatal");
+  LOGERROR("警告");
+  // LOGFATAL("fatal");
 
   auto manager = XAudioManager::newmanager();
 
@@ -72,7 +75,7 @@ int main(int argc, char* argv[]) {
 
   // 载入音频
   for (auto& var : audio_paths) {
-    manager->load(var);
+    manager->loadaudio(var);
   }
 
   std::string devicename = "External Headphones";
@@ -226,7 +229,7 @@ int main(int argc, char* argv[]) {
           std::cout << "播放[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
-          manager->play(deviceid, audioid, true);
+          manager->playAudio(deviceid, audioid, true);
           break;
         }
           // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
@@ -235,34 +238,34 @@ int main(int argc, char* argv[]) {
           std::cout << "设置[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频到60000ms位置"
                     << std::endl;
-          manager->set_audio_time(deviceid, audioid, 60000);
+          manager->set_audio_current_pos(deviceid, audioid, 60000);
           break;
         }
         case STOPAUDIO: {
           std::cout << "移除[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
-          manager->stop(deviceid, audioid);
+          manager->stopAudio(deviceid, audioid);
           break;
         }
         case STOPDEVICE: {
           std::cout << "停止[" + std::to_string(deviceid) + "]设备"
                     << std::endl;
-          manager->stop(deviceid);
+          manager->stopDevice(deviceid);
           break;
         }
         case PAUSE: {
           std::cout << "暂停[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
-          manager->pause(deviceid, audioid);
+          manager->pauseAudio(deviceid, audioid);
           break;
         }
         case RESUME: {
           std::cout << "恢复[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
-          manager->resume(deviceid, audioid);
+          manager->resumeAudio(deviceid, audioid);
           break;
         }
       }
@@ -274,7 +277,7 @@ int main(int argc, char* argv[]) {
 
   // 卸载音频
   for (int i = 0; i < 10; i++) {
-    manager->unload(i);
+    manager->unloadaudio(i);
   }
 
   GLogger::destroy();

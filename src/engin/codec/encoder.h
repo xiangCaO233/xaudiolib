@@ -1,4 +1,4 @@
-#ifndef X_AUDIO_ENCODER_H
+﻿#ifndef X_AUDIO_ENCODER_H
 #define X_AUDIO_ENCODER_H
 
 extern "C" {
@@ -15,7 +15,7 @@ class XAudioEncoder {
   // encoderid
   AVCodecID encoder_id_name;
 
- public:
+public:
   // 构造XAudioEncoder
   explicit XAudioEncoder(AVCodecID id);
   // 析构XAudioEncoder
