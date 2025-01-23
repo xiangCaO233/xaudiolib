@@ -1,5 +1,7 @@
 ﻿#include <glog/logging.h>
+#ifdef _WIN32
 #include <windows.h>
+#endif  //_WIN32
 
 #include <iostream>
 #include <string>
@@ -9,7 +11,9 @@
 #include "log/colorful-log.h"
 
 int main(int argc, char* argv[]) {
-	SetConsoleOutputCP(CP_UTF8);
+#ifdef _WIN32
+  SetConsoleOutputCP(CP_UTF8);
+#endif  //_WIN32
   GLogger::init(argv[0]);
 
   LOGINFO("info");

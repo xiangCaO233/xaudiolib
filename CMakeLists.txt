@@ -29,23 +29,23 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(includes src)
 
-# 鏃ュ織
+# 日志
 find_package(glog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
-# OpenAL(鎾斁api)
+# OpenAL(3d音效api)
 find_package(OpenAL REQUIRED)
-# OpenCL(GPU鍔犻€熸贩闊宠绠?
+# OpenCL(GPU加速计算api)
 find_package(OpenCL REQUIRED)
-# OpenGL(GPU浣跨敤gl娓叉煋绠＄嚎鍔犻€?
+# OpenGL(GPU图形渲染管线)
 find_package(OpenGL REQUIRED)
-#glm
+# glm(gl数学库)
 find_package(glm REQUIRED)
-# GLEW(opengl椹卞姩鎺ュ彛)
+# GLEW(opengl显卡接口)
 find_package(GLEW REQUIRED)
-# GLFW(opengl涓婁笅鏂?
+# GLFW(opengl窗口api)
 find_package(glfw3 REQUIRED)
-# 鍖呯鐞嗗櫒
+# (c包管理器)
 find_package(PkgConfig REQUIRED)
 # ffmpeg
 pkg_check_modules(
@@ -57,18 +57,18 @@ pkg_check_modules(
   libavcodec
   libavformat)
 
-# 鍙墽琛?
+# 可执行程序
 add_executable(testxaudiolib ${SOURCES})
 
-# 闈欐€佸簱
+# 静态库
 add_library(xaudio-dev STATIC ${LIB_SOURCES})
 
-# 鍔ㄦ€佸簱
+# 动态库
 add_library(xaudio SHARED ${LIB_SOURCES})
 
-# 閾炬帴鍏朵粬搴?
+# Mac平台
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  # macos macos 鏌ユ壘 Core Audio 妗嗘灦
+  # macos Core Audio
   find_library(COREAUDIO_LIBRARY CoreAudio)
   find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
   find_library(AUDIOUNIT_LIBRARY AudioUnit)
@@ -84,6 +84,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            GLEW::GLEW
            glfw
            OpenGL::GL
+           glm::glm
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -97,6 +98,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            GLEW::GLEW
            glfw
            OpenGL::GL
+           glm::glm
            SDL2::SDL2
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -110,6 +112,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            GLEW::GLEW
            glfw
            OpenGL::GL
+           glm::glm
            SDL2::SDL2
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -122,6 +125,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            SDL2::SDL2
            glfw
            OpenGL::GL
+           glm::glm
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
@@ -131,6 +135,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            SDL2::SDL2
            glfw
            OpenGL::GL
+           glm::glm
            GLEW::GLEW
            PkgConfig::ffmpeg)
   target_link_libraries(
@@ -141,6 +146,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            GLEW::GLEW
            SDL2::SDL2
            OpenGL::GL
+           glm::glm
            glfw
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
