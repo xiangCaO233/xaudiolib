@@ -1,5 +1,4 @@
-﻿#include <glog/logging.h>
-#ifdef _WIN32
+﻿#ifdef _WIN32
 #include <windows.h>
 #endif  //_WIN32
 
@@ -14,14 +13,6 @@ int main(int argc, char* argv[]) {
 #ifdef _WIN32
   SetConsoleOutputCP(CP_UTF8);
 #endif  //_WIN32
-  GLogger::init(argv[0]);
-
-  LOGINFO("info");
-  LOGWARN("warn");
-  LOGERROR("error");
-  LOGERROR("警告");
-  // LOGFATAL("fatal");
-
   auto manager = XAudioManager::newmanager();
 
   std::vector<std::string> audio_paths;
@@ -284,6 +275,5 @@ int main(int argc, char* argv[]) {
     manager->unloadaudio(i);
   }
 
-  GLogger::destroy();
   return 0;
 }

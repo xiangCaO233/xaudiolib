@@ -30,7 +30,7 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 include_directories(includes src)
 
 # 日志
-find_package(glog REQUIRED)
+find_package(spdlog REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
 # OpenAL(3d音效api)
@@ -78,7 +78,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-           glog::glog
+           spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -92,7 +92,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-           glog::glog
+           spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -106,7 +106,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-           glog::glog
+           spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -118,7 +118,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_link_libraries(
     testxaudiolib
-    PUBLIC glog::glog
+    PUBLIC spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -129,7 +129,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC glog::glog
+    PUBLIC spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            SDL2::SDL2
@@ -140,7 +140,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC glog::glog
+    PUBLIC spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -157,7 +157,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenCL::OpenCL
            GLEW::glew
            SDL2::SDL2
-           glog::glog
+           spdlog::spdlog
            OpenGL::GL
            glm::glm
            glfw
@@ -167,7 +167,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     PUBLIC OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::glew
-           glog::glog
+           spdlog::spdlog
            OpenGL::GL
            glm::glm
            glfw
@@ -182,7 +182,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenGL::GL
            glm::glm
            glfw
-           glog::glog
+           spdlog::spdlog
            PkgConfig::ffmpeg)
 else()
   # 其它系统
