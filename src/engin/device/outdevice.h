@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_OUTDEVICE_H
+#ifndef X_AUDIO_OUTDEVICE_H
 #define X_AUDIO_OUTDEVICE_H
 
 #include <memory>

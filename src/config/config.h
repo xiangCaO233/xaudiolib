@@ -1,4 +1,4 @@
-﻿#ifndef X_CONFIG_H
+#ifndef X_CONFIG_H
 #define X_CONFIG_H
 
 #include <string>

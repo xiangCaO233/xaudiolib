@@ -1,7 +1,6 @@
-﻿#ifndef X_AUDIO_DECODER_H
+#ifndef X_AUDIO_DECODER_H
 #define X_AUDIO_DECODER_H
 
-#include <memory>
 #include <vector>
 
 extern "C" {
@@ -27,7 +26,7 @@ class XAudioDecoder {
   // 析构XAudioDecoder
   virtual ~XAudioDecoder();
   // 解码整个音频
-  int decode_audio(const std::shared_ptr<AVFormatContext>& format,
+  int decode_audio(AVFormatContext* format,
                    int streamIndex, std::vector<float>& pcm_data);
 };
 

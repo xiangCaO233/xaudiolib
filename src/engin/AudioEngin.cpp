@@ -1,4 +1,4 @@
-﻿#include "AudioEngin.h"
+#include "AudioEngin.h"
 
 #include <SDL.h>
 #include <SDL_audio.h>
@@ -115,8 +115,7 @@ int XAudioEngin::load(const std::string &audio) {
                        "]"
                 << std::endl;
       // 初始化
-      // 包装为智能指针
-      auto audioformat = std::shared_ptr<AVFormatContext>(format);
+      auto audioformat = format;
 
       auto sound = std::make_shared<XSound>(currentid, name, p, audioformat);
       audios.insert({currentid, sound});
@@ -152,7 +151,7 @@ int XAudioEngin::load(const std::string &audio) {
                                           nullptr, -1);
       codecit = audio_codecs.find(extension);
       // 解码数据(直接填充到表所处内存中)
-      if (codecit->second.first->decode_audio(sound->audio_format, streamindex,
+      if (codecit->second.first->decode_audio(format, streamindex,
                                               sound->pcm_data) >= 0) {
         std::cout << "解码[" + sound->name + "]成功" << std::endl;
         std::cout << "音频数据大小:[" + std::to_string(sound->pcm_data.size()) +

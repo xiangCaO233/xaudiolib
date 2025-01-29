@@ -1,14 +1,19 @@
-﻿#ifndef X_NCM_H
+#ifndef X_NCM_H
 #define X_NCM_H
 
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <ostream>
 #include <string>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace xutil {
-inline static void convert_music(const std::string& path,
-                                 std::string& desdirpath) {
+inline static void convert_music(const std::string &path,
+                                 std::string &desdirpath) {
   std::filesystem::path srcpath = std::filesystem::path(path);
   // 源文件路径
   auto absolutesrcpath = std::filesystem::absolute(srcpath).string();
@@ -19,16 +24,17 @@ inline static void convert_music(const std::string& path,
   // 目标输出路径
 #ifdef __APPLE__
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
-#endif  //__APPLE__
+#endif //__APPLE__
 #ifdef __unix
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
-#endif  //__unix
+#endif //__unix
 #ifdef _WIN32
-  std::filesystem::path desdir = std::filesystem::path("ncmtemp\\");
-#endif  //__unix
+  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
+#endif //__unix
   auto absolutedesdir = std::filesystem::absolute(desdir).string();
   // 目标文件名(去后缀)
   auto filename = srcpath.filename().stem().string();
+
   desdirpath = absolutedesdir + filename;
 
   std::cout << "输出路径:[" + desdirpath + "]" << std::endl;
@@ -40,7 +46,7 @@ inline static void convert_music(const std::string& path,
               std::filesystem::directory_iterator(desdirpath))) {
     std::cout << "检测到输出路径非空" << std::endl;
     // 目标文件夹是文件夹且不为空
-    for (const auto& entry : std::filesystem::directory_iterator(desdirpath)) {
+    for (const auto &entry : std::filesystem::directory_iterator(desdirpath)) {
       // 判断是否是普通文件
       if (entry.is_regular_file()) {
         std::string ffileName = entry.path().filename().stem().string();
@@ -61,21 +67,30 @@ inline static void convert_music(const std::string& path,
 #ifdef __APPLE__
   std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
                         " -o " + desdirpath;
-#endif  //__APPLE__
+  // 执行命令
+  std::system(command.c_str());
+#endif //__APPLE__
 #ifdef __linux__
   std::string command = std::string("../lib/ncmdump-linux ") + absolutesrcpath +
                         " -o " + desdirpath;
-#endif  //__linux__
-#ifdef _WIN32
-  std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
-                        " -o " + desdirpath;
-#endif  //_WIN32
   // 执行命令
   std::system(command.c_str());
+#endif //__linux__
+#ifdef _WIN32
+  std::string command = std::string("..\\lib\\ncmdump.exe ") + absolutesrcpath +
+                        " -o " + desdirpath;
+  std::cout << "command context:" << command << std::endl;
+
+  int wlen = MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, NULL, 0);
+  std::wstring wcommand(wlen, L'\0');
+  MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, &wcommand[0], wlen);
+  // 执行命令
+  _wsystem(wcommand.c_str());
+#endif //_WIN32
   filename = srcpath.filename().replace_extension("").string();
   absolutesrcpath = std::filesystem::absolute(srcpath).string();
   desdirpath = absolutedesdir + filename;
 }
-}  // namespace xutil
+} // namespace xutil
 
-#endif  // X_NCM_H
+#endif // X_NCM_H

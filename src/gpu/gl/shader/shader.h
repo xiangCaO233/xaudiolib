@@ -1,4 +1,4 @@
-﻿#ifndef XGL3D_SHADER_H
+#ifndef XGL3D_SHADER_H
 #define XGL3D_SHADER_H
 
 #include <string>

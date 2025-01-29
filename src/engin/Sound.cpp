@@ -1,15 +1,22 @@
-﻿#include "Sound.h"
+#include "Sound.h"
 
 #include <iostream>
 #include <utility>
 
+extern "C"{
+	#include <libavutil/mem.h>
+}
+
 XSound::XSound(int h, std::string n, std::string p,
-	std::shared_ptr<AVFormatContext> f)
+	AVFormatContext *f)
 	: handle(h),
 	name(std::move(n)),
 	path(std::move(p)),
-	audio_format(std::move(f)) {
+	audio_format(f) {
 	std::cout << "XSound初始化" << std::endl;
+}
+XSound::~XSound(){
+	av_free(audio_format);
 }
 // 调整位置(按帧)
 void XSound::locateframe(size_t frameindex) {

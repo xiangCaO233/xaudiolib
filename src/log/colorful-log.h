@@ -1,4 +1,4 @@
-﻿#ifndef XIANG_COLORFULLOG_H
+#ifndef XIANG_COLORFULLOG_H
 #define XIANG_COLORFULLOG_H
 
 #include <spdlog/sinks/base_sink.h>

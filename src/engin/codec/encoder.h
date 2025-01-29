@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_ENCODER_H
+#ifndef X_AUDIO_ENCODER_H
 #define X_AUDIO_ENCODER_H
 
 extern "C" {

@@ -1,7 +1,6 @@
-﻿#ifndef X_AUDIO_SOUND_H
+#ifndef X_AUDIO_SOUND_H
 #define X_AUDIO_SOUND_H
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -24,9 +23,9 @@ class XSound {
 public:
 	// 构造XSound
 	XSound(int h, std::string n, std::string p,
-		std::shared_ptr<AVFormatContext> f);
+		AVFormatContext *f);
 	// 析构XSound
-	virtual ~XSound() = default;
+	virtual ~XSound();
 
 	// 调整位置(按帧)
 	void locateframe(size_t frameindex);
@@ -40,7 +39,7 @@ public:
 	// 音频路径
 	const std::string path;
 	// 音频格式
-	const std::shared_ptr<AVFormatContext> audio_format;
+	AVFormatContext *audio_format;
 };
 
 #endif  // X_AUDIO_SOUND_H

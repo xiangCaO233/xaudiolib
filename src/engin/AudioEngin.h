@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_ENGIN_H
+#ifndef X_AUDIO_ENGIN_H
 #define X_AUDIO_ENGIN_H
 
 #include <memory>

@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_MIXER_H
+#ifndef X_AUDIO_MIXER_H
 #define X_AUDIO_MIXER_H
 
 #include <memory>

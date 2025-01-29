@@ -1,4 +1,4 @@
-﻿#include "xplayer.h"
+#include "xplayer.h"
 
 #include <SDL_audio.h>
 
