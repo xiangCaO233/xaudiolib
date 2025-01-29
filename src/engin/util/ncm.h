@@ -7,6 +7,8 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+
+#include "../../log/colorful-log.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -18,33 +20,45 @@ inline static void convert_music(const std::string &path,
   // 源文件路径
   auto absolutesrcpath = std::filesystem::absolute(srcpath).string();
   // 包裹单引号防空格
-  absolutesrcpath.insert(absolutesrcpath.begin(), '\'');
-  absolutesrcpath.append("\'");
+  absolutesrcpath.insert(absolutesrcpath.begin(), '"');
 
   // 目标输出路径
 #ifdef __APPLE__
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
-#endif //__APPLE__
-#ifdef __unix
-  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
-#endif //__unix
-#ifdef _WIN32
-  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
-#endif //__unix
   auto absolutedesdir = std::filesystem::absolute(desdir).string();
   // 目标文件名(去后缀)
   auto filename = srcpath.filename().stem().string();
 
   desdirpath = absolutedesdir + filename;
+#endif //__APPLE__
+#ifdef __unix
+  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
+  auto absolutedesdir = std::filesystem::absolute(desdir).string();
+  // 目标文件名(去后缀)
+  auto filename = srcpath.filename().stem().string();
 
-  std::cout << "输出路径:[" + desdirpath + "]" << std::endl;
+  desdirpath = absolutedesdir + filename;
+#endif //__unix
+#ifdef _WIN32
+  absolutesrcpath.replace(absolutesrcpath.find_last_of("\\") , 1, "/'");
+  absolutesrcpath.append("\'");
+  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
+  auto absolutedesdir = std::filesystem::absolute(desdir).string();
+  // 目标文件名(去后缀)
+  auto filename = srcpath.filename().stem().string();
+
+  desdirpath = absolutedesdir + "\'" + filename + "\'";
+#endif //__unix
+  absolutesrcpath.append("\"");
+
+  XINFO("输出路径:[" + desdirpath + "]");
 
   // 判断是否已经转换过(目标文件夹是否有同名文件)
   if (std::filesystem::is_directory(desdirpath) &&
       std::filesystem::directory_iterator(desdirpath) !=
           std::filesystem::end(
               std::filesystem::directory_iterator(desdirpath))) {
-    std::cout << "检测到输出路径非空" << std::endl;
+    XINFO("检测到输出路径非空");
     // 目标文件夹是文件夹且不为空
     for (const auto &entry : std::filesystem::directory_iterator(desdirpath)) {
       // 判断是否是普通文件
@@ -60,9 +74,9 @@ inline static void convert_music(const std::string &path,
     }
   }
 
-  // 目标路径(包裹单引号)
-  desdirpath.insert(desdirpath.begin(), '\'');
-  desdirpath.append("\'");
+  // 目标路径(包裹引号)
+  desdirpath.insert(desdirpath.begin(), '"');
+  desdirpath.append("\"");
 
 #ifdef __APPLE__
   std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
@@ -77,15 +91,71 @@ inline static void convert_music(const std::string &path,
   std::system(command.c_str());
 #endif //__linux__
 #ifdef _WIN32
-  std::string command = std::string("..\\lib\\ncmdump.exe ") + absolutesrcpath +
-                        " -o " + desdirpath;
-  std::cout << "command context:" << command << std::endl;
+  // 获取当前工作区路径
+  char buffer[MAX_PATH];
+  DWORD result = GetCurrentDirectory(MAX_PATH, buffer);
+  if (result == 0) {
+    // 获取失败
+    XERROR("GetCurrentDirectory failed (" + std::to_string(GetLastError()) +
+           ").");
+  } else if (result > MAX_PATH) {
+    // 缓冲区太小
+    XERROR("Buffer is too small. Required size: " + std::to_string(result));
+  }
+  auto wd = std::string(buffer);
+  std::string command = std::string("powershell.exe -Command cd " + wd +
+                                    "; ..\\lib\\ncmdump.exe ") +
+                        absolutesrcpath + " -o " + desdirpath;
 
-  int wlen = MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, NULL, 0);
-  std::wstring wcommand(wlen, L'\0');
-  MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, &wcommand[0], wlen);
-  // 执行命令
-  _wsystem(wcommand.c_str());
+  // 获取所需的缓冲区大小
+  int bufferSize =
+      MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, nullptr, 0);
+  if (bufferSize == 0) {
+    XERROR("MultiByteToWideChar failed");
+  }
+  // 分配缓冲区
+  std::wstring wcommand(bufferSize, 0);
+  // 执行转换
+  if (MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, &wcommand[0],
+                          bufferSize) == 0) {
+    XERROR("MultiByteToWideChar failed");
+  }
+
+  // 移除末尾的空字符
+  wcommand.resize(bufferSize - 1);
+  wchar_t cmdLineCopy[256];
+  wcscpy_s(cmdLineCopy, wcommand.c_str());
+  XDEBUG("command context:" + command);
+
+  // 初始化 STARTUPINFO 和 PROCESS_INFORMATION 结构体
+  STARTUPINFOW si;
+  PROCESS_INFORMATION pi;
+
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  ZeroMemory(&pi, sizeof(pi));
+
+  // 创建子进程
+  if (!CreateProcessW(NULL,        // 不使用模块名
+                      cmdLineCopy, // 命令行
+                      NULL,        // 进程句柄不可继承
+                      NULL,        // 线程句柄不可继承
+                      FALSE,       // 不继承句柄
+                      0,           // 无创建标志
+                      NULL,        // 使用父进程的环境块
+                      NULL,        // 使用父进程的起始目录
+                      &si,         // 指向 STARTUPINFO 的指针
+                      &pi          // 指向 PROCESS_INFORMATION 的指针
+                      )) {
+    XERROR("CreateProcess failed (" + std::to_string(GetLastError()) + ").");
+  }
+
+  // 等待子进程结束
+  WaitForSingleObject(pi.hProcess, INFINITE);
+
+  // 关闭进程和线程句柄
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
 #endif //_WIN32
   filename = srcpath.filename().replace_extension("").string();
   absolutesrcpath = std::filesystem::absolute(srcpath).string();
