@@ -3,14 +3,15 @@ cmake_minimum_required(VERSION 3.28)
 project(xaudiolib)
 
 if(MSVC)
-    add_compile_options(/utf-8)
-    add_compile_options(/EHsc)
-    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+  add_compile_options(/utf-8)
+  add_compile_options(/EHsc)
+  add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+  add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 else()
-    # 覆盖所有非 MSVC 编译器（包括 GCC/Clang/Intel 等）
-    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+  # 覆盖所有非 MSVC 编译器（包括 GCC/Clang/Intel 等）
+  add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
+add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
@@ -39,7 +40,7 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(includes src)
 
-# 日志  
+# 日志
 find_package(spdlog CONFIG REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
@@ -70,7 +71,6 @@ else()
     libavcodec
     libavformat)
 endif(WIN32)
-
 
 # 可执行程序
 add_executable(testxaudiolib ${SOURCES})

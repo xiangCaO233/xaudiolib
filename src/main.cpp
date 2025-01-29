@@ -1,6 +1,6 @@
 #ifdef _WIN32
 #include <windows.h>
-#endif //_WIN32
+#endif  //_WIN32
 
 #include <iostream>
 #include <string>
@@ -13,14 +13,17 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
   SetConsoleOutputCP(CP_UTF8);
   SetConsoleCP(65001);
-  std::setlocale(LC_ALL, ".UTF-8");  
-#endif //_WIN32
+  std::setlocale(LC_ALL, ".UTF-8");
+#endif  //_WIN32
+  XLogger::init();
+
   auto manager = XAudioManager::newmanager();
 
   std::vector<std::string> audio_paths;
 #ifdef _WIN32
   audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back("../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
+  audio_paths.push_back(
+      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
   audio_paths.push_back("../resources/combobreak.wav");
   audio_paths.push_back("../resources/New story.mp3");
   audio_paths.push_back(
@@ -39,7 +42,7 @@ int main(int argc, char *argv[]) {
   audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
   audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
   audio_paths.push_back("../resources/233.mp3");
-#endif //_WIN32
+#endif  //_WIN32
 
 #ifdef __linux__
   audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
@@ -64,7 +67,7 @@ int main(int argc, char *argv[]) {
   audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
   audio_paths.push_back("../resources/233.mp3");
 
-#endif //__linux__
+#endif  //__linux__
 #ifdef __APPLE__
   audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
   audio_paths.push_back(
@@ -88,7 +91,7 @@ int main(int argc, char *argv[]) {
   audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
   audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
   audio_paths.push_back("../resources/233.mp3");
-#endif //__APPLE__
+#endif  //__APPLE__
 
   // 载入音频
   for (auto &var : audio_paths) {
@@ -114,176 +117,177 @@ int main(int argc, char *argv[]) {
 
       for (int i = 0; i < 3; i++) {
         switch (line.at(i)) {
-        case 'm': {
-          o = STOPAUDIO;
-          break;
-        }
-        case 'a': {
-          o = PLAY;
-          break;
-        }
-        case 'q': {
-          quit = true;
-          o = QUIT;
-          break;
-        }
-        case 'k': {
-          o = STOPDEVICE;
-          break;
-        }
-        case 'r': {
-          o = RESUME;
-          break;
-        }
-        case 's': {
-          o = SETPOS;
-          break;
-        }
-        case 'p': {
-          o = PAUSE;
-          break;
-        }
-        case '0': {
-          if (i == 1) {
-            deviceid = 0;
+          case 'm': {
+            o = STOPAUDIO;
+            break;
           }
-          if (i == 2) {
-            audioid = 0;
+          case 'a': {
+            o = PLAY;
+            break;
           }
-          break;
-        }
-        case '1': {
-          if (i == 1) {
-            deviceid = 1;
+          case 'q': {
+            quit = true;
+            o = QUIT;
+            break;
           }
-          if (i == 2) {
-            audioid = 1;
+          case 'k': {
+            o = STOPDEVICE;
+            break;
           }
-          break;
-        }
-        case '2': {
-          if (i == 1) {
-            deviceid = 2;
+          case 'r': {
+            o = RESUME;
+            break;
           }
-          if (i == 2) {
-            audioid = 2;
+          case 's': {
+            o = SETPOS;
+            break;
           }
-          break;
-        }
-        case '3': {
-          if (i == 1) {
-            deviceid = 3;
+          case 'p': {
+            o = PAUSE;
+            break;
           }
-          if (i == 2) {
-            audioid = 3;
+          case '0': {
+            if (i == 1) {
+              deviceid = 0;
+            }
+            if (i == 2) {
+              audioid = 0;
+            }
+            break;
           }
-          break;
-        }
-        case '4': {
-          if (i == 1) {
-            deviceid = 4;
+          case '1': {
+            if (i == 1) {
+              deviceid = 1;
+            }
+            if (i == 2) {
+              audioid = 1;
+            }
+            break;
           }
-          if (i == 2) {
-            audioid = 4;
+          case '2': {
+            if (i == 1) {
+              deviceid = 2;
+            }
+            if (i == 2) {
+              audioid = 2;
+            }
+            break;
           }
-          break;
-        }
-        case '5': {
-          if (i == 1) {
-            deviceid = 5;
+          case '3': {
+            if (i == 1) {
+              deviceid = 3;
+            }
+            if (i == 2) {
+              audioid = 3;
+            }
+            break;
           }
-          if (i == 2) {
-            audioid = 5;
+          case '4': {
+            if (i == 1) {
+              deviceid = 4;
+            }
+            if (i == 2) {
+              audioid = 4;
+            }
+            break;
           }
-          break;
-        }
-        case '6': {
-          if (i == 1) {
-            deviceid = 6;
+          case '5': {
+            if (i == 1) {
+              deviceid = 5;
+            }
+            if (i == 2) {
+              audioid = 5;
+            }
+            break;
           }
-          if (i == 2) {
-            audioid = 6;
+          case '6': {
+            if (i == 1) {
+              deviceid = 6;
+            }
+            if (i == 2) {
+              audioid = 6;
+            }
+            break;
           }
-          break;
-        }
-        case '7': {
-          if (i == 1) {
-            deviceid = 7;
+          case '7': {
+            if (i == 1) {
+              deviceid = 7;
+            }
+            if (i == 2) {
+              audioid = 7;
+            }
+            break;
           }
-          if (i == 2) {
-            audioid = 7;
+          case '8': {
+            if (i == 1) {
+              deviceid = 8;
+            }
+            if (i == 2) {
+              audioid = 8;
+            }
+            break;
           }
-          break;
-        }
-        case '8': {
-          if (i == 1) {
-            deviceid = 8;
+          case '9': {
+            if (i == 1) {
+              deviceid = 9;
+            }
+            if (i == 2) {
+              audioid = 9;
+            }
+            break;
           }
-          if (i == 2) {
-            audioid = 8;
-          }
-          break;
-        }
-        case '9': {
-          if (i == 1) {
-            deviceid = 9;
-          }
-          if (i == 2) {
-            audioid = 9;
-          }
-          break;
-        }
         }
       }
 
       std::cout << "操作: " << line << std::endl;
       switch (o) {
-      case QUIT: {
-        std::cout << "退出" << std::endl;
-        break;
-      }
-      case PLAY: {
-        std::cout << "播放[" + std::to_string(deviceid) + "]设备上的[" +
-                         std::to_string(audioid) + "]音频"
-                  << std::endl;
-        manager->playAudio(deviceid, audioid, true);
-        break;
-      }
-        // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
-        // PAUSE, RESUME };
-      case SETPOS: {
-        std::cout << "设置[" + std::to_string(deviceid) + "]设备上的[" +
-                         std::to_string(audioid) + "]音频到60000ms位置"
-                  << std::endl;
-        manager->set_audio_current_pos(deviceid, audioid, 60000);
-        break;
-      }
-      case STOPAUDIO: {
-        std::cout << "移除[" + std::to_string(deviceid) + "]设备上的[" +
-                         std::to_string(audioid) + "]音频"
-                  << std::endl;
-        manager->stopAudio(deviceid, audioid);
-        break;
-      }
-      case STOPDEVICE: {
-        std::cout << "停止[" + std::to_string(deviceid) + "]设备" << std::endl;
-        manager->stopDevice(deviceid);
-        break;
-      }
-      case PAUSE: {
-        std::cout << "暂停[" + std::to_string(deviceid) + "]设备上的[" +
-                         std::to_string(audioid) + "]音频"
-                  << std::endl;
-        manager->pauseAudio(deviceid, audioid);
-        break;
-      }
-      case RESUME: {
-        std::cout << "恢复[" + std::to_string(deviceid) + "]设备上的[" +
-                         std::to_string(audioid) + "]音频"
-                  << std::endl;
-        manager->resumeAudio(deviceid, audioid);
-        break;
-      }
+        case QUIT: {
+          std::cout << "退出" << std::endl;
+          break;
+        }
+        case PLAY: {
+          std::cout << "播放[" + std::to_string(deviceid) + "]设备上的[" +
+                           std::to_string(audioid) + "]音频"
+                    << std::endl;
+          manager->playAudio(deviceid, audioid, true);
+          break;
+        }
+          // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
+          // PAUSE, RESUME };
+        case SETPOS: {
+          std::cout << "设置[" + std::to_string(deviceid) + "]设备上的[" +
+                           std::to_string(audioid) + "]音频到60000ms位置"
+                    << std::endl;
+          manager->set_audio_current_pos(deviceid, audioid, 60000);
+          break;
+        }
+        case STOPAUDIO: {
+          std::cout << "移除[" + std::to_string(deviceid) + "]设备上的[" +
+                           std::to_string(audioid) + "]音频"
+                    << std::endl;
+          manager->stopAudio(deviceid, audioid);
+          break;
+        }
+        case STOPDEVICE: {
+          std::cout << "停止[" + std::to_string(deviceid) + "]设备"
+                    << std::endl;
+          manager->stopDevice(deviceid);
+          break;
+        }
+        case PAUSE: {
+          std::cout << "暂停[" + std::to_string(deviceid) + "]设备上的[" +
+                           std::to_string(audioid) + "]音频"
+                    << std::endl;
+          manager->pauseAudio(deviceid, audioid);
+          break;
+        }
+        case RESUME: {
+          std::cout << "恢复[" + std::to_string(deviceid) + "]设备上的[" +
+                           std::to_string(audioid) + "]音频"
+                    << std::endl;
+          manager->resumeAudio(deviceid, audioid);
+          break;
+        }
       }
     }
     if (quit) {
