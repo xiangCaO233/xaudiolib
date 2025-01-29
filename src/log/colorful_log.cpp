@@ -1,1 +1,1 @@
-﻿#include <glog/logging.h>
+#include "colorful-log.h"

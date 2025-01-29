@@ -1,4 +1,4 @@
-﻿#include "mixer.h"
+#include "mixer.h"
 
 #include <cmath>
 #include <iostream>

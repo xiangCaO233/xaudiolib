@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_UTILS_H
+#ifndef X_AUDIO_UTILS_H
 #define X_AUDIO_UTILS_H
 
 #include <cstddef>

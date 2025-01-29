@@ -1,4 +1,4 @@
-﻿#include "config.h"
+#include "config.h"
 
 // 音频传输方式
 const int Config::audio_transfer_method = AUDIO_DATA_BUFFERED;

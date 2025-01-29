@@ -1,4 +1,4 @@
-﻿#include "indevice.h"
+#include "indevice.h"
 
 #include <iostream>
 #include <utility>

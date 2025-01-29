@@ -1,7 +1,6 @@
-﻿#include "decoder.h"
+#include "decoder.h"
 
 #include <iostream>
-#include <memory>
 #include <vector>
 
 #include "config/config.h"
@@ -23,7 +22,7 @@ XAudioDecoder::~XAudioDecoder() {
             << std::endl;
 }
 
-int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext>& format,
+int XAudioDecoder::decode_audio(AVFormatContext* format,
                                 int streamIndex, std::vector<float>& pcm_data) {
   av_log_set_level(AV_LOG_ERROR);
   // 填充解码器上下文参数
@@ -47,7 +46,7 @@ int XAudioDecoder::decode_audio(const std::shared_ptr<AVFormatContext>& format,
     return -1;
   }
 
-  while (av_read_frame(format.get(), packet) >= 0) {
+  while (av_read_frame(format, packet) >= 0) {
     if (packet->stream_index == streamIndex) {
       if (avcodec_send_packet(decoder_context, packet) < 0) {
         std::cout << "发送包到解码器时出现问题" << std::endl;

@@ -1,4 +1,4 @@
-﻿#include "rbuffer.h"
+#include "rbuffer.h"
 
 #include <iostream>
 

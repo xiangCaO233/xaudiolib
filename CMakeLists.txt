@@ -1,9 +1,19 @@
-﻿cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.28)
 
-project(xaudiolib LANGUAGES CXX)
+project(xaudiolib)
 
-set(CMAKE_CXX_STANDARD 23)
+if(MSVC)
+    add_compile_options(/utf-8)
+    add_compile_options(/EHsc)
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+else()
+    # 覆盖所有非 MSVC 编译器（包括 GCC/Clang/Intel 等）
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
+
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
@@ -29,8 +39,8 @@ set(SOURCES src/main.cpp ${LIB_SOURCES})
 
 include_directories(includes src)
 
-# 日志
-find_package(spdlog REQUIRED)
+# 日志  
+find_package(spdlog CONFIG REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
 # OpenAL(3d音效api)
@@ -45,17 +55,22 @@ find_package(glm REQUIRED)
 find_package(GLEW REQUIRED)
 # GLFW(opengl窗口api)
 find_package(glfw3 REQUIRED)
-# (c包管理器)
-find_package(PkgConfig REQUIRED)
-# ffmpeg
-pkg_check_modules(
-  ffmpeg
-  REQUIRED
-  IMPORTED_TARGET
-  libavutil
-  libswresample
-  libavcodec
-  libavformat)
+if(WIN32)
+  find_package(FFMPEG REQUIRED)
+else()
+  # (c包管理器)
+  find_package(PkgConfig REQUIRED)
+  # ffmpeg
+  pkg_check_modules(
+    ffmpeg
+    REQUIRED
+    IMPORTED_TARGET
+    libavutil
+    libswresample
+    libavcodec
+    libavformat)
+endif(WIN32)
+
 
 # 可执行程序
 add_executable(testxaudiolib ${SOURCES})
@@ -161,7 +176,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenGL::GL
            glm::glm
            glfw
-           PkgConfig::ffmpeg)
+           ${FFMPEG_LIBRARIES})
   target_link_libraries(
     xaudio
     PUBLIC OpenAL::OpenAL
@@ -172,7 +187,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            glm::glm
            glfw
            SDL2::SDL2
-           PkgConfig::ffmpeg)
+           ${FFMPEG_LIBRARIES})
   target_link_libraries(
     xaudio-dev
     PUBLIC OpenAL::OpenAL
@@ -183,7 +198,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            glm::glm
            glfw
            spdlog::spdlog
-           PkgConfig::ffmpeg)
+           ${FFMPEG_LIBRARIES})
 else()
   # 其它系统
   message(STATUS "当前系统: ${CMAKE_SYSTEM_NAME}")

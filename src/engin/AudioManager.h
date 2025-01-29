@@ -1,4 +1,4 @@
-﻿#ifndef X_AUDIO_MANAGER_H
+#ifndef X_AUDIO_MANAGER_H
 #define X_AUDIO_MANAGER_H
 
 #include "AudioEngin.h"
