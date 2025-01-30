@@ -29,7 +29,7 @@ void ColorfulFormatter::format(const spdlog::details::log_msg &msg,
   spdlog::fmt_lib::format_to(
       std::back_inserter(dest),
       "\033[40m[\033[36;1m{:%Y-%m-%d %H:%M:%S}.{:03d}\033[22m\033[37m] "
-      "[\033[{}m{}\033[37m/\033[32m{}\033[37m]",
+      "[\033[{}m{}\033[37m/\033[32;1m{}\033[37;22m]",
       tm_buf, millis.count(), get_color(msg.level),
       spdlog::level::to_string_view(msg.level),
       msg.source.funcname ? msg.source.funcname : "unknown");
@@ -53,20 +53,20 @@ std::unique_ptr<spdlog::formatter> ColorfulFormatter::clone() const {
 }
 const char *ColorfulFormatter::get_color(spdlog::level::level_enum level) {
   switch (level) {
-  case spdlog::level::trace:
-    return "37"; // 白色
-  case spdlog::level::debug:
-    return "36"; // 青色
-  case spdlog::level::info:
-    return "32"; // 绿色
-  case spdlog::level::warn:
-    return "33"; // 黄色
-  case spdlog::level::err:
-    return "31"; // 红色
-  case spdlog::level::critical:
-    return "31;1"; // 亮红色
-  default:
-    return "0";
+    case spdlog::level::trace:
+      return "37";  // 白色
+    case spdlog::level::debug:
+      return "36";  // 青色
+    case spdlog::level::info:
+      return "32";  // 绿色
+    case spdlog::level::warn:
+      return "33";  // 黄色
+    case spdlog::level::err:
+      return "31";  // 红色
+    case spdlog::level::critical:
+      return "31;1";  // 亮红色
+    default:
+      return "0";
   }
 }
 

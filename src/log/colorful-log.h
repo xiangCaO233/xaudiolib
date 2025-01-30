@@ -2,7 +2,9 @@
 #define XIANG_COLORFULLOG_H
 
 #include <spdlog/common.h>
+#ifndef __linux__
 #define SPDLOG_FUNCTION __FUNCTION__
+#endif
 
 #include <spdlog/details/log_msg.h>
 #include <spdlog/fmt/chrono.h>

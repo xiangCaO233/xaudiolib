@@ -10,6 +10,7 @@ else()
   # 覆盖所有非 MSVC 编译器（包括 GCC/Clang/Intel 等）
   add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
 endif()
+
 add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
 set(CMAKE_BUILD_TYPE Debug)

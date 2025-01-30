@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
   std::setlocale(LC_ALL, ".UTF-8");
 #endif  //_WIN32
   auto manager = XAudioManager::newmanager();
-  manager->disableLoggin();
 
   std::vector<std::string> audio_paths;
 #ifdef _WIN32
