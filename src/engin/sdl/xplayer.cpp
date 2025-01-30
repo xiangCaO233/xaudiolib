@@ -10,7 +10,6 @@
 #include <thread>
 
 #include "config/config.h"
-#include "engin/device/indevice.h"
 #include "log/colorful-log.h"
 
 XPlayer::XPlayer()
@@ -154,9 +153,8 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   if (rbuffer.readable() <= int(floorf(Config::mix_buffer_size / 3.0))) {
     // 数据即将使用完,请求更新
     player->isrequested = true;
-    // LOG_DEBUG("请求数据");
-    // LOG_DEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) +
-    //          "]");
+    // XDEBUG("请求数据");
+    // XDEBUG("当前缓冲区剩余:[" + std::to_string(rbuffer.readable()) + "]");
     player->mixercv.notify_all();
   }
   // SDL请求样本数
