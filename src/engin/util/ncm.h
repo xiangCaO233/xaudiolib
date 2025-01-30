@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <filesystem>
-#include <iostream>
-#include <ostream>
 #include <string>
 
 #include "../../log/colorful-log.h"
@@ -40,14 +38,14 @@ inline static void convert_music(const std::string &path,
   desdirpath = absolutedesdir + filename;
 #endif //__unix
 #ifdef _WIN32
-  absolutesrcpath.replace(absolutesrcpath.find_last_of("\\") , 1, "/'");
+  absolutesrcpath.replace(absolutesrcpath.find_last_of("\\"), 1, "/'");
   absolutesrcpath.append("\'");
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
   auto absolutedesdir = std::filesystem::absolute(desdir).string();
   // 目标文件名(去后缀)
   auto filename = srcpath.filename().stem().string();
 
-  desdirpath = absolutedesdir + "\'" + filename + "\'";
+  desdirpath = absolutedesdir + filename;
 #endif //__unix
   absolutesrcpath.append("\"");
 
@@ -67,12 +65,16 @@ inline static void convert_music(const std::string &path,
         // 检查文件名是否存在
         if (ffileName == filename) {
           // 存在,不需要再转换
-          std::cout << "[" + ffileName + "]已转换过,跳过" << std::endl;
+          XINFO("[" + ffileName + "]已转换过,跳过");
           return;
         }
       }
     }
   }
+
+#ifdef _WIN32
+  desdirpath = absolutedesdir + "\'" + filename + "\'";
+#endif
 
   // 目标路径(包裹引号)
   desdirpath.insert(desdirpath.begin(), '"');
@@ -96,11 +98,10 @@ inline static void convert_music(const std::string &path,
   DWORD result = GetCurrentDirectory(MAX_PATH, buffer);
   if (result == 0) {
     // 获取失败
-    XERROR("GetCurrentDirectory failed (" + std::to_string(GetLastError()) +
-           ").");
+    XERROR("获取工作目录失败(" + std::to_string(GetLastError()) + ").");
   } else if (result > MAX_PATH) {
     // 缓冲区太小
-    XERROR("Buffer is too small. Required size: " + std::to_string(result));
+    XERROR("缓冲区过小. 需求大小: " + std::to_string(result));
   }
   auto wd = std::string(buffer);
   std::string command = std::string("powershell.exe -Command cd " + wd +
@@ -111,14 +112,14 @@ inline static void convert_music(const std::string &path,
   int bufferSize =
       MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, nullptr, 0);
   if (bufferSize == 0) {
-    XERROR("MultiByteToWideChar failed");
+    XERROR("多字节字符转换失败");
   }
   // 分配缓冲区
   std::wstring wcommand(bufferSize, 0);
   // 执行转换
   if (MultiByteToWideChar(CP_UTF8, 0, command.c_str(), -1, &wcommand[0],
                           bufferSize) == 0) {
-    XERROR("MultiByteToWideChar failed");
+    XERROR("多字节字符转换失败");
   }
 
   // 移除末尾的空字符
@@ -147,7 +148,7 @@ inline static void convert_music(const std::string &path,
                       &si,         // 指向 STARTUPINFO 的指针
                       &pi          // 指向 PROCESS_INFORMATION 的指针
                       )) {
-    XERROR("CreateProcess failed (" + std::to_string(GetLastError()) + ").");
+    XERROR("进程创建失败(" + std::to_string(GetLastError()) + ").");
   }
 
   // 等待子进程结束
