@@ -2,7 +2,7 @@
 #define XIANG_COLORFULLOG_H
 
 #include <spdlog/common.h>
-#ifndef __linux__
+#ifdef _WIN32
 #define SPDLOG_FUNCTION __FUNCTION__
 #endif
 
