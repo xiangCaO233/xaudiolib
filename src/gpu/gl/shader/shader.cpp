@@ -1,10 +1,11 @@
 #include "shader.h"
-#include "gpu/gl/glheaders.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <windows.h>
+
+#include "gpu/gl/glheaders.h"
+#include "log/colorful-log.h"
 
 // 读取文件
 Shader::Shader(const std::string& vsfile, const std::string& fsfile) {
@@ -42,7 +43,6 @@ Shader::Shader(const std::string& vsfile, const std::string& gsfile,
 
 // 创建着色器
 Shader::Shader(const char* vssource, const char* fssource) {
-  GLenum e = GL_LEVEL_ERROR;
   auto vshader = GLCALL(glCreateShader(GL_VERTEX_SHADER));
   auto fshader = GLCALL(glCreateShader(GL_FRAGMENT_SHADER));
 
@@ -57,9 +57,9 @@ Shader::Shader(const char* vssource, const char* fssource) {
   GLCALL(glGetShaderiv(vshader, GL_COMPILE_STATUS, &success));
   if (!success) {
     GLCALL(glGetShaderInfoLog(vshader, 512, NULL, infoLog));
-    std::cout << "顶点着色器编译出错:\n" << infoLog << std::endl;
+    XCRITICAL("顶点着色器编译出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "顶点着色器编译成功" << std::endl;
+    XINFO("顶点着色器编译成功");
   }
 
   GLCALL(glCompileShader(fshader));
@@ -67,9 +67,9 @@ Shader::Shader(const char* vssource, const char* fssource) {
   GLCALL(glGetShaderiv(fshader, GL_COMPILE_STATUS, &success));
   if (!success) {
     GLCALL(glGetShaderInfoLog(fshader, 512, NULL, infoLog));
-    std::cout << "片段着色器编译出错:\n" << infoLog << std::endl;
+    XCRITICAL("片段着色器编译出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "片段着色器编译成功" << std::endl;
+    XINFO("片段着色器编译成功");
   }
   // 链接着色器
   program = glCreateProgram();
@@ -80,9 +80,9 @@ Shader::Shader(const char* vssource, const char* fssource) {
   GLCALL(glGetProgramiv(program, GL_LINK_STATUS, &success));
   if (!success) {
     GLCALL(glGetProgramInfoLog(program, 512, NULL, infoLog));
-    std::cout << "链接着色器出错:\n" << infoLog << std::endl;
+    XCRITICAL("链接着色器出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "着色器程序链接成功" << std::endl;
+    XINFO("着色器程序链接成功");
   }
   // 释放着色器
   GLCALL(glDeleteShader(vshader));
@@ -106,9 +106,9 @@ Shader::Shader(const char* vssource, const char* gssource,
   GLCALL(glGetShaderiv(vshader, GL_COMPILE_STATUS, &success));
   if (!success) {
     GLCALL(glGetShaderInfoLog(vshader, 512, NULL, infoLog));
-    std::cout << "顶点着色器编译出错:\n" << infoLog << std::endl;
+    XCRITICAL("顶点着色器编译出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "顶点着色器编译成功" << std::endl;
+    XINFO("顶点着色器编译成功");
   }
 
   GLCALL(glCompileShader(gshader));
@@ -116,9 +116,9 @@ Shader::Shader(const char* vssource, const char* gssource,
   GLCALL(glGetShaderiv(gshader, GL_COMPILE_STATUS, &success));
   if (!success) {
     GLCALL(glGetShaderInfoLog(gshader, 512, NULL, infoLog));
-    std::cout << "几何着色器编译出错:\n" << infoLog << std::endl;
+    XCRITICAL("几何着色器编译出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "几何着色器编译成功" << std::endl;
+    XINFO("几何着色器编译成功");
   }
 
   GLCALL(glCompileShader(fshader));
@@ -126,9 +126,9 @@ Shader::Shader(const char* vssource, const char* gssource,
   GLCALL(glGetShaderiv(fshader, GL_COMPILE_STATUS, &success));
   if (!success) {
     GLCALL(glGetShaderInfoLog(fshader, 512, NULL, infoLog));
-    std::cout << "片段着色器编译出错:\n" << infoLog << std::endl;
+    XCRITICAL("片段着色器编译出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "片段着色器编译成功" << std::endl;
+    XINFO("片段着色器编译成功");
   }
 
   // 链接着色器
@@ -141,9 +141,9 @@ Shader::Shader(const char* vssource, const char* gssource,
   GLCALL(glGetProgramiv(program, GL_LINK_STATUS, &success));
   if (!success) {
     GLCALL(glGetProgramInfoLog(program, 512, NULL, infoLog));
-    std::cout << "链接着色器出错:\n" << infoLog << std::endl;
+    XCRITICAL("链接着色器出错:\n" + std::string(infoLog));
   } else {
-    std::cout << "着色器程序链接成功" << std::endl;
+    XINFO("着色器程序链接成功");
   }
 
   // 释放着色器
@@ -173,7 +173,7 @@ GLint Shader::uniform_loc(const std::string& name) {
 // 设置uniform变量
 void Shader::set_sampler(const std::string& name, int value) const {
   auto pos = GLCALL(glGetUniformLocation(program, name.c_str()))
-  GLCALL(glUniform1i(pos, value));
+      GLCALL(glUniform1i(pos, value));
 }
 void Shader::set_unfm1f(const std::string& name, float value) {
   GLCALL(glUniform1f(uniform_loc(name), value));
