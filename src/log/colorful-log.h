@@ -1,6 +1,7 @@
 #ifndef XIANG_COLORFULLOG_H
 #define XIANG_COLORFULLOG_H
 
+#include <spdlog/common.h>
 #define SPDLOG_FUNCTION __FUNCTION__
 
 #include <spdlog/details/log_msg.h>
@@ -35,5 +36,9 @@ class XLogger {
 
  public:
   static void init();
+  static void shutdown();
+  static void enable();
+  static void disable();
+  static void setlevel(spdlog::level::level_enum level);
 };
 #endif  // XIANG_COLORFULLOG_H

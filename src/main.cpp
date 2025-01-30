@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "engin/AudioManager.h"
-#include "log/colorful-log.h"
 
 int main(int argc, char *argv[]) {
 #ifdef _WIN32
@@ -15,8 +14,8 @@ int main(int argc, char *argv[]) {
   SetConsoleCP(65001);
   std::setlocale(LC_ALL, ".UTF-8");
 #endif  //_WIN32
-  XLogger::init();
   auto manager = XAudioManager::newmanager();
+  manager->disableLoggin();
 
   std::vector<std::string> audio_paths;
 #ifdef _WIN32

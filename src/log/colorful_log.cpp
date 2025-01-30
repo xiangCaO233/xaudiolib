@@ -2,8 +2,8 @@
 
 #include "colorful-log.h"
 
-void ColorfulFormatter::format(const spdlog::details::log_msg& msg,
-                               spdlog::memory_buf_t& dest) {
+void ColorfulFormatter::format(const spdlog::details::log_msg &msg,
+                               spdlog::memory_buf_t &dest) {
   // 时间处理
   // 使用chrono直接格式化时间点
   auto time_point = msg.time;
@@ -29,7 +29,7 @@ void ColorfulFormatter::format(const spdlog::details::log_msg& msg,
   spdlog::fmt_lib::format_to(
       std::back_inserter(dest),
       "\033[40m[\033[36;1m{:%Y-%m-%d %H:%M:%S}.{:03d}\033[22m\033[37m] "
-      "[\033[{}m{}\033[37m/\033[32;1m{}\033[37;22m]",
+      "[\033[{}m{}\033[37m/\033[32m{}\033[37m]",
       tm_buf, millis.count(), get_color(msg.level),
       spdlog::level::to_string_view(msg.level),
       msg.source.funcname ? msg.source.funcname : "unknown");
@@ -51,22 +51,22 @@ void ColorfulFormatter::format(const spdlog::details::log_msg& msg,
 std::unique_ptr<spdlog::formatter> ColorfulFormatter::clone() const {
   return std::make_unique<ColorfulFormatter>();
 }
-const char* ColorfulFormatter::get_color(spdlog::level::level_enum level) {
+const char *ColorfulFormatter::get_color(spdlog::level::level_enum level) {
   switch (level) {
-    case spdlog::level::trace:
-      return "37";  // 白色
-    case spdlog::level::debug:
-      return "36";  // 青色
-    case spdlog::level::info:
-      return "32";  // 绿色
-    case spdlog::level::warn:
-      return "33";  // 黄色
-    case spdlog::level::err:
-      return "31";  // 红色
-    case spdlog::level::critical:
-      return "31;1";  // 亮红色
-    default:
-      return "0";
+  case spdlog::level::trace:
+    return "37"; // 白色
+  case spdlog::level::debug:
+    return "36"; // 青色
+  case spdlog::level::info:
+    return "32"; // 绿色
+  case spdlog::level::warn:
+    return "33"; // 黄色
+  case spdlog::level::err:
+    return "31"; // 红色
+  case spdlog::level::critical:
+    return "31;1"; // 亮红色
+  default:
+    return "0";
   }
 }
 
@@ -106,4 +106,19 @@ void XLogger::init() {
   spdlog::set_default_logger(logger);
 
   XINFO("日志初始化完成");
+}
+void XLogger::shutdown() {
+  // 销毁 logger
+  spdlog::drop("xaudiolib");
+  // 直接销毁 logger 对象
+  logger.reset();
+  // 销毁所有 logger
+  spdlog::shutdown();
+}
+void XLogger::enable() { logger->set_level(spdlog::level::trace); }
+void XLogger::disable() { logger->set_level(spdlog::level::off); }
+
+void XLogger::setlevel(spdlog::level::level_enum level) {
+  // 设置全局日志级别
+  logger->set_level(level);
 }

@@ -10,8 +10,19 @@ class XAudioManager {
 
 
 public:
-  // 载入音频
+  // 构造XAudioManager音频管理器
+  XAudioManager();
+  // 析构XAudioManager
+  virtual ~XAudioManager();
 
+  static std::shared_ptr<XAudioManager> newmanager();
+  // 启用日志
+  void enableLoggin();
+  // 禁用日志
+  void disableLoggin();
+  // 0-trace,1-debug,2-info,3-warning,4-error,5-critical
+  void setLogginLevel(int level);
+  // 载入音频
   int loadaudio(const std::string &audio);
   // 卸载音频
   void unloadaudio(const std::string &audio);
@@ -84,13 +95,6 @@ public:
   void stopDevice(int device_id);
   void stopDevice(const std::string &devicename);
 
- public:
-  // 构造XAudioManager音频管理器
-  XAudioManager();
-  // 析构XAudioManager
-  virtual ~XAudioManager();
-
-  static std::shared_ptr<XAudioManager> newmanager();
 };
 
 #endif  // X_AUDIO_MANAGER_H

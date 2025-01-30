@@ -1,19 +1,31 @@
 #include "AudioManager.h"
 #include "log/colorful-log.h"
+#include <spdlog/common.h>
 
 XAudioManager::XAudioManager() {
   XINFO("XAudioManager初始化");
-  if (engin) return;
+  if (engin)
+    return;
   engin = XAudioEngin::init();
-  if (engin) XINFO("初始化引擎成功");
+  if (engin)
+    XINFO("初始化引擎成功");
 }
 
 XAudioManager::~XAudioManager() { XTRACE("销毁音频管理器"); }
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
+  XLogger::init();
   return std::make_shared<XAudioManager>();
 }
 
+// 启用日志
+void XAudioManager::enableLoggin() { XLogger::enable(); }
+// 禁用日志
+void XAudioManager::disableLoggin() { XLogger::disable(); }
+// 0-trace,1-debug,2-info,3-warning,4-error,5-critical
+void XAudioManager::setLogginLevel(int level) {
+  XLogger::setlevel(spdlog::level::level_enum(level));
+}
 int XAudioManager::loadaudio(const std::string &audio) {
   return engin->load(audio);
 }
