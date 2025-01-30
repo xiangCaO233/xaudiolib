@@ -1,6 +1,5 @@
 #include "rbuffer.h"
-
-#include <iostream>
+#include "log/colorful-log.h"
 
 ringbuffer::ringbuffer(size_t size)
     : buffersize(size + 1),
@@ -8,7 +7,7 @@ ringbuffer::ringbuffer(size_t size)
       readbuffer(new float[size]),
       readpos(0),
       writepos(0) {}
-ringbuffer::~ringbuffer() { std::cout << "销毁环形缓冲区" << std::endl; };
+ringbuffer::~ringbuffer() { XTRACE("销毁环形缓冲区"); };
 
 // 可读数据量
 size_t ringbuffer::readable() const {

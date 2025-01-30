@@ -1,9 +1,7 @@
 #include "mixer.h"
 
 #include <cmath>
-#include <iostream>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -11,6 +9,7 @@
 #include "../sdl/xplayer.h"
 #include "config/config.h"
 #include "gpu/gl/shader/shader.h"
+#include "log/colorful-log.h"
 
 // 是否已初始化gl上下文
 bool XAuidoMixer::isglinitialized = false;
@@ -38,7 +37,7 @@ void main(){
 )";
 
 XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
-  std::cout << "初始化混音器" << std::endl;
+  XINFO("初始化混音器");
   unknown_prop.sound = nullptr;
   unknown_prop.playpos = -1;
   unknown_prop.loop = false;
@@ -46,17 +45,17 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   unknown_prop.volume = -1.0f;
   unknown_prop.speed = -1.0f;
   if (!isglinitialized) {
-    std::cout << "gl上下文未初始化" << std::endl;
-    std::cout << "正在初始化gl上下文" << std::endl;
+    XWARN("gl上下文未初始化");
+    XINFO("正在初始化gl上下文");
     if (glfwInit()) {
-      std::cout << "glfw初始化成功" << std::endl;
+      XINFO("glfw初始化成功");
       // 配置glfw参数
       glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
       // Apple平台前向适配
-      std::cout << "当前为Apple平台,启用opengl前向兼容" << std::endl;
+      XINFO("当前为Apple平台,启用opengl前向兼容");
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
       auto w = glfwCreateWindow(1, 1, "", nullptr, nullptr);
@@ -65,29 +64,28 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
       if (w) {
         glfwMakeContextCurrent(w);
         if (glewInit() == GLEW_OK) {
-          std::cout << "glew初始化成功" << std::endl;
-          std::cout << "初始化opengl着色器" << std::endl;
+          XINFO("glew初始化成功");
+          XINFO("初始化opengl着色器");
           glshader = new Shader(vsource, fsource);
           isglinitialized = true;
           // 终止glfw,防止未响应
           glfwTerminate();
         } else {
-          std::cout << "glew初始化失败" << std::endl;
+          XCRITICAL("glew初始化失败");
           glfwTerminate();
         }
       } else {
-        std::cout << "glfw窗体上下文初始化失败" << std::endl;
+        XERROR("glfw窗体上下文初始化失败");
         glfwTerminate();
       }
     } else {
-      std::cout << "glfw初始化失败" << std::endl;
+      XCRITICAL("glfw初始化失败");
     }
   }
 }
 
 XAuidoMixer::~XAuidoMixer() {
-  std::cout << "析构[" + std::to_string(des_player->outdevice_index) + "]混音器"
-            << std::endl;
+  XTRACE("析构[" + std::to_string(des_player->outdevice_index) + "]混音器");
 }
 
 // 添加音频轨道
@@ -107,26 +105,24 @@ void XAuidoMixer::add_orbit(std::shared_ptr<XSound> &orbit) {
 bool XAuidoMixer::remove_orbit(std::shared_ptr<XSound> &orbit) {
   auto orbitit = audio_orbits.find(orbit->handle);
   if (orbitit == audio_orbits.end()) {
-    std::cout << "此混音器不存在音轨[" + orbit->name + "]" << std::endl;
+    XWARN("此混音器不存在音轨[" + orbit->name + "]");
     return false;
   }
   audio_orbits.erase(orbitit);
   auto propit = orbit_properties.find(orbit->handle);
   if (propit == orbit_properties.end()) {
-    std::cout << "此混音器不存在音轨[" + orbit->name + "]" << std::endl;
+    XWARN("此混音器不存在音轨[" + orbit->name + "]");
     return false;
   }
   orbit_properties.erase(propit);
-  std::cout << "已移除音轨[" + std::to_string(orbit->handle) + "]" << std::endl;
+  XINFO("已移除音轨[" + std::to_string(orbit->handle) + "]");
   return true;
 };
 // 设置循环标识
 void XAuidoMixer::setloop(int audio_handle, bool isloop) {
   auto propit = orbit_properties.find(audio_handle);
   if (propit == orbit_properties.end()) {
-    std::cout << "此设备上不存在音轨--音频句柄[" +
-                     std::to_string(audio_handle) + "]"
-              << std::endl;
+    XWARN("此设备上不存在音轨--音频句柄[" + std::to_string(audio_handle) + "]");
     return;
   }
   propit->second.loop = isloop;
@@ -135,8 +131,7 @@ void XAuidoMixer::setloop(int audio_handle, bool isloop) {
 OrbitProps &XAuidoMixer::prop(int audio_handle) {
   auto propit = orbit_properties.find(audio_handle);
   if (propit == orbit_properties.end()) {
-    std::cout << "未找到音轨--音频句柄[" + std::to_string(audio_handle) + "]"
-              << std::endl;
+    XWARN("未找到音轨--音频句柄[" + std::to_string(audio_handle) + "]");
     return unknown_prop;
   }
   return propit->second;
@@ -156,7 +151,8 @@ void XAuidoMixer::send_pcm_thread() {
     });
 
     // 播放器停止则混音线程也立刻停止
-    if (!des_player->running) break;
+    if (!des_player->running)
+      break;
     // 每次发送数据量
     auto size = int(floorf((float)Config::mix_buffer_size / 3.0f));
     // 混合数据
@@ -181,7 +177,7 @@ void XAuidoMixer::send_pcm_thread() {
     }
     if (!shouldplay) {
       // 没有需要播放的音频了
-      std::cout << "全部音频播放结束,已暂停" << std::endl;
+      XINFO("全部音频播放结束,已暂停");
       des_player->rbuffer.write(0.0f, des_player->rbuffer.available());
       des_player->pause();
     } else {
@@ -202,7 +198,7 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
   for (auto &audio : src_sounds) {
     auto &p = prop(audio->handle);
     if (!p.sound) {
-      std::cout << "音频轨道属性出错" << std::endl;
+      XERROR("音频轨道属性出错");
       // 暂时静音
       for (auto &var : mixed_pcm) {
         var = 0.0f;
@@ -213,11 +209,11 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
     // 结束检查
     if (playpos >= audio->pcm_data.size()) {
       // 检查结尾
-      std::cout << "[" + std::to_string(audio->handle) + "]播放结束"
-                << std::endl;
+      XTRACE("[" + std::to_string(audio->handle) + "]播放结束");
       playpos = 0;
       auto &loop = p.loop;
-      if (!loop) loop = true;
+      if (!loop)
+        loop = true;
     }
 
     // 混合音频到目标

@@ -4,18 +4,18 @@
 
 #include <cmath>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <mutex>
-#include <ostream>
 #include <string>
 #include <thread>
 
 #include "config/config.h"
+#include "engin/device/indevice.h"
+#include "log/colorful-log.h"
 
 XPlayer::XPlayer()
     : paused(false), running(false), rbuffer(Config::mix_buffer_size) {
-  std::cout << "初始化播放器" << std::endl;
+  XINFO("初始化播放器");
   // sdl配置
   // 播放采样率
   desired_spec.freq = Config::samplerate;
@@ -35,8 +35,7 @@ XPlayer::XPlayer()
 XPlayer::~XPlayer() {
   // 确保资源释放
   stop();
-  std::cout << "析构[" + std::to_string(outdevice_index) + "]设备播放器"
-            << std::endl;
+  XTRACE("析构[" + std::to_string(outdevice_index) + "]设备播放器");
 }
 // 设置设备索引
 void XPlayer::set_device_index(int device_index) {
@@ -49,14 +48,12 @@ void XPlayer::player_thread() {
                                   &desired_spec, &obtained_spec, 0);
   if (!device_id) {
     auto error = SDL_GetError();
-    std::cout << std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
-                     std::to_string(outdevice_index) + "]"
-              << std::endl;
-    std::cout << error << std::endl;
+    XERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
+           std::to_string(outdevice_index) + "]");
+    XERROR(error);
     return;
   } else {
-    std::cout << "成功打开设备[" + std::to_string(outdevice_index) + "]"
-              << std::endl;
+    XINFO("成功打开设备[" + std::to_string(outdevice_index) + "]");
   }
   // 开始播放
   SDL_PauseAudioDevice(device_id, 0);
@@ -86,36 +83,40 @@ void XPlayer::player_thread() {
 // 开始
 void XPlayer::start() {
   // 防止重复启动
-  if (running) return;
+  if (running)
+    return;
   if (outdevice_index < 0) {
-    std::cout << "尚未选择设备,播放器启动失败" << std::endl;
+    XWARN("尚未选择设备,播放器启动失败");
     return;
   }
   running = true;
   // 启动线程
-  std::cout << "启动播放线程..." << std::endl;
+  XINFO("启动播放线程...");
   sdl_playthread = std::thread(&XPlayer::player_thread, this);
   sdl_playthread.detach();
 
-  std::cout << "启动混音线程..." << std::endl;
+  XINFO("启动混音线程...");
   mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
   mixer->mixthread.detach();
 };
 // 终止
 void XPlayer::stop() {
   // 停止播放器
-  if (!running) return;
+  if (!running)
+    return;
   running = false;
   // 唤起线程
   cv.notify_all();
   mixercv.notify_all();
   // 等待线程正常结束
-  if (sdl_playthread.joinable()) sdl_playthread.join();
+  if (sdl_playthread.joinable())
+    sdl_playthread.join();
   // 暂停sdl设备
   SDL_PauseAudioDevice(device_id, 1);
-  std::cout << "播放线程结束" << std::endl;
-  if (mixer->mixthread.joinable()) mixer->mixthread.join();
-  std::cout << "混音线程结束" << std::endl;
+  XINFO("播放线程结束");
+  if (mixer->mixthread.joinable())
+    mixer->mixthread.join();
+  XINFO("混音线程结束");
 };
 // 暂停
 void XPlayer::pause() {
@@ -135,7 +136,7 @@ void XPlayer::set_player_volume(float v) {
   if (v >= 0 && v <= 1.0f) {
     global_volume = v;
   } else {
-    std::cout << "非法音量值:[" + std::to_string(v) + "]" << std::endl;
+    XWARN("非法音量值:[" + std::to_string(v) + "]");
   }
 }
 

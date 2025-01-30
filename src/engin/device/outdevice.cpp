@@ -1,16 +1,16 @@
 #include "outdevice.h"
 
-#include <iostream>
 #include <memory>
 #include <utility>
 
 #include "../sdl/xplayer.h"
+#include "log/colorful-log.h"
 
 XOutputDevice::XOutputDevice(int id, std::string name)
     : sdl_id(id), device_name(std::move(name)) {}
 
 XOutputDevice::~XOutputDevice() {
-  std::cout << "销毁输出设备:[" + device_name + "]" << std::endl;
+  XTRACE("销毁输出设备:[" + device_name + "]");
 }
 
 // 创建一个位于该设备的播放器

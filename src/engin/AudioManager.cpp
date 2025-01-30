@@ -1,15 +1,14 @@
 #include "AudioManager.h"
-
-#include <iostream>
+#include "log/colorful-log.h"
 
 XAudioManager::XAudioManager() {
-  std::cout << "XAudioManager初始化" << std::endl;
+  XINFO("XAudioManager初始化");
   if (engin) return;
   engin = XAudioEngin::init();
-  if (engin) std::cout << "初始化引擎成功" << std::endl;
+  if (engin) XINFO("初始化引擎成功");
 }
 
-XAudioManager::~XAudioManager() { std::cout << "销毁音频管理器" << std::endl; }
+XAudioManager::~XAudioManager() { XTRACE("销毁音频管理器"); }
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
   return std::make_shared<XAudioManager>();

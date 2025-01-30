@@ -1,14 +1,12 @@
 #include "encoder.h"
-
-#include <iostream>
+#include "log/colorful-log.h"
 
 XAudioEncoder::XAudioEncoder(AVCodecID id) {
   encoder = avcodec_find_encoder(id);
   if (!encoder)
-    std::cout << "创建编码器失败" << std::endl;
+    XERROR("创建编码器失败");
   else
-    std::cout << "成功创建[" + std::string(avcodec_get_name(id)) + "]编码器"
-              << std::endl;
+    XINFO("成功创建[" + std::string(avcodec_get_name(id)) + "]编码器");
 }
 
 XAudioEncoder::~XAudioEncoder() = default;

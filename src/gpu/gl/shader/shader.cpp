@@ -1,8 +1,10 @@
 #include "shader.h"
+#include "gpu/gl/glheaders.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <windows.h>
 
 // 读取文件
 Shader::Shader(const std::string& vsfile, const std::string& fsfile) {
@@ -40,6 +42,7 @@ Shader::Shader(const std::string& vsfile, const std::string& gsfile,
 
 // 创建着色器
 Shader::Shader(const char* vssource, const char* fssource) {
+  GLenum e = GL_LEVEL_ERROR;
   auto vshader = GLCALL(glCreateShader(GL_VERTEX_SHADER));
   auto fshader = GLCALL(glCreateShader(GL_FRAGMENT_SHADER));
 
