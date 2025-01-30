@@ -4,7 +4,6 @@
 #include <SDL_audio.h>
 
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <string>
 
