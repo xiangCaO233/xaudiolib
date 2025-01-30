@@ -20,6 +20,11 @@ inline static void convert_music(const std::string &path,
   // 包裹单引号防空格
   absolutesrcpath.insert(absolutesrcpath.begin(), '"');
 
+  auto tmppath = std::filesystem::path("ncmtemp/");
+  // 创建ncmtemp目录存放ncmdump导出的东西
+  if (!std::filesystem::exists(tmppath)) {
+    std::filesystem::create_directories(tmppath);
+  }
   // 目标输出路径
 #ifdef __APPLE__
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");

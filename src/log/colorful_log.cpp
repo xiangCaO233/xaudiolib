@@ -76,15 +76,16 @@ void XLogger::init() {
   // 创建三个sink（终端、全量文件、错误文件）
   auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
   auto file_all_sink =
-      std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/all.log");
+      std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/latest.log");
   auto file_error_sink =
       std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/error.log");
 
   // 设置统一的自定义格式
   auto formatter = std::make_unique<ColorfulFormatter>();
   console_sink->set_formatter(formatter->clone());
-  file_all_sink->set_formatter(formatter->clone());
-  file_error_sink->set_formatter(formatter->clone());
+  file_all_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%s:%#] %v");
+  file_error_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%s:%#] %v");
+
 
   // 设置sink级别过滤
   console_sink->set_level(spdlog::level::trace);
@@ -93,7 +94,7 @@ void XLogger::init() {
 
   // 创建组合logger
   logger = std::make_shared<spdlog::logger>(
-      "multi_sink",
+      "xaudiolib",
       spdlog::sinks_init_list{console_sink, file_all_sink, file_error_sink});
 
   // 设置全局日志级别
