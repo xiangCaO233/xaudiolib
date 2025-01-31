@@ -33,7 +33,7 @@ inline static void convert_music(const std::string &path,
   auto filename = srcpath.filename().stem().string();
 
   desdirpath = absolutedesdir + filename;
-#endif //__APPLE__
+#endif  //__APPLE__
 #ifdef __unix
   std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
   auto absolutedesdir = std::filesystem::absolute(desdir).string();
@@ -41,7 +41,7 @@ inline static void convert_music(const std::string &path,
   auto filename = srcpath.filename().stem().string();
 
   desdirpath = absolutedesdir + filename;
-#endif //__unix
+#endif  //__unix
 #ifdef _WIN32
   absolutesrcpath.replace(absolutesrcpath.find_last_of("\\"), 1, "/'");
   absolutesrcpath.append("\'");
@@ -51,10 +51,10 @@ inline static void convert_music(const std::string &path,
   auto filename = srcpath.filename().stem().string();
 
   desdirpath = absolutedesdir + filename;
-#endif //__unix
+#endif  //__unix
   absolutesrcpath.append("\"");
 
-  XINFO("输出路径:[" + desdirpath + "]");
+  XINFO("ncmdump输出路径:[" + desdirpath + "]");
 
   // 判断是否已经转换过(目标文件夹是否有同名文件)
   if (std::filesystem::is_directory(desdirpath) &&
@@ -90,13 +90,13 @@ inline static void convert_music(const std::string &path,
                         " -o " + desdirpath;
   // 执行命令
   std::system(command.c_str());
-#endif //__APPLE__
+#endif  //__APPLE__
 #ifdef __linux__
   std::string command = std::string("../lib/ncmdump-linux ") + absolutesrcpath +
                         " -o " + desdirpath;
   // 执行命令
   std::system(command.c_str());
-#endif //__linux__
+#endif  //__linux__
 #ifdef _WIN32
   // 获取当前工作区路径
   char buffer[MAX_PATH];
@@ -142,16 +142,16 @@ inline static void convert_music(const std::string &path,
   ZeroMemory(&pi, sizeof(pi));
 
   // 创建子进程
-  if (!CreateProcessW(NULL,        // 不使用模块名
-                      cmdLineCopy, // 命令行
-                      NULL,        // 进程句柄不可继承
-                      NULL,        // 线程句柄不可继承
-                      FALSE,       // 不继承句柄
-                      0,           // 无创建标志
-                      NULL,        // 使用父进程的环境块
-                      NULL,        // 使用父进程的起始目录
-                      &si,         // 指向 STARTUPINFO 的指针
-                      &pi          // 指向 PROCESS_INFORMATION 的指针
+  if (!CreateProcessW(NULL,         // 不使用模块名
+                      cmdLineCopy,  // 命令行
+                      NULL,         // 进程句柄不可继承
+                      NULL,         // 线程句柄不可继承
+                      FALSE,        // 不继承句柄
+                      0,            // 无创建标志
+                      NULL,         // 使用父进程的环境块
+                      NULL,         // 使用父进程的起始目录
+                      &si,          // 指向 STARTUPINFO 的指针
+                      &pi           // 指向 PROCESS_INFORMATION 的指针
                       )) {
     XERROR("进程创建失败(" + std::to_string(GetLastError()) + ").");
   }
@@ -162,11 +162,11 @@ inline static void convert_music(const std::string &path,
   // 关闭进程和线程句柄
   CloseHandle(pi.hProcess);
   CloseHandle(pi.hThread);
-#endif //_WIN32
+#endif  //_WIN32
   filename = srcpath.filename().replace_extension("").string();
   absolutesrcpath = std::filesystem::absolute(srcpath).string();
   desdirpath = absolutedesdir + filename;
 }
-} // namespace xutil
+}  // namespace xutil
 
-#endif // X_NCM_H
+#endif  // X_NCM_H

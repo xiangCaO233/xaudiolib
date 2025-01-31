@@ -29,7 +29,7 @@ void ColorfulFormatter::format(const spdlog::details::log_msg &msg,
   spdlog::fmt_lib::format_to(
       std::back_inserter(dest),
       "\033[40m[\033[36;1m{:%Y-%m-%d %H:%M:%S}.{:03d}\033[22m\033[37m] "
-      "[\033[{}m{}\033[37m/\033[32;1m{}\033[37;22m]",
+      "[\033[{};1m{}\033[37;22m/\033[32;1m{}\033[37;22m]",
       tm_buf, millis.count(), get_color(msg.level),
       spdlog::level::to_string_view(msg.level),
       msg.source.funcname ? msg.source.funcname : "unknown");
