@@ -98,7 +98,7 @@ void XAuidoMixer::add_orbit(std::shared_ptr<XSound> &orbit) {
   prop.paused = false;
   prop.playpos = 0;
   prop.sound = orbit.get();
-  prop.speed = 1.0f;
+  prop.speed = 1.5f;
   prop.volume = 1.0f;
 };
 // 移除音频轨道
@@ -151,8 +151,7 @@ void XAuidoMixer::send_pcm_thread() {
     });
 
     // 播放器停止则混音线程也立刻停止
-    if (!des_player->running)
-      break;
+    if (!des_player->running) break;
     // 每次发送数据量
     auto size = int(floorf((float)Config::mix_buffer_size / 3.0f));
     // 混合数据
@@ -193,10 +192,13 @@ void XAuidoMixer::send_pcm_thread() {
 void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
                       std::vector<float> &mixed_pcm, float global_volume) {
   // LOG_DEBUG("开始混音");
+  // 目标数据大小
   size_t des_size = mixed_pcm.size();
 
   for (auto &audio : src_sounds) {
     auto &p = prop(audio->handle);
+
+    // 检查属性
     if (!p.sound) {
       XERROR("音频轨道属性出错");
       // 暂时静音
@@ -205,6 +207,8 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
       }
       return;
     }
+
+    // 当前音轨播放位置
     auto &playpos = p.playpos;
     // 结束检查
     if (playpos >= audio->pcm_data.size()) {
@@ -212,16 +216,27 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
       XTRACE("[" + std::to_string(audio->handle) + "]播放结束");
       playpos = 0;
       auto &loop = p.loop;
-      if (!loop)
-        loop = true;
+
+      // 播放结束后若有循环标识则设置播放位置到头部
+      if (!loop) loop = true;
     }
 
-    // 混合音频到目标
-    for (int i = 0; i < des_size; ++i) {
+    // 获取变速属性
+    auto speed = p.speed;
+
+    // 混合(相加)音频到目标
+    for (int i = 0; i < des_size; i++) {
       if (playpos + i < audio->pcm_data.size()) {
+        /*
+         * 目标数据:----------
+         * 倍速0.5x
+         * 实际数据:-----
+         * 倍速2x
+         * 实际数据:--------------------
+         */
         // 相加所有的采样(限制最大值)
-        mixed_pcm[i] = mixed_pcm[i] + audio->pcm_data[p.playpos + i] *
-                                          p.volume * global_volume;
+        mixed_pcm[i] = mixed_pcm[i * speed] + audio->pcm_data[p.playpos + i] *
+                                                  p.volume * global_volume;
       }
     }
 
@@ -229,7 +244,7 @@ void XAuidoMixer::mix(std::vector<std::shared_ptr<XSound>> &src_sounds,
       // 修正结尾
       playpos = audio->pcm_data.size();
     } else {
-      playpos += des_size;
+      playpos += des_size * speed;
     }
   }
 }

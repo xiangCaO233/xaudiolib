@@ -184,7 +184,7 @@ void XAudioEngin::unload(int id) {
     auto handelit = handles.find(audioit->second->name);
     handles.erase(handelit);
     // TODO(xiang 2024-12-19): 还需要删除所有设备中的此音轨
-    XINFO("已删除[" + audioit->second->name + "],句柄:[" + std::to_string(id) +
+    XINFO("已卸载[" + audioit->second->name + "],句柄:[" + std::to_string(id) +
           "]");
     // 删除音频
     audios.erase(audioit);
@@ -252,9 +252,8 @@ const bool XAudioEngin::is_outdevice_exist(const std::string &devicename,
   device_index = deviceindexit->second;
   return true;
 }
-const bool
-XAudioEngin::is_outdevice_exist(int device_index,
-                                std::shared_ptr<XOutputDevice> &res) {
+const bool XAudioEngin::is_outdevice_exist(
+    int device_index, std::shared_ptr<XOutputDevice> &res) {
   auto deviceit = outdevices.find(device_index);
   if (device_index == -1 || deviceit == outdevices.end()) {
     XWARN("输出设备索引[" + std::to_string(device_index) + "]不存在");
