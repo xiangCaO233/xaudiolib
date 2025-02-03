@@ -57,17 +57,14 @@ class XAudioEngin {
   void unload(int id);
 
   // 检查音频是否加载
-  const bool is_audio_loaded(const std::string &audioname, int &handle);
-  const bool is_audio_loaded(int audio_handle, std::shared_ptr<XSound> &res);
+  bool is_audio_loaded(const std::string &audioname, int &handle);
+  bool is_audio_loaded(int audio_handle, std::shared_ptr<XSound> &res);
   // 检查设备是否存在
-  const bool is_indevice_exist(const std::string &devicename,
-                               int &device_index);
-  const bool is_indevice_exist(int device_index,
-                               std::shared_ptr<XInputDevice> &res);
-  const bool is_outdevice_exist(const std::string &devicename,
-                                int &device_index);
-  const bool is_outdevice_exist(int device_index,
-                                std::shared_ptr<XOutputDevice> &res);
+  bool is_indevice_exist(const std::string &devicename, int &device_index);
+  bool is_indevice_exist(int device_index, std::shared_ptr<XInputDevice> &res);
+  bool is_outdevice_exist(const std::string &devicename, int &device_index);
+  bool is_outdevice_exist(int device_index,
+                          std::shared_ptr<XOutputDevice> &res);
 
   // 获取音频名
   const std::string &audio_name(int id);
@@ -78,10 +75,10 @@ class XAudioEngin {
   const std::string &output_device_name(int id);
 
   // 获得音频句柄
-  const int audio_handle(const std::string &name);
+  int audio_handle(const std::string &name);
   // 获得设备索引
-  const int input_device_index(const std::string &name);
-  const int output_device_index(const std::string &name);
+  int input_device_index(const std::string &name);
+  int output_device_index(const std::string &name);
 
   // 设置音频当前播放到的位置
   void pos(int deviceid, int id, int64_t time);

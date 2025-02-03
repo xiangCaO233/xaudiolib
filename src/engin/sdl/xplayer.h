@@ -14,6 +14,29 @@
 class XOutputDevice;
 
 class XPlayer {
+ public:
+  // 构造XPlayer
+  XPlayer();
+  // 析构XPlayer
+  virtual ~XPlayer();
+
+  // 设置设备索引
+  void set_device_index(int device_index);
+  void set_player_volume(float v);
+
+  // 开始
+  void start();
+  // 终止
+  void stop();
+  // 暂停
+  void pause();
+  // 继续
+  void resume();
+
+  // sdl播放回调函数
+  static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
+
+ private:
   // 播放线程运行状态
   bool running;
   // 播放暂停状态
@@ -22,6 +45,9 @@ class XPlayer {
   float global_volume;
   // 数据请求状态
   bool isrequested{false};
+
+  // sdl音频规范(实际)
+  SDL_AudioSpec obtained_spec{};
 
   // 混音互斥锁
   std::mutex mix_mutex;
@@ -34,7 +60,7 @@ class XPlayer {
   std::condition_variable cv;
 
   // sdl播放线程
-  std::thread sdl_playthread;
+  std::jthread sdl_playthread;
 
   // 环形音频处理缓冲区
   ringbuffer rbuffer;
@@ -52,31 +78,6 @@ class XPlayer {
   friend XAudioEngin;
   friend XAuidoMixer;
   friend XOutputDevice;
-
- public:
-  // 构造XPlayer
-  XPlayer();
-  // 析构XPlayer
-  virtual ~XPlayer();
-
-  // sdl音频规范(实际)
-  SDL_AudioSpec obtained_spec{};
-
-  // 设置设备索引
-  void set_device_index(int device_index);
-  void set_player_volume(float v);
-
-  // 开始
-  void start();
-  // 终止
-  void stop();
-  // 暂停
-  void pause();
-  // 继续
-  void resume();
-
-  // sdl播放回调函数
-  static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
 };
 
 #endif  // X_AUDIO_PLAYER_H

@@ -8,8 +8,7 @@ class XAudioManager {
   // 引擎(唯一)
   std::unique_ptr<XAudioEngin> engin;
 
-
-public:
+ public:
   // 构造XAudioManager音频管理器
   XAudioManager();
   // 析构XAudioManager
@@ -17,11 +16,11 @@ public:
 
   static std::shared_ptr<XAudioManager> newmanager();
   // 启用日志
-  void enableLoggin();
+  void enableLoggin() const;
   // 禁用日志
-  void disableLoggin();
+  void disableLoggin() const;
   // 0-trace,1-debug,2-info,3-warning,4-error,5-critical
-  void setLogginLevel(int level);
+  void setLogginLevel(int level) const;
   // 载入音频
   int loadaudio(const std::string &audio);
   // 卸载音频
@@ -56,7 +55,7 @@ public:
                       float v);
 
   // 设置全局音量
-  float getGlobalVolume();
+  float getGlobalVolume() const;
   void setGlobalAudioVolume(float volume);
 
   // 播放暂停恢复停止音频
@@ -94,7 +93,6 @@ public:
 
   void stopDevice(int device_id);
   void stopDevice(const std::string &devicename);
-
 };
 
 #endif  // X_AUDIO_MANAGER_H

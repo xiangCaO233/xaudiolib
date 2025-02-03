@@ -3,16 +3,18 @@
 #include <SDL.h>
 #include <SDL_audio.h>
 
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "Sound.h"
 #include "config/config.h"
 #include "engin/mix/mixer.h"
 #include "engin/util/ncm.h"
 #include "log/colorful-log.h"
-#include "util//utils.h"
+#include "util/utils.h"
 
 // 引擎实现
 int XAudioEngin::currentid = 0;
@@ -41,14 +43,14 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     auto device_name_str = std::string(input_device_name);
     auto inputdevice = std::make_shared<XInputDevice>(i, device_name_str);
     XINFO("检测到输入设备" + device_name_str);
-    e->inputdevice_indicies.insert({device_name_str, i});
-    e->inputdevices.insert({i, inputdevice});
+    e->inputdevice_indicies.try_emplace(device_name_str, i);
+    e->inputdevices.try_emplace(i, inputdevice);
   }
   // 插入一个未知设备
   std::string input_device_name = "unknown input device";
   auto inputdevice = std::make_shared<XInputDevice>(-1, input_device_name);
-  e->inputdevice_indicies.insert({input_device_name, -1});
-  e->inputdevices.insert({-1, inputdevice});
+  e->inputdevice_indicies.try_emplace(input_device_name, -1);
+  e->inputdevices.try_emplace(-1, inputdevice);
 
   auto outputs = SDL_GetNumAudioDevices(false);
   if (outputs < 0) {
@@ -60,20 +62,20 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     auto device_name_str = std::string(output_device_name);
     auto outdevice = std::make_shared<XOutputDevice>(i, device_name_str);
     XINFO("检测到输出设备" + device_name_str);
-    e->outdevice_indicies.insert({device_name_str, i});
-    e->outdevices.insert({i, outdevice});
+    e->outdevice_indicies.try_emplace(device_name_str, i);
+    e->outdevices.try_emplace(i, outdevice);
   }
   // 插入一个未知设备
   std::string output_device_name = "unknown output device";
   auto outdevice = std::make_shared<XOutputDevice>(-1, output_device_name);
-  e->outdevice_indicies.insert({output_device_name, -1});
-  e->outdevices.insert({-1, outdevice});
+  e->outdevice_indicies.try_emplace(output_device_name, -1);
+  e->outdevices.try_emplace(-1, outdevice);
 
   // 插入一个未知音频
-  auto unknown_sound =
+  const auto unknown_sound =
       std::make_shared<XSound>(-1, "unknown sound", "unknown path", nullptr);
-  e->handles.insert({"unknown sound", -1});
-  e->audios.insert({-1, unknown_sound});
+  e->handles.try_emplace("unknown sound", -1);
+  e->audios.try_emplace(-1, unknown_sound);
 
   return e;
 }
@@ -112,7 +114,7 @@ int XAudioEngin::load(const std::string &audio) {
       auto audioformat = format;
 
       auto sound = std::make_shared<XSound>(currentid, name, p, audioformat);
-      audios.insert({currentid, sound});
+      audios.try_emplace(currentid, sound);
       handles[name] = currentid;
       // 获取流信息
       if (avformat_find_stream_info(format, nullptr) < 0) {
@@ -136,7 +138,7 @@ int XAudioEngin::load(const std::string &audio) {
         auto encoder = std::make_shared<XAudioEncoder>(
             format->streams[streamindex]->codecpar->codec_id);
         // 直接在表中分配
-        audio_codecs.insert({extension, {decoder, encoder}});
+        audio_codecs.try_emplace(extension, std::make_pair(decoder, encoder));
       } else {
         XINFO("找到解码器:[" + extension + "]");
       }
@@ -194,7 +196,7 @@ void XAudioEngin::unload(int id) {
 }
 
 // 检查音频是否加载
-const bool XAudioEngin::is_audio_loaded(const std::string &audioname,
+bool XAudioEngin::is_audio_loaded(const std::string &audioname,
                                         int &handle) {
   auto handleit = handles.find(audioname);
   if (handleit == handles.end()) {
@@ -205,7 +207,7 @@ const bool XAudioEngin::is_audio_loaded(const std::string &audioname,
   handle = handleit->second;
   return true;
 }
-const bool XAudioEngin::is_audio_loaded(int audio_handle,
+bool XAudioEngin::is_audio_loaded(int audio_handle,
                                         std::shared_ptr<XSound> &res) {
   auto audioit = audios.find(audio_handle);
   if (audio_handle == -1 || audioit == audios.end()) {
@@ -218,7 +220,7 @@ const bool XAudioEngin::is_audio_loaded(int audio_handle,
 }
 
 // 检查设备是否存在
-const bool XAudioEngin::is_indevice_exist(const std::string &devicename,
+bool XAudioEngin::is_indevice_exist(const std::string &devicename,
                                           int &device_index) {
   auto deviceindexit = inputdevice_indicies.find(devicename);
   if (deviceindexit == inputdevice_indicies.end()) {
@@ -229,7 +231,7 @@ const bool XAudioEngin::is_indevice_exist(const std::string &devicename,
   device_index = deviceindexit->second;
   return true;
 }
-const bool XAudioEngin::is_indevice_exist(int device_index,
+bool XAudioEngin::is_indevice_exist(int device_index,
                                           std::shared_ptr<XInputDevice> &res) {
   auto deviceit = inputdevices.find(device_index);
   if (device_index == -1 || deviceit == inputdevices.end()) {
@@ -241,7 +243,7 @@ const bool XAudioEngin::is_indevice_exist(int device_index,
   return true;
 }
 
-const bool XAudioEngin::is_outdevice_exist(const std::string &devicename,
+bool XAudioEngin::is_outdevice_exist(const std::string &devicename,
                                            int &device_index) {
   auto deviceindexit = outdevice_indicies.find(devicename);
   if (deviceindexit == outdevice_indicies.end()) {
@@ -252,7 +254,7 @@ const bool XAudioEngin::is_outdevice_exist(const std::string &devicename,
   device_index = deviceindexit->second;
   return true;
 }
-const bool XAudioEngin::is_outdevice_exist(
+bool XAudioEngin::is_outdevice_exist(
     int device_index, std::shared_ptr<XOutputDevice> &res) {
   auto deviceit = outdevices.find(device_index);
   if (device_index == -1 || deviceit == outdevices.end()) {
@@ -290,18 +292,18 @@ const std::string &XAudioEngin::output_device_name(int id) {
 }
 
 // 获得音频句柄
-const int XAudioEngin::audio_handle(const std::string &name) {
+int XAudioEngin::audio_handle(const std::string &name) {
   int res;
   is_audio_loaded(name, res);
   return res;
 }
 // 获得设备索引
-const int XAudioEngin::input_device_index(const std::string &name) {
+int XAudioEngin::input_device_index(const std::string &name) {
   int res;
   is_indevice_exist(name, res);
   return res;
 }
-const int XAudioEngin::output_device_index(const std::string &name) {
+int XAudioEngin::output_device_index(const std::string &name) {
   int res;
   is_outdevice_exist(name, res);
   return res;
@@ -318,15 +320,15 @@ float XAudioEngin::volume(int deviceid, int id) {
     return -1.0f;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
     return -1.0f;
   }
   // 检查混音器
-  auto &mixer = player->mixer;
-  auto &prop = mixer->prop(id);
+  const auto &mixer = player->mixer;
+  const auto &prop = mixer->prop(id);
   if (!prop.sound) {
     XWARN("此设备上不存在音轨句柄[" + std::to_string(id) + "]");
     return -1.0f;
@@ -345,13 +347,13 @@ void XAudioEngin::setVolume(int deviceid, int id, float v) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
     return;
   }
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   // 检查混音器音轨
   auto &prop = mixer->prop(id);
   if (!prop.sound) {
@@ -385,13 +387,13 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
     return;
   }
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   // 检查混音器音轨
   auto &prop = mixer->prop(id);
   if (!prop.sound) {
@@ -400,7 +402,7 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
     return;
   }
   auto pos =
-      xutil::milliseconds2pcmpos(time, Config::samplerate, Config::channel);
+      xutil::milliseconds2pcmpos(time, static_cast<int>(Config::samplerate), static_cast<uint8_t>(Config::channel));
   prop.playpos = pos;
   XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
         "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
@@ -418,7 +420,7 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     // 不存在此设备的播放器
     XWARN("未找到输出设备[" + std::to_string(device_index) + ":" +
@@ -445,7 +447,7 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     XWARN("播放器为关闭状态,已重新启动");
   }
   // 找播放器绑定的混音器中是否存在此音频
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   auto &prop = mixer->prop(audio_id);
   if (!prop.sound) {
     XWARN("[" + std::to_string(device_index) + ":" + outdevice->device_name +
@@ -486,13 +488,13 @@ void XAudioEngin::pause(int device_index, int audio_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_index) + ":" +
           outdevice->device_name + "]还没有初始化播放器");
     return;
   }
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   auto &prop = player->mixer->prop(audio_id);
   if (!prop.sound) {
     XWARN("暂停失败,设备[" + std::to_string(device_index) + "]不存在句柄[" +
@@ -516,13 +518,13 @@ void XAudioEngin::resume(int device_index, int audio_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_index) + ":" +
           outdevice->device_name + "]还没有初始化播放器");
     return;
   }
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   auto &prop = mixer->prop(audio_id);
   if (!prop.sound) {
     XWARN("设备[" + std::to_string(device_index) + ":" +
@@ -560,13 +562,13 @@ void XAudioEngin::stop(int device_index, int audio_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_index) + ":" +
           outdevice->device_name + "]还没有初始化播放器");
     return;
   }
-  auto &mixer = player->mixer;
+  const auto &mixer = player->mixer;
   // 移除此音轨
   if (!mixer->remove_orbit(audio)) {
     XERROR("移除音轨失败");
@@ -584,7 +586,7 @@ bool XAudioEngin::is_pause(int device_id) {
     return false;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_id) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
@@ -600,7 +602,7 @@ void XAudioEngin::pause_device(int device_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_id) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
@@ -618,7 +620,7 @@ void XAudioEngin::resume_device(int device_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_id) + ":" + outdevice->device_name +
           "]还没有初始化播放器");
@@ -636,7 +638,7 @@ void XAudioEngin::stop_player(int device_id) {
     return;
   }
   // 检查播放器
-  auto &player = outdevice->player;
+  const auto &player = outdevice->player;
   if (!player) {
     XWARN("设备[" + std::to_string(device_id) + ":" + outdevice->device_name +
           "]还没有初始化播放器");

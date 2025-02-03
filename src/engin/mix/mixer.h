@@ -28,13 +28,14 @@ struct OrbitProps {
 
 class XAuidoMixer {
   // 混音线程
-  std::thread mixthread;
+  std::jthread mixthread;
   // 是否已初始化gl上下文
   static bool isglinitialized;
   // 着色器(opengl)
-  static Shader* glshader;
+  static std::unique_ptr<Shader> glshader;
   // 着色器源代码
-  static const char *vsource, *fsource;
+  static const char* vsource;
+  static const char* fsource;
   // 目标播放器指针(仅传递方便访问,不释放,其他地方已管理)
   XPlayer* des_player;
   // 全部音轨(音频句柄-音频)
@@ -54,9 +55,9 @@ class XAuidoMixer {
   friend XPlayer;
 
   // 添加音频轨道
-  void add_orbit(std::shared_ptr<XSound>& orbit);
+  void add_orbit(const std::shared_ptr<XSound>& orbit);
   // 移除音频轨道
-  bool remove_orbit(std::shared_ptr<XSound>& orbit);
+  bool remove_orbit(const std::shared_ptr<XSound>& orbit);
   // 设置循环标识
   void setloop(int audio_handle, bool isloop);
 
@@ -64,14 +65,14 @@ class XAuidoMixer {
   OrbitProps& prop(int audio_handle);
 
   // 混合音频
-  void mix(std::vector<std::shared_ptr<XSound>>& src_sounds,
+  void mix(const std::vector<std::shared_ptr<XSound>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
 
  public:
   // 构造XAuidoMixer
-  XAuidoMixer(XPlayer* player);
+  explicit XAuidoMixer(XPlayer* player);
   // 析构XAuidoMixer
   virtual ~XAuidoMixer();
 };

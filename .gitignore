@@ -2,6 +2,7 @@
 /.cache
 /.idea
 /.vs
+/.vscode
 /cmake-build-debug
 /subproject
 /out

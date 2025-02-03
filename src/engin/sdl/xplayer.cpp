@@ -3,6 +3,7 @@
 #include <SDL_audio.h>
 
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <mutex>
@@ -13,17 +14,17 @@
 #include "log/colorful-log.h"
 
 XPlayer::XPlayer()
-    : paused(false), running(false), rbuffer(Config::mix_buffer_size) {
+    : running(false), paused(false), rbuffer(Config::mix_buffer_size) {
   XINFO("初始化播放器");
   // sdl配置
   // 播放采样率
-  desired_spec.freq = Config::samplerate;
+  desired_spec.freq = static_cast<int>(Config::samplerate);
   // 浮点数据型(自动转换字节序大小端)
   desired_spec.format = AUDIO_F32;
   // 声道数
-  desired_spec.channels = Config::channel;
+  desired_spec.channels = static_cast<uint8_t>(Config::channel);
   // 播放缓冲区大小
-  desired_spec.samples = Config::play_buffer_size;
+  desired_spec.samples = static_cast<uint16_t>(Config::play_buffer_size);
   // 设置回调
   desired_spec.callback = &XPlayer::sdl_audio_callback;
   // 用户数据
@@ -63,7 +64,7 @@ void XPlayer::player_thread() {
       // LOG_DEBUG("播放标识[" + std::to_string(running) + "]");
       // LOG_DEBUG("暂停标识[" + std::to_string(paused) + "]");
       //    暂停在此处等待
-      std::unique_lock<std::mutex> pauselock(player_mutex);
+      auto pauselock = std::unique_lock<std::mutex>(player_mutex);
       cv.wait(pauselock, [this]() { return !paused || !running; });
     }
     // LOG_DEBUG("播放器播放中,等待暂停或终止");
@@ -72,7 +73,7 @@ void XPlayer::player_thread() {
     //   LOG_DEBUG("等待数据或继续播放");
     //   播放中在此等待
     //   等待数据推送或暂停恢复
-    std::unique_lock<std::mutex> lock(player_mutex);
+    auto lock = std::unique_lock<std::mutex>(player_mutex);
     cv.wait(lock, [this]() { return paused || !running; });
   }
 
@@ -82,8 +83,7 @@ void XPlayer::player_thread() {
 // 开始
 void XPlayer::start() {
   // 防止重复启动
-  if (running)
-    return;
+  if (running) return;
   if (outdevice_index < 0) {
     XWARN("尚未选择设备,播放器启动失败");
     return;
@@ -91,30 +91,27 @@ void XPlayer::start() {
   running = true;
   // 启动线程
   XINFO("启动播放线程...");
-  sdl_playthread = std::thread(&XPlayer::player_thread, this);
+  sdl_playthread = std::jthread(&XPlayer::player_thread, this);
   sdl_playthread.detach();
 
   XINFO("启动混音线程...");
-  mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
+  mixer->mixthread = std::jthread(&XAuidoMixer::send_pcm_thread, mixer.get());
   mixer->mixthread.detach();
 };
 // 终止
 void XPlayer::stop() {
   // 停止播放器
-  if (!running)
-    return;
+  if (!running) return;
   running = false;
   // 唤起线程
   cv.notify_all();
   mixercv.notify_all();
   // 等待线程正常结束
-  if (sdl_playthread.joinable())
-    sdl_playthread.join();
+  if (sdl_playthread.joinable()) sdl_playthread.join();
   // 暂停sdl设备
   SDL_PauseAudioDevice(device_id, 1);
   XINFO("播放线程结束");
-  if (mixer->mixthread.joinable())
-    mixer->mixthread.join();
+  if (mixer->mixthread.joinable()) mixer->mixthread.join();
   XINFO("混音线程结束");
 };
 // 暂停
@@ -150,7 +147,8 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   // LOG_DEBUG("当前环形缓冲区-->{readpos:[" + std::to_string(rbuffer.readpos)
   // +
   //           "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
-  if (rbuffer.readable() <= int(floorf(Config::mix_buffer_size / 3.0))) {
+  if (rbuffer.readable() <=
+      int(floorf((float)Config::mix_buffer_size / 3.0f))) {
     // 数据即将使用完,请求更新
     player->isrequested = true;
     // XDEBUG("请求数据");

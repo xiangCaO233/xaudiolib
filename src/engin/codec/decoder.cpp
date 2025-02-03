@@ -30,8 +30,9 @@ int XAudioDecoder::decode_audio(AVFormatContext *format, int streamIndex,
   auto packet = av_packet_alloc();
   auto frame = av_frame_alloc();
   AVChannelLayout out_channel_layout;
-  av_channel_layout_default(&out_channel_layout, Config::channel);
-  int out_sample_rate = Config::samplerate;
+  av_channel_layout_default(&out_channel_layout,
+                            static_cast<int>(Config::channel));
+  auto out_sample_rate = static_cast<int>(Config::samplerate);
   enum AVSampleFormat out_sample_format = AV_SAMPLE_FMT_FLT;
 
   int sampler_allocat_ret = swr_alloc_set_opts2(
@@ -56,8 +57,8 @@ int XAudioDecoder::decode_audio(AVFormatContext *format, int streamIndex,
             swr_get_delay(resampler, out_sample_rate) + frame->nb_samples,
             out_sample_rate, decoder_context->sample_rate, AV_ROUND_UP);
         if (av_samples_alloc_array_and_samples(
-                &out_buffer, &out_linesize, Config::channel, (int)out_samples,
-                out_sample_format, 0) < 0) {
+                &out_buffer, &out_linesize, static_cast<int>(Config::channel),
+                (int)out_samples, out_sample_format, 0) < 0) {
           XCRITICAL("分配输出采样数组时出现问题");
           return -1;
         }
@@ -72,8 +73,9 @@ int XAudioDecoder::decode_audio(AVFormatContext *format, int streamIndex,
         }
 
         auto buffer_ptr = reinterpret_cast<float *>(out_buffer[0]);
-        pcm_data.insert(pcm_data.end(), buffer_ptr,
-                        buffer_ptr + converted_samples * Config::channel);
+        pcm_data.insert(
+            pcm_data.end(), buffer_ptr,
+            buffer_ptr + converted_samples * static_cast<int>(Config::channel));
 
         av_freep(&out_buffer[0]);
         av_freep(&out_buffer);
