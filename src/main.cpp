@@ -18,86 +18,104 @@ int main(int argc, char *argv[]) {
 
   std::vector<std::string> audio_paths;
 #ifdef _WIN32
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back(
+      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
 
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.push_back("../resources/233.mp3");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
+  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
+  audio_paths.emplace_back("../resources/233.mp3");
 #endif  //_WIN32
 
 #ifdef __linux__
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back(
+      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
 
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.push_back("../resources/233.mp3");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
+  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
+  audio_paths.emplace_back("../resources/233.mp3");
 
 #endif  //__linux__
 #ifdef __APPLE__
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back(
+      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
 
-  audio_paths.push_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
+  audio_paths.emplace_back(
       "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.push_back("../resources/combobreak.wav");
-  audio_paths.push_back("../resources/New story.mp3");
-  audio_paths.push_back(
+  audio_paths.emplace_back("../resources/combobreak.wav");
+  audio_paths.emplace_back("../resources/New story.mp3");
+  audio_paths.emplace_back(
       "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.push_back("../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.push_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.push_back("../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-  audio_paths.push_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.push_back("../resources/233.mp3");
+  audio_paths.emplace_back(
+      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
+  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
+  audio_paths.emplace_back(
+      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
+  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
+  audio_paths.emplace_back("../resources/233.mp3");
 #endif  //__APPLE__
 
   // 载入音频
-  for (auto &var : audio_paths) {
+  for (const auto &var : audio_paths) {
     manager->loadaudio(var);
   }
 
   std::string devicename = "External Headphones";
 
-  enum Operate { PLAY, STOPAUDIO, STOPDEVICE, SETPOS, QUIT, PAUSE, RESUME };
+  enum class Operate {
+    PLAY,
+    STOPAUDIO,
+    STOPDEVICE,
+    SETPOS,
+    QUIT,
+    PAUSE,
+    RESUME
+  };
   bool quit{false};
   while (true) {
     std::cout << "输入指令[o](操作)[d](设备)[a](音频)" << std::endl;
@@ -106,41 +124,39 @@ int main(int argc, char *argv[]) {
     if (line.size() != 3) {
       continue;
     } else {
-      bool isdevicename = false;
       int deviceid = -1;
-      bool isaudioname = false;
       int audioid = -1;
       Operate o;
 
       for (int i = 0; i < 3; i++) {
         switch (line.at(i)) {
           case 'm': {
-            o = STOPAUDIO;
+            o = Operate::STOPAUDIO;
             break;
           }
           case 'a': {
-            o = PLAY;
+            o = Operate::PLAY;
             break;
           }
           case 'q': {
             quit = true;
-            o = QUIT;
+            o = Operate::QUIT;
             break;
           }
           case 'k': {
-            o = STOPDEVICE;
+            o = Operate::STOPDEVICE;
             break;
           }
           case 'r': {
-            o = RESUME;
+            o = Operate::RESUME;
             break;
           }
           case 's': {
-            o = SETPOS;
+            o = Operate::SETPOS;
             break;
           }
           case 'p': {
-            o = PAUSE;
+            o = Operate::PAUSE;
             break;
           }
           case '0': {
@@ -233,52 +249,52 @@ int main(int argc, char *argv[]) {
             }
             break;
           }
+          default:
+            break;
         }
       }
 
       std::cout << "操作: " << line << std::endl;
       switch (o) {
-        case QUIT: {
+        case Operate::QUIT: {
           std::cout << "退出" << std::endl;
           break;
         }
-        case PLAY: {
+        case Operate::PLAY: {
           std::cout << "播放[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
           manager->playAudio(deviceid, audioid, false);
           break;
         }
-          // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
-          // PAUSE, RESUME };
-        case SETPOS: {
+        case Operate::SETPOS: {
           std::cout << "设置[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频到60000ms位置"
                     << std::endl;
           manager->set_audio_current_pos(deviceid, audioid, 60000);
           break;
         }
-        case STOPAUDIO: {
+        case Operate::STOPAUDIO: {
           std::cout << "移除[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
           manager->stopAudio(deviceid, audioid);
           break;
         }
-        case STOPDEVICE: {
+        case Operate::STOPDEVICE: {
           std::cout << "停止[" + std::to_string(deviceid) + "]设备"
                     << std::endl;
           manager->stopDevice(deviceid);
           break;
         }
-        case PAUSE: {
+        case Operate::PAUSE: {
           std::cout << "暂停[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
           manager->pauseAudio(deviceid, audioid);
           break;
         }
-        case RESUME: {
+        case Operate::RESUME: {
           std::cout << "恢复[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;

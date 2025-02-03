@@ -1,12 +1,12 @@
 #include "rbuffer.h"
+
 #include "log/colorful-log.h"
 
 ringbuffer::ringbuffer(size_t size)
-    : buffersize(size + 1),
-      buffer(new float[size + 1]()),
-      readbuffer(new float[size]),
-      readpos(0),
-      writepos(0) {}
+    : buffersize(size + 1), readpos(0), writepos(0) {
+  buffer = std::make_shared<float[]>(size + 1);
+  readbuffer = std::make_shared<float[]>(size);
+}
 ringbuffer::~ringbuffer() { XTRACE("销毁环形缓冲区"); };
 
 // 可读数据量

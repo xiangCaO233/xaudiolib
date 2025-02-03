@@ -43,7 +43,6 @@ class XSound {
   void locatesample(size_t sampleindex) const;
   // 调整位置(按时间)
   void locatetime(size_t milliseconds) const;
-
 };
 
 #endif  // X_AUDIO_SOUND_H

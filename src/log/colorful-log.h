@@ -29,7 +29,7 @@ class ColorfulFormatter : public spdlog::formatter {
   std::unique_ptr<spdlog::formatter> clone() const override;
 
  private:
-  const char* get_color(spdlog::level::level_enum level);
+  const char* get_color(spdlog::level::level_enum level) const;
 };
 
 class XLogger {

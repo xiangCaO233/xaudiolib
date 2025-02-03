@@ -5,9 +5,9 @@
 
 class ringbuffer {
   // 缓冲区本体
-  std::shared_ptr<float> buffer;
+  std::shared_ptr<float[]> buffer;
   // 读取缓冲区
-  std::shared_ptr<float> readbuffer;
+  std::shared_ptr<float[]> readbuffer;
   // 缓冲区大小（包含1个空闲单元）
   size_t buffersize;
   // 读取指针

@@ -1,7 +1,6 @@
 #ifndef X_NCM_H
 #define X_NCM_H
 
-#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
@@ -14,7 +13,7 @@
 namespace xutil {
 inline static void convert_music(const std::string &path,
                                  std::string &desdirpath) {
-  std::filesystem::path srcpath = std::filesystem::path(path);
+  auto srcpath = std::filesystem::path(path);
   // 源文件路径
   auto absolutesrcpath = std::filesystem::absolute(srcpath).string();
   // 包裹单引号防空格
@@ -35,7 +34,7 @@ inline static void convert_music(const std::string &path,
   desdirpath = absolutedesdir + filename;
 #endif  //__APPLE__
 #ifdef __unix
-  std::filesystem::path desdir = std::filesystem::path("ncmtemp/");
+  auto desdir = std::filesystem::path("ncmtemp/");
   auto absolutedesdir = std::filesystem::absolute(desdir).string();
   // 目标文件名(去后缀)
   auto filename = srcpath.filename().stem().string();

@@ -6,8 +6,6 @@ void ColorfulFormatter::format(const spdlog::details::log_msg &msg,
                                spdlog::memory_buf_t &dest) {
   // 时间处理
   // 使用chrono直接格式化时间点
-  auto time_point = msg.time;
-
   // 分离时间的秒和毫秒部分
   const auto time_since_epoch = msg.time.time_since_epoch();
   const auto sec =
@@ -51,7 +49,8 @@ void ColorfulFormatter::format(const spdlog::details::log_msg &msg,
 std::unique_ptr<spdlog::formatter> ColorfulFormatter::clone() const {
   return std::make_unique<ColorfulFormatter>();
 }
-const char *ColorfulFormatter::get_color(spdlog::level::level_enum level) {
+const char *ColorfulFormatter::get_color(
+    spdlog::level::level_enum level) const {
   switch (level) {
     case spdlog::level::trace:
       return "37";  // 白色
