@@ -138,7 +138,7 @@ int XAudioEngin::load(const std::string &audio) {
         auto encoder = std::make_shared<XAudioEncoder>(
             format->streams[streamindex]->codecpar->codec_id);
         // 直接在表中分配
-        audio_codecs.try_emplace(extension, std::make_pair(decoder, encoder));
+        audio_codecs.try_emplace(extension, decoder, encoder);
       } else {
         XINFO("找到解码器:[" + extension + "]");
       }
@@ -151,6 +151,9 @@ int XAudioEngin::load(const std::string &audio) {
                                               sound->pcm_data) >= 0) {
         XINFO("解码[" + sound->name + "]成功");
         XINFO("音频数据大小:[" + std::to_string(sound->pcm_data.size()) + "]");
+        // 最低0.05x倍速
+        sound->temp_data.reserve(Config::mix_buffer_size * 20);
+        XINFO("已分配变速缓存空间");
       } else {
         XERROR("解码出现问题");
         handelit = handles.find(name);
@@ -495,7 +498,7 @@ void XAudioEngin::pause(int device_index, int audio_id) {
     return;
   }
   const auto &mixer = player->mixer;
-  auto &prop = player->mixer->prop(audio_id);
+  auto &prop = mixer->prop(audio_id);
   if (!prop.sound) {
     XWARN("暂停失败,设备[" + std::to_string(device_index) + "]不存在句柄[" +
           std::to_string(audio_id) + "]");

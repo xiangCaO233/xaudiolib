@@ -15,6 +15,8 @@ class XSound {
   int handle;
   // pcm声音数据
   std::vector<float> pcm_data;
+  // 缓存数据
+  std::vector<float> temp_data;
   // 音频文件名
   const std::string name;
   // 音频路径
@@ -22,6 +24,9 @@ class XSound {
   // 音频格式
   AVFormatContext *audio_format;
 
+  friend XAudioManager;
+  friend XAudioEngin;
+  friend XAuidoMixer;
   friend XAudioManager;
   friend XAudioEngin;
   friend XAuidoMixer;

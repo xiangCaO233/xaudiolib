@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
           std::cout << "播放[" + std::to_string(deviceid) + "]设备上的[" +
                            std::to_string(audioid) + "]音频"
                     << std::endl;
-          manager->playAudio(deviceid, audioid, true);
+          manager->playAudio(deviceid, audioid, false);
           break;
         }
           // enum Operate { STOPAUDIO, STOPDEVICE, SETPOS, QUIT,
