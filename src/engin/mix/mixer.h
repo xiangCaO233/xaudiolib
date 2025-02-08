@@ -28,7 +28,7 @@ struct OrbitProps {
 
 class XAuidoMixer {
   // 混音线程
-  std::jthread mixthread;
+  std::thread mixthread;
   // 是否已初始化gl上下文
   static bool isglinitialized;
   // 着色器(opengl)

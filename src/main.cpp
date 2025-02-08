@@ -1,14 +1,16 @@
+#include <filesystem>
+
+#include "log/colorful-log.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif  //_WIN32
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "engin/AudioManager.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 #ifdef _WIN32
   SetConsoleOutputCP(CP_UTF8);
   SetConsoleCP(65001);
@@ -16,96 +18,12 @@ int main(int argc, char *argv[]) {
 #endif  //_WIN32
   auto manager = XAudioManager::newmanager();
 
-  std::vector<std::string> audio_paths;
-#ifdef _WIN32
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back(
-      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.emplace_back("../resources/233.mp3");
-#endif  //_WIN32
-
-#ifdef __linux__
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back(
-      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.emplace_back("../resources/233.mp3");
-
-#endif  //__linux__
-#ifdef __APPLE__
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back(
-      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-
-  audio_paths.emplace_back("../resources/Tensions - スキャンダル.mp3");
-  audio_paths.emplace_back(
-      "../resources/HoneyWorks,かぴ - ヒロインとアイドル (feat. かぴ).flac");
-  audio_paths.emplace_back("../resources/combobreak.wav");
-  audio_paths.emplace_back("../resources/New story.mp3");
-  audio_paths.emplace_back(
-      "../resources/結城アイラ - どんな星空よりも、どんな思い出よりも.flac");
-  audio_paths.emplace_back(
-      "../resources/ゆよゆっぺ,meola,巡音ルカ - Palette.mp3");
-  audio_paths.emplace_back("../resources/音莉飴 - りんごと君.ncm");
-  audio_paths.emplace_back(
-      "../resources/鬼頭明里,Neko Hacker - 刹那の誓い.flac");
-  audio_paths.emplace_back("../resources/花鋏キョウ - Behavior.ncm");
-  audio_paths.emplace_back("../resources/233.mp3");
-#endif  //__APPLE__
-
   // 载入音频
-  for (const auto &var : audio_paths) {
-    manager->loadaudio(var);
+  auto respath = std::filesystem::path("../resources/");
+  XINFO("respath:" + respath.string());
+  for (const auto& entry : std::filesystem::directory_iterator(respath)) {
+    manager->loadaudio(entry.path().string());
   }
-
-  std::string devicename = "External Headphones";
 
   enum class Operate {
     PLAY,

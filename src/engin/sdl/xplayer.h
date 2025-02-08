@@ -60,7 +60,7 @@ class XPlayer {
   std::condition_variable cv;
 
   // sdl播放线程
-  std::jthread sdl_playthread;
+  std::thread sdl_playthread;
 
   // 环形音频处理缓冲区
   ringbuffer rbuffer;

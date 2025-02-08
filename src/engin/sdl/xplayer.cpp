@@ -91,11 +91,11 @@ void XPlayer::start() {
   running = true;
   // 启动线程
   XINFO("启动播放线程...");
-  sdl_playthread = std::jthread(&XPlayer::player_thread, this);
+  sdl_playthread = std::thread(&XPlayer::player_thread, this);
   sdl_playthread.detach();
 
   XINFO("启动混音线程...");
-  mixer->mixthread = std::jthread(&XAuidoMixer::send_pcm_thread, mixer.get());
+  mixer->mixthread = std::thread(&XAuidoMixer::send_pcm_thread, mixer.get());
   mixer->mixthread.detach();
 };
 // 终止
