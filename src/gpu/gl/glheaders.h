@@ -2,14 +2,14 @@
 #define XGL3D_GLHEADERS_H
 
 // 用于包装 OpenGL 调用并检查错误
-#define GLCALL(func)                                              \
-  func;                                                           \
-  {                                                               \
-    GLenum error = glGetError();                                  \
-    if (error != GL_NO_ERROR) {                                   \
-      std::cerr << "在[" << #func << "]发生OpenGL错误: " << error \
-                << std::endl;                                     \
-    }                                                             \
+#define GLCALL(func)                                       \
+  func;                                                    \
+  {                                                        \
+    GLenum error = glGetError();                           \
+    if (error != GL_NO_ERROR) {                            \
+      XERROR("在[" + std::string(#func) +                  \
+             "]发生OpenGL错误: " + std::to_string(error)); \
+    }                                                      \
   }
 
 // 操作系统判断宏

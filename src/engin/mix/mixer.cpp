@@ -229,7 +229,7 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
      */
     audio->temp_data.clear();
     for (auto i = 0.0f; i < (float)des_size * speed &&
-                        (size_t)(playpos + i) < audio->pcm_data.size();
+                        (size_t)((float)playpos + i) < audio->pcm_data.size();
          i += 1.0f) {
       // 获取实际使用样本数据放入缓存处
       audio->temp_data.push_back(audio->pcm_data[p.playpos + (int)i] *
@@ -242,8 +242,8 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
         audio->temp_data.push_back(0);
       }
     }
-    // 处理缓存样本数据到目标中,大小应为des_size
 
+    // 处理缓存样本数据到目标中,大小应为des_size
     // 混合(相加)音频到混音结果
     for (int i = 0; i < des_size; i++) {
       // 相加所有的采样
