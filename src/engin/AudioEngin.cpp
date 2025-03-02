@@ -27,6 +27,22 @@ XAudioEngin::~XAudioEngin() {
 
 std::unique_ptr<XAudioEngin> XAudioEngin::init() {
   XINFO("初始化音频引擎");
+  XTRACE("正在获取配置文件");
+  std::filesystem::path config_path("./config/latest_config.json");
+  if (std::filesystem::exists(config_path.parent_path())) {
+    if (std::filesystem::exists(config_path)) {
+      XTRACE("配置目录存在");
+      // 加载配置文件
+      Config::load();
+    }
+  } else {
+    XWARN("配置目录不存在");
+    if (std::filesystem::create_directory(config_path.parent_path())) {
+      XINFO("配置目录创建成功");
+    } else {
+      XERROR("配置目录创建失败");
+    }
+  }
   auto e = std::make_unique<XAudioEngin>();
   auto sdl_init_ret = SDL_Init(SDL_INIT_AUDIO);
   if (sdl_init_ret < 0) {
@@ -80,7 +96,11 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
   return e;
 }
 
-void XAudioEngin::shutdown() { SDL_Quit(); }
+void XAudioEngin::shutdown() {
+  SDL_Quit();
+  XTRACE("保存配置");
+  Config::save();
+}
 
 int XAudioEngin::load(const std::string &audio) {
   std::filesystem::path path(audio);

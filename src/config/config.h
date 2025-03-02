@@ -1,7 +1,10 @@
 #ifndef X_CONFIG_H
 #define X_CONFIG_H
 
+#include <nlohmann/json.hpp>
 #include <string>
+
+using json = nlohmann::json;
 
 enum class transfertype {
   /*
@@ -65,18 +68,18 @@ class Config {
   // 音频传输方式
   static transfertype audio_transfer_method;
   // 音频解码线程数(max128)
-  const static int decode_thread_count;
+  static int decode_thread_count;
   // 混音方式
   static mixtype mix_method;
   // 混音处理时的环形缓冲区大小(设备性能越低这个需要越大)
   // 越大时可能会增加延迟
-  const static int mix_buffer_size;
+  static int mix_buffer_size;
   // 播放音频时的声道数
   static channels channel;
   // 播放音频时的采样率
   static sampleratetype samplerate;
   // 播放音频的缓冲区大小
-  const static int play_buffer_size;
+  static int play_buffer_size;
 
   // 保存路径
   static std::string config_file_path;
@@ -86,9 +89,11 @@ class Config {
   friend XAuidoMixer;
   friend XAudioEncoder;
   friend XAudioDecoder;
+  static void to_json(json& j);
+  static void from_json(const json& j);
 
   // 载入配置
-  static void load(std::string_view config_file);
+  static void load();
 
   // 保存配置
   static void save();

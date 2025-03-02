@@ -43,6 +43,8 @@ include_directories(includes src)
 
 # 日志
 find_package(spdlog CONFIG REQUIRED)
+# json库
+find_package(nlohmann_json REQUIRED)
 # SDL2(Simple DirectMedia Library2)
 find_package(SDL2 REQUIRED)
 # OpenAL(3d音效api)
@@ -94,6 +96,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -108,6 +111,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -122,6 +126,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -134,7 +139,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_link_libraries(
     testxaudiolib
-    PUBLIC spdlog::spdlog
+    PUBLIC 
+		nlohmann_json::nlohmann_json
+		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -145,7 +152,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC spdlog::spdlog
+    PUBLIC 
+		nlohmann_json::nlohmann_json
+		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            SDL2::SDL2
@@ -156,7 +165,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC spdlog::spdlog
+    PUBLIC 
+		nlohmann_json::nlohmann_json
+		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -174,6 +185,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            GLEW::glew
            SDL2::SDL2
            spdlog::spdlog
+					 nlohmann_json::nlohmann_json
            OpenGL::GL
            glm::glm
            glfw
@@ -184,6 +196,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenCL::OpenCL
            GLEW::glew
            spdlog::spdlog
+					 nlohmann_json::nlohmann_json
            OpenGL::GL
            glm::glm
            glfw
@@ -194,6 +207,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     PUBLIC OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::glew
+					 nlohmann_json::nlohmann_json
            SDL2::SDL2
            OpenGL::GL
            glm::glm
