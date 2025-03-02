@@ -15,7 +15,7 @@ class XAudioEngin;
 struct OrbitProps {
   XSound* sound;
   // 播放指针
-  size_t playpos;
+  double playpos;
   // 轨道音量
   float volume;
   // 轨道指针播放速度
@@ -40,6 +40,8 @@ class XAuidoMixer {
   XPlayer* des_player;
   // 全部音轨(音频句柄-音频)
   std::unordered_map<int, std::shared_ptr<XSound>> audio_orbits;
+  // 全部音轨的原始数据
+  std::vector<std::vector<float>> src_pcms;
   // 轨道属性(句柄-属性)
   std::unordered_map<int, OrbitProps> orbit_properties;
   // 未知属性
@@ -67,6 +69,8 @@ class XAuidoMixer {
   // 混合音频
   void mix(const std::vector<std::shared_ptr<XSound>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
+  void mix_pcmdata(std::vector<float>& mixed_pcm, float global_volume);
+  void resample(std::vector<float>& pcm, size_t des_size);
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
 

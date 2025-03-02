@@ -458,8 +458,8 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
     // 不存在
     // 加入此音频
     mixer->add_orbit(audio);
-    XINFO("已添加播放音频句柄[" + std::to_string(audio_id) + "]到[" +
-          std::to_string(device_index) + ":" + outdevice->device_name +
+    XINFO("已添加播放音频句柄[" + std::to_string(audio_id) + ":" + audio->name +
+          "]到[" + std::to_string(device_index) + ":" + outdevice->device_name +
           "]音轨");
   } else {
     if (prop.paused) {

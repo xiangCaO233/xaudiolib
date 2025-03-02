@@ -194,10 +194,20 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
   // LOG_DEBUG("开始混音");
   // 目标数据大小
   size_t des_size = mixed_pcm.size();
+  // 扩充大小
+  for (auto i = src_pcms.size(); i < src_sounds.size(); i++) {
+    src_pcms.emplace_back();
+    src_pcms.back().reserve(10 * Config::mix_buffer_size);
+  }
+  if (src_pcms.size() > src_sounds.size()) {
+    // 移除多余
+    src_pcms.erase(src_pcms.end() - (src_pcms.size() - src_sounds.size()),
+                   src_pcms.end());
+  }
 
-  for (auto &audio : src_sounds) {
+  for (int i = 0; i < src_sounds.size(); i++) {
+    auto &audio = src_sounds[i];
     auto &p = prop(audio->handle);
-
     // 检查属性
     if (!p.sound) {
       XERROR("音频轨道属性出错");
@@ -205,7 +215,6 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
       std::fill(mixed_pcm.begin(), mixed_pcm.end(), 0.0f);
       return;
     }
-
     // 当前音轨播放位置
     auto &playpos = p.playpos;
     // 结束检查
@@ -220,41 +229,41 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
 
     // 获取变速属性
     auto speed = p.speed;
+    // 取出音频数据:
     /*
-     * 目标数据:----------
-     * 倍速0.5x
-     * 实际使用数据:-----
-     * 倍速2x
-     * 实际使用数据:--------------------
+     * speed = 0.5时,取0.5 x des_size
+     * speed = 2时,取2 x des_size
      */
-    audio->temp_data.clear();
-    for (auto i = 0.0f; i < (float)des_size * speed &&
-                        (size_t)((float)playpos + i) < audio->pcm_data.size();
-         i += 1.0f) {
-      // 获取实际使用样本数据放入缓存处
-      audio->temp_data.push_back(audio->pcm_data[p.playpos + (int)i] *
-                                 p.volume * global_volume);
-    }
-    // 补齐缺失数据
-    if (audio->temp_data.size() < (size_t)((float)des_size * speed)) {
-      for (auto i = audio->temp_data.size();
-           i < (size_t)((float)des_size * speed); i++) {
-        audio->temp_data.push_back(0);
+    for (int j = 0; j < speed * (double)des_size; j++) {
+      auto currentpos = std::floor(playpos++);
+      if (currentpos <= audio->pcm_data.size()) {
+        src_pcms[i][j] = audio->pcm_data[currentpos] * p.volume;
+      } else {
+        src_pcms[i][j] = 0;
       }
     }
-
-    // 处理缓存样本数据到目标中,大小应为des_size
-    // 混合(相加)音频到混音结果
-    for (int i = 0; i < des_size; i++) {
-      // 相加所有的采样
-      mixed_pcm[i] = mixed_pcm[i] + audio->temp_data[(int)((float)i * speed)];
-    }
-
-    if (playpos + (int)((float)des_size * speed) >= audio->pcm_data.size()) {
-      // 修正结尾
+    // 修正结尾
+    if (playpos > audio->pcm_data.size()) {
       playpos = audio->pcm_data.size();
-    } else {
-      playpos += (int)((float)des_size * speed);
     }
   }
+  mix_pcmdata(mixed_pcm, global_volume);
+}
+
+void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
+                              float global_volume) {
+  for (auto &pcm : src_pcms) {
+    // 重采样
+    resample(pcm, mixed_pcm.size());
+  }
+  for (size_t i = 0; i < mixed_pcm.size(); i++) {
+    // 混音
+    for (auto &pcm : src_pcms) {
+      mixed_pcm[i] += pcm[i] * global_volume;
+    }
+  }
+}
+
+void XAuidoMixer::resample(std::vector<float> &pcm, size_t des_size) {
+  // TODO(xiang 2025-03-02): 实现重采样
 }

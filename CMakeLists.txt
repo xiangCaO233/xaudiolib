@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.28)
 
 project(xaudiolib LANGUAGES CXX)
 
-set(CMAKE_BUILD_TYPE DEBUG)
 if(MSVC)
   add_compile_options(/utf-8 /EHsc /wd4005)
   add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -15,6 +14,7 @@ endif()
 add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
