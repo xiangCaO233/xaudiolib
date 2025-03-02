@@ -12,6 +12,7 @@
 #include "rbuffer.h"
 
 class XOutputDevice;
+class XAudioManager;
 
 class XPlayer {
  public:
@@ -32,6 +33,8 @@ class XPlayer {
   void pause();
   // 继续
   void resume();
+  // 更改全局播放速度(变调)
+  void ratio(float speed);
 
   // sdl播放回调函数
   static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
@@ -43,6 +46,8 @@ class XPlayer {
   bool paused;
   // 全局音量
   float global_volume;
+  // 全局速度
+  float global_speed{1.0f};
   // 数据请求状态
   bool isrequested{false};
 
@@ -76,6 +81,7 @@ class XPlayer {
   void player_thread();
 
   friend XAudioEngin;
+  friend XAudioManager;
   friend XAuidoMixer;
   friend XOutputDevice;
 };

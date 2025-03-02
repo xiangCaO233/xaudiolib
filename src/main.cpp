@@ -32,6 +32,7 @@ int main(int argc, char* argv[]) {
     SETPOS,
     QUIT,
     PAUSE,
+    SPEED,
     RESUME
   };
   bool quit{false};
@@ -54,6 +55,10 @@ int main(int argc, char* argv[]) {
           }
           case 'a': {
             o = Operate::PLAY;
+            break;
+          }
+          case 'c': {
+            o = Operate::SPEED;
             break;
           }
           case 'q': {
@@ -183,6 +188,13 @@ int main(int argc, char* argv[]) {
                            std::to_string(audioid) + "]音频"
                     << std::endl;
           manager->playAudio(deviceid, audioid, false);
+          break;
+        }
+        case Operate::SPEED: {
+          std::cout << "更改播放器[" + std::to_string(deviceid) + "]速度为[" +
+                           std::to_string(audioid) + "x0.2]x"
+                    << std::endl;
+          manager->setDevicePlaySpeed(deviceid, audioid * 0.2);
           break;
         }
         case Operate::SETPOS: {

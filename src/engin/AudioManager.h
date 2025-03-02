@@ -54,7 +54,10 @@ class XAudioManager {
   void setAudioVolume(const std::string &devicename, const std::string &audio,
                       float v);
 
-  // 设置全局音量
+  // 全局播放速度(变调)
+  float getDevicePlaySpeed(int device_index) const;
+  void setDevicePlaySpeed(int device_index, float speed);
+  // 全局音量
   float getGlobalVolume() const;
   void setGlobalAudioVolume(float volume);
 

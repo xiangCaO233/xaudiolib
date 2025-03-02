@@ -71,6 +71,7 @@ class XAuidoMixer {
            std::vector<float>& mixed_pcm, float global_volume);
   void mix_pcmdata(std::vector<float>& mixed_pcm, float global_volume);
   void resample(std::vector<float>& pcm, size_t des_size);
+  void reset_pcms();
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
 

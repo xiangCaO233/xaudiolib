@@ -5,6 +5,7 @@
 #include <string>
 
 class XAudioEngin;
+class XAudioManager;
 class XPlayer;
 
 class XOutputDevice {
@@ -16,6 +17,7 @@ class XOutputDevice {
   std::shared_ptr<XPlayer> player;
 
   friend XAudioEngin;
+  friend XAudioManager;
 
  public:
   // 构造XOutputDevice

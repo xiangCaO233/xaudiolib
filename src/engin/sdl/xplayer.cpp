@@ -113,13 +113,13 @@ void XPlayer::stop() {
   XINFO("播放线程结束");
   if (mixer->mixthread.joinable()) mixer->mixthread.join();
   XINFO("混音线程结束");
-};
+}
 // 暂停
 void XPlayer::pause() {
   // 暂停
   paused = true;
   cv.notify_all();
-};
+}
 // 继续
 void XPlayer::resume() {
   // 继续
@@ -127,7 +127,17 @@ void XPlayer::resume() {
   // 唤起线程
   cv.notify_all();
   mixercv.notify_all();
-};
+}
+// 更改全局播放速度(变调)
+void XPlayer::ratio(float speed) {
+  pause();
+  stop();
+  // 修改播放采样率
+  desired_spec.freq = static_cast<int>(Config::samplerate) * speed;
+  global_speed = speed;
+  start();
+  resume();
+}
 void XPlayer::set_player_volume(float v) {
   if (v >= 0 && v <= 1.0f) {
     global_volume = v;

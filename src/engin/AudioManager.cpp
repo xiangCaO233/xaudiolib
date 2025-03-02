@@ -2,6 +2,8 @@
 
 #include <spdlog/common.h>
 
+#include <string>
+
 #include "log/colorful-log.h"
 
 XAudioManager::XAudioManager() {
@@ -132,6 +134,21 @@ void XAudioManager::setAudioVolume(const std::string &devicename,
 float XAudioManager::getGlobalVolume() const { return engin->gVolume; }
 void XAudioManager::setGlobalAudioVolume(float volume) {
   engin->setGlobalVolume(volume);
+}
+// 全局播放速度(变调)
+float XAudioManager::getDevicePlaySpeed(int device_index) const {
+  if (!engin->outdevices[device_index]) {
+    XERROR("[" + std::to_string(device_index) + "]设备id不存在");
+    return -1;
+  }
+  return engin->outdevices[device_index]->player->global_speed;
+}
+void XAudioManager::setDevicePlaySpeed(int device_index, float speed) {
+  if (!engin->outdevices[device_index]) {
+    XERROR("[" + std::to_string(device_index) + "]设备id不存在");
+    return;
+  }
+  engin->outdevices[device_index]->player->ratio(speed);
 }
 
 // 播放和暂停音频
