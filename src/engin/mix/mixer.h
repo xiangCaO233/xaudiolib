@@ -6,6 +6,11 @@
 #include <unordered_map>
 #include <vector>
 
+extern "C" {
+#include <libavutil/opt.h>
+#include <libswresample/swresample.h>
+}
+
 #include "../../gpu/gl/shader/shader.h"
 
 class XSound;

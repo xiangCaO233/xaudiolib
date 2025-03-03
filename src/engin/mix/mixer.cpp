@@ -235,14 +235,17 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
      * speed = 0.5时,取0.5 x des_size
      * speed = 2时,取2 x des_size
      */
-    for (int j = 0; j < speed * (double)des_size; j++) {
-      auto currentpos = std::floor(playpos+=1.0);
+    double input_data_size = speed * (double)des_size;
+    for (int j = 0; j < input_data_size; j++) {
+      auto currentpos = std::floor(playpos);
+      playpos++;
       if (currentpos <= (double)audio->pcm_data.size()) {
         src_pcms[i][j] = audio->pcm_data[(int)currentpos] * p.volume;
       } else {
         src_pcms[i][j] = 0;
       }
     }
+    src_pcms[i].resize((int)input_data_size);
     auto t = xutil::pcmpos2milliseconds(
         (size_t)playpos, static_cast<int>(Config::samplerate), 2);
     XINFO("[" + std::to_string(audio->handle) + ":" + audio->name +
@@ -271,35 +274,4 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
 
 void XAuidoMixer::resample(std::vector<float> &pcm, size_t des_size) {
   // TODO(xiang 2025-03-02): 实现重采样
-  int n = pcm.size();
-  // 若原始大小与目标相同，则直接返回
-  if (n == des_size) {
-    return;
-  }
-  // 若原始为空，则直接扩容并填 0
-  if (n == 0) {
-    pcm.resize(des_size, 0.0f);
-    return;
-  }
-  // 当目标长度为1时，直接保留第一个元素即可
-  if (des_size == 1) {
-    pcm.resize(1);
-    return;
-  }
-
-  // 复制原始数据，防止在赋值过程中数据被覆盖
-  std::vector<float> original(pcm.begin(), pcm.end());
-
-  // 确保 pcm 的 size 至少能容纳 des_size 个元素（容量已足够时，resize
-  // 不会触发内存重新分配）
-  pcm.resize(des_size);
-
-  // 对于每个目标下标 i，根据原数据通过线性插值计算新值
-  for (int i = 0; i < des_size; ++i) {
-    float t = i * (n - 1.0f) / (des_size - 1.0f);
-    int idx = static_cast<int>(std::floor(t));
-    int next = std::min(idx + 1, n - 1);
-    float alpha = t - idx;
-    pcm[i] = (1 - alpha) * original[idx] + alpha * original[next];
-  }
 }
