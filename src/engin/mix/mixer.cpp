@@ -236,16 +236,16 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
      * speed = 2时,取2 x des_size
      */
     double input_data_size = speed * (double)des_size;
+    src_pcms[i].resize((int)input_data_size);
     for (int j = 0; j < input_data_size; j++) {
       auto currentpos = std::floor(playpos);
       playpos++;
-      if (currentpos <= (double)audio->pcm_data.size()) {
+      if (currentpos < (double)audio->pcm_data.size()) {
         src_pcms[i][j] = audio->pcm_data[(int)currentpos] * p.volume;
       } else {
         src_pcms[i][j] = 0;
       }
     }
-    src_pcms[i].resize((int)input_data_size);
     auto t = xutil::pcmpos2milliseconds(
         (size_t)playpos, static_cast<int>(Config::samplerate), 2);
     XINFO("[" + std::to_string(audio->handle) + ":" + audio->name +
