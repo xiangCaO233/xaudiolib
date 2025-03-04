@@ -102,7 +102,8 @@ void XAudioEngin::shutdown() {
   Config::save();
 }
 
-int XAudioEngin::load(const std::string &audio) {
+int XAudioEngin::load(const std::string &audio,
+                      std::string &loaded_audio_name) {
   std::filesystem::path path(audio);
   auto extension = path.extension().string();
   if (extension == ".ncm") {
@@ -118,6 +119,7 @@ int XAudioEngin::load(const std::string &audio) {
   }
   auto p = std::filesystem::absolute(path).string();
   auto name = path.filename().string();
+  loaded_audio_name = name;
   auto handelit = handles.find(name);
   if (handelit != handles.end()) {
     XWARN("载入音频[" + audio + "]失败,音频已载入过,句柄[" +

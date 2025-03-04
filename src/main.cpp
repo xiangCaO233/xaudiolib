@@ -22,7 +22,8 @@ int main(int argc, char* argv[]) {
   auto respath = std::filesystem::path("../resources/");
   XINFO("respath:" + respath.string());
   for (const auto& entry : std::filesystem::directory_iterator(respath)) {
-    manager->loadaudio(entry.path().string());
+    std::string temp;
+    manager->loadaudio(entry.path().string(), temp);
   }
 
   enum class Operate {

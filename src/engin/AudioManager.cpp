@@ -28,8 +28,9 @@ void XAudioManager::disableLoggin() const { XLogger::disable(); }
 void XAudioManager::setLogginLevel(int level) const {
   XLogger::setlevel(spdlog::level::level_enum(level));
 }
-int XAudioManager::loadaudio(const std::string &audio) {
-  return engin->load(audio);
+int XAudioManager::loadaudio(const std::string &audio,
+                             std::string &loaded_audio_name) {
+  return engin->load(audio, loaded_audio_name);
 }
 void XAudioManager::unloadaudio(const std::string &audio) {
   engin->unload(audio);

@@ -22,7 +22,7 @@ class XAudioManager {
   // 0-trace,1-debug,2-info,3-warning,4-error,5-critical
   void setLogginLevel(int level) const;
   // 载入音频
-  int loadaudio(const std::string &audio);
+  int loadaudio(const std::string &audio, std::string &loaded_audio_name);
   // 卸载音频
   void unloadaudio(const std::string &audio);
   void unloadaudio(int id);

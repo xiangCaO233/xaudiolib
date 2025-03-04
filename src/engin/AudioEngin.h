@@ -50,7 +50,7 @@ class XAudioEngin {
   float gVolume{0.2f};
 
   // 载入音频
-  int load(const std::string &audio);
+  int load(const std::string &audio, std::string &loaded_audio_name);
 
   // 卸载音频
   void unload(const std::string &audio);

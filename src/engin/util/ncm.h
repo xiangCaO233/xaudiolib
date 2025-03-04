@@ -85,13 +85,13 @@ inline static void convert_music(const std::string &path,
   desdirpath.append("\"");
 
 #ifdef __APPLE__
-  std::string command = std::string("../lib/ncmdump-macos ") + absolutesrcpath +
+  std::string command = std::string("../bin/ncmdump-macos ") + absolutesrcpath +
                         " -o " + desdirpath;
   // 执行命令
   std::system(command.c_str());
 #endif  //__APPLE__
 #ifdef __linux__
-  std::string command = std::string("../lib/ncmdump-linux ") + absolutesrcpath +
+  std::string command = std::string("../bin/ncmdump-linux ") + absolutesrcpath +
                         " -o " + desdirpath;
   // 执行命令
   std::system(command.c_str());
@@ -109,7 +109,7 @@ inline static void convert_music(const std::string &path,
   }
   auto wd = std::string(buffer);
   std::string command = std::string("powershell.exe -Command cd " + wd +
-                                    "; ..\\lib\\ncmdump.exe ") +
+                                    "; ..\\bin\\ncmdump.exe ") +
                         absolutesrcpath + " -o " + desdirpath;
 
   // 获取所需的缓冲区大小
