@@ -19,7 +19,7 @@ sampleratetype Config::samplerate = sampleratetype::AVMEDIA_SAMPLERATE;
 // 播放音频的缓冲区大小(有下限)
 int Config::play_buffer_size = 256;
 // 保存路径
-std::string Config::config_file_path = "./config.json";
+std::string Config::config_file_path = "./config/latest_config.json";
 void Config::to_json(json& j) {
   j = json{{"audio_transfer_method", static_cast<int>(audio_transfer_method)},
            {"decode_thread_count", decode_thread_count},
@@ -41,7 +41,6 @@ void Config::from_json(const json& j) {
 }
 
 void Config::load() {
-  // TODO(xiang 2024-12-16): 读取配置文件
   std::ifstream input(config_file_path);
   if (input) {
     json j;
@@ -53,12 +52,12 @@ void Config::load() {
 };
 
 void Config::save() {
-  // TODO(xiang 2024-12-16): 保存配置文件
   json j;
   to_json(j);
   std::ofstream output(config_file_path);
   if (output) {
-    output << j.dump(4);  // 美化输出，缩进为4
+    // 美化输出，缩进为4
+    output << j.dump(4);
   } else {
     XERROR("无法保存配置文件!");
   }
