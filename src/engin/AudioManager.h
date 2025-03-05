@@ -96,6 +96,13 @@ class XAudioManager {
 
   void stopDevice(int device_id);
   void stopDevice(const std::string &devicename);
+
+  std::unordered_map<std::string, int> *get_handles();
+  std::unordered_map<int, std::shared_ptr<XSound>> *get_audios();
+  std::unordered_map<int, std::shared_ptr<XOutputDevice>> *get_outdevices();
+  std::unordered_map<std::string, int> *get_outdevice_indicies();
+  std::unordered_map<int, std::shared_ptr<XInputDevice>> *get_inputdevices();
+  std::unordered_map<std::string, int> *get_inputdevice_indices();
 };
 
 #endif  // X_AUDIO_MANAGER_H

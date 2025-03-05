@@ -299,3 +299,23 @@ void XAudioManager::stopDevice(const std::string &devicename) {
   }
   engin->stop_player(deviceid);
 }
+std::unordered_map<std::string, int> *XAudioManager::get_handles() {
+  return &engin->handles;
+}
+std::unordered_map<int, std::shared_ptr<XSound>> *XAudioManager::get_audios() {
+  return &engin->audios;
+}
+std::unordered_map<int, std::shared_ptr<XOutputDevice>> *
+XAudioManager::get_outdevices() {
+  return &engin->outdevices;
+}
+std::unordered_map<std::string, int> *XAudioManager::get_outdevice_indicies() {
+  return &engin->outdevice_indicies;
+}
+std::unordered_map<int, std::shared_ptr<XInputDevice>> *
+XAudioManager::get_inputdevices() {
+  return &engin->inputdevices;
+}
+std::unordered_map<std::string, int> *XAudioManager::get_inputdevice_indices() {
+  return &engin->inputdevice_indicies;
+}
