@@ -9,8 +9,6 @@ class XAudioManager;
 class XPlayer;
 
 class XOutputDevice {
-  // 设备名称
-  std::string device_name;
   // 设备sdlid(仅索引)
   int sdl_id;
   // 播放器
@@ -20,6 +18,8 @@ class XOutputDevice {
   friend XAudioManager;
 
  public:
+  // 设备名称
+  std::string device_name;
   // 构造XOutputDevice
   XOutputDevice(int id, std::string name);
   // 析构XOutputDevice

@@ -14,6 +14,8 @@ endif()
 add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_VISIBILITY_PRESET default)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -176,6 +178,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            glm::glm
            glfw
            PkgConfig::ffmpeg)
+	set_target_properties(xaudio-dev PROPERTIES INTERFACE_LINK_LIBRARIES "${CMAKE_LINK_INTERFACE_LIBRARIES}")
+	set_target_properties(xaudio-dev PROPERTIES LINK_INTERFACE_MULTIPLICITY 1)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
