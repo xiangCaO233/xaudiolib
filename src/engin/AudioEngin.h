@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "engin/sdl/xplayer.h"
+#include "sdl/xplayer.h"
 #if defined(__APPLE__)
 // 苹果coreaudio库
 #include <AudioToolbox/AudioToolbox.h>
@@ -18,11 +18,11 @@
 #include <unordered_map>
 
 #include "Sound.h"
-#include "engin/codec/decoder.h"
-#include "engin/codec/encoder.h"
-#include "engin/device/indevice.h"
-#include "engin/device/outdevice.h"
-#include "engin/mix/mixer.h"
+#include "codec/decoder.h"
+#include "codec/encoder.h"
+#include "device/indevice.h"
+#include "device/outdevice.h"
+#include "mix/mixer.h"
 
 class XAudioEngin {
   // 引擎接口

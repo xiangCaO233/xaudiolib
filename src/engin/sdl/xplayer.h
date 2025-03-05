@@ -8,7 +8,7 @@
 #include <mutex>
 #include <thread>
 
-#include "engin/mix/mixer.h"
+#include "../mix/mixer.h"
 #include "rbuffer.h"
 
 class XOutputDevice;
