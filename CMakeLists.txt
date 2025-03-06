@@ -178,8 +178,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            glm::glm
            glfw
            PkgConfig::ffmpeg)
-	set_target_properties(xaudio-dev PROPERTIES INTERFACE_LINK_LIBRARIES "${CMAKE_LINK_INTERFACE_LIBRARIES}")
-	set_target_properties(xaudio-dev PROPERTIES LINK_INTERFACE_MULTIPLICITY 1)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(

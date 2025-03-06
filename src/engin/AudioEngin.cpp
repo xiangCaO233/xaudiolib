@@ -173,9 +173,6 @@ int XAudioEngin::load(const std::string &audio,
                                               sound->pcm_data) >= 0) {
         XINFO("解码[" + sound->name + "]成功");
         XINFO("音频数据大小:[" + std::to_string(sound->pcm_data.size()) + "]");
-        // 最低0.05x倍速
-        sound->temp_data.reserve(Config::mix_buffer_size * 20);
-        XINFO("已分配变速缓存空间");
       } else {
         XERROR("解码出现问题");
         handelit = handles.find(name);

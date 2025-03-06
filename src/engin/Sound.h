@@ -15,8 +15,6 @@ class XSound {
   int handle;
   // pcm声音数据
   std::vector<float> pcm_data;
-  // 缓存数据
-  std::vector<float> temp_data;
   // 音频文件名
   const std::string name;
   // 音频路径
@@ -37,12 +35,14 @@ class XSound {
   // 析构XSound
   virtual ~XSound();
 
-  // 调整位置(按帧)
-  void locateframe(size_t frameindex) const;
-  // 调整位置(按采样)
-  void locatesample(size_t sampleindex) const;
-  // 调整位置(按时间)
-  void locatetime(size_t milliseconds) const;
+  // 获取位置(按帧)
+  size_t locateframe(size_t frameindex) const;
+  // 获取位置(按采样)
+  size_t locatesample(size_t sampleindex) const;
+  // 获取位置(按时间)
+  size_t locatetime(size_t milliseconds) const;
+  // 获取音频数据大小
+  size_t get_pcm_data_size() const;
 };
 
 #endif  // X_AUDIO_SOUND_H
