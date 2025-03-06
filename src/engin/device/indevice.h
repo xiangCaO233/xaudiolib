@@ -15,7 +15,7 @@ class XInputDevice {
 
  public:
   // 构造XInputDevice
-  XInputDevice(int id, std::string name);
+  XInputDevice(int id, std::string &name);
   // 析构XInputDevice
   virtual ~XInputDevice();
 };

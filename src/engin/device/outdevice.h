@@ -21,7 +21,7 @@ class XOutputDevice {
   // 播放器
   std::shared_ptr<XPlayer> player;
   // 构造XOutputDevice
-  XOutputDevice(int id, std::string name);
+  XOutputDevice(int id, std::string &name);
   // 析构XOutputDevice
   virtual ~XOutputDevice();
 
