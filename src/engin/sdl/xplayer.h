@@ -20,26 +20,6 @@ class XPlayer {
   XPlayer();
   // 析构XPlayer
   virtual ~XPlayer();
-
-  // 设置设备索引
-  void set_device_index(int device_index);
-  void set_player_volume(float v);
-
-  // 开始
-  void start();
-  // 终止
-  void stop();
-  // 暂停
-  void pause();
-  // 继续
-  void resume();
-  // 更改全局播放速度(变调)
-  void ratio(float speed);
-
-  // sdl播放回调函数
-  static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
-
- private:
   // 播放线程运行状态
   bool running;
   // 播放暂停状态
@@ -80,10 +60,23 @@ class XPlayer {
 
   void player_thread();
 
-  friend XAudioEngin;
-  friend XAudioManager;
-  friend XAuidoMixer;
-  friend XOutputDevice;
+  // 设置设备索引
+  void set_device_index(int device_index);
+  void set_player_volume(float v);
+
+  // 开始
+  void start();
+  // 终止
+  void stop();
+  // 暂停
+  void pause();
+  // 继续
+  void resume();
+  // 更改全局播放速度(变调)
+  void ratio(float speed);
+
+  // sdl播放回调函数
+  static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);
 };
 
 #endif  // X_AUDIO_PLAYER_H

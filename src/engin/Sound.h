@@ -4,13 +4,10 @@
 #include <string>
 #include <vector>
 
-class XAudioManager;
-class XAudioEngin;
-class XAuidoMixer;
-
 struct AVFormatContext;
 
 class XSound {
+ public:
   // 句柄(id)
   int handle;
   // pcm声音数据
@@ -22,14 +19,6 @@ class XSound {
   // 音频格式
   AVFormatContext *audio_format;
 
-  friend XAudioManager;
-  friend XAudioEngin;
-  friend XAuidoMixer;
-  friend XAudioManager;
-  friend XAudioEngin;
-  friend XAuidoMixer;
-
- public:
   // 构造XSound
   XSound(int h, std::string n, std::string p, AVFormatContext *f);
   // 析构XSound

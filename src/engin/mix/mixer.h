@@ -14,11 +14,12 @@ extern "C" {
 
 #include "../../gpu/gl/shader/shader.h"
 
-class XSound;
 class XPlayer;
-class XAudioEngin;
 
 class XAuidoMixer {
+ public:
+  // 全部音轨(句柄-轨道)
+  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
   // 混音线程
   std::thread mixthread;
   // 是否已初始化gl上下文
@@ -41,9 +42,6 @@ class XAuidoMixer {
   // 片段着色器源代码
   static const char* fragmentshader_source;
 
-  friend XAudioEngin;
-  friend XPlayer;
-
   // 混合音频
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
@@ -52,10 +50,6 @@ class XAuidoMixer {
   void reset_pcms();
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
-
- public:
-  // 全部音轨(句柄-轨道)
-  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
   // 添加音频轨道
   void add_orbit(const std::shared_ptr<XSound>& sound);
   // 移除音频轨道

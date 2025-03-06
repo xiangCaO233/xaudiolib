@@ -3,17 +3,13 @@
 
 #include <string>
 
-class XAudioEngin;
-
 class XInputDevice {
+ public:
   // 设备名称
   std::string device_name;
   // 设备sdlid
   int sdl_id;
 
-  friend XAudioEngin;
-
- public:
   // 构造XInputDevice
   XInputDevice(int id, std::string &name);
   // 析构XInputDevice
