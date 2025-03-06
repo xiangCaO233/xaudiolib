@@ -30,8 +30,6 @@ class XAuidoMixer {
   static const char* fsource;
   // 目标播放器指针(仅传递方便访问,不释放,其他地方已管理)
   XPlayer* des_player;
-  // 全部音轨(句柄-轨道)
-  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
   // 未知音轨
   XAudioOrbit unknown_orbit;
   // 全部音轨的原始数据
@@ -46,13 +44,6 @@ class XAuidoMixer {
   friend XAudioEngin;
   friend XPlayer;
 
-  // 添加音频轨道
-  void add_orbit(const std::shared_ptr<XSound>& sound);
-  // 移除音频轨道
-  bool remove_orbit(const std::shared_ptr<XSound>& sound);
-  // 设置循环标识
-  void setloop(int audio_handle, bool isloop);
-
   // 混合音频
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
@@ -63,6 +54,14 @@ class XAuidoMixer {
   void send_pcm_thread();
 
  public:
+  // 全部音轨(句柄-轨道)
+  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
+  // 添加音频轨道
+  void add_orbit(const std::shared_ptr<XSound>& sound);
+  // 移除音频轨道
+  bool remove_orbit(const std::shared_ptr<XSound>& sound);
+  // 设置循环标识
+  void setloop(int audio_handle, bool isloop);
   // 构造XAuidoMixer
   explicit XAuidoMixer(XPlayer* player);
   // 析构XAuidoMixer
