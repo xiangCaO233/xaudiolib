@@ -40,12 +40,6 @@ void main(){
 
 XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   XINFO("初始化混音器");
-  unknown_prop.sound = nullptr;
-  unknown_prop.playpos = -1;
-  unknown_prop.loop = false;
-  unknown_prop.paused = false;
-  unknown_prop.volume = -1.0f;
-  unknown_prop.speed = -1.0f;
   if (!isglinitialized) {
     XWARN("gl上下文未初始化");
     XINFO("正在初始化gl上下文");
@@ -91,17 +85,11 @@ XAuidoMixer::~XAuidoMixer() {
 }
 
 // 添加音频轨道
-void XAuidoMixer::add_orbit(const std::shared_ptr<XSound> &orbit) {
-  // 加入音轨
-  audio_orbits[orbit->handle] = orbit;
-  // 初始化音轨属性
-  auto &prop = orbit_properties[orbit->handle];
-  prop.loop = false;
-  prop.paused = false;
-  prop.playpos = 0;
-  prop.sound = orbit.get();
-  prop.speed = 1.0f;
-  prop.volume = 1.0f;
+void XAuidoMixer::add_orbit(const std::shared_ptr<XSound> &audio) {
+  // 创建音轨
+  auto orbit = std::make_shared<XAudioOrbit>(audio);
+  audio_orbits.try_emplace(audio->handle, orbit);
+  XDEBUG("添加音轨:[" + audio->name + "]");
 };
 // 移除音频轨道
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &orbit) {
@@ -111,32 +99,18 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &orbit) {
     return false;
   }
   audio_orbits.erase(orbitit);
-  auto propit = orbit_properties.find(orbit->handle);
-  if (propit == orbit_properties.end()) {
-    XWARN("此混音器不存在音轨[" + orbit->name + "]");
-    return false;
-  }
-  orbit_properties.erase(propit);
+
   XINFO("已移除音轨[" + std::to_string(orbit->handle) + "]");
   return true;
 };
 // 设置循环标识
 void XAuidoMixer::setloop(int audio_handle, bool isloop) {
-  auto propit = orbit_properties.find(audio_handle);
-  if (propit == orbit_properties.end()) {
-    XWARN("此设备上不存在音轨--音频句柄[" + std::to_string(audio_handle) + "]");
+  auto orbitit = audio_orbits.find(audio_handle);
+  if (orbitit == audio_orbits.end()) {
+    XWARN("此混音器不存在音轨[" + std::to_string(audio_handle) + "]");
     return;
   }
-  propit->second.loop = isloop;
-};
-// 获取轨道属性
-OrbitProps &XAuidoMixer::prop(int audio_handle) {
-  auto propit = orbit_properties.find(audio_handle);
-  if (propit == orbit_properties.end()) {
-    XWARN("未找到音轨--音频句柄[" + std::to_string(audio_handle) + "]");
-    return unknown_prop;
-  }
-  return propit->second;
+  orbitit->second->loop = isloop;
 };
 
 void XAuidoMixer::send_pcm_thread() {
@@ -159,12 +133,11 @@ void XAuidoMixer::send_pcm_thread() {
     // 混合数据
     std::vector<float> mixed_pcm(size, 0);
     // 记录需要混合的音频
-    auto sounds = std::vector<std::shared_ptr<XSound>>();
+    auto sounds = std::vector<std::shared_ptr<XAudioOrbit>>();
 
     bool shouldplay = false;
     for (const auto &[handle, audio] : audio_orbits) {
-      const auto &p = prop(audio->handle);
-      if (!p.paused) {
+      if (!audio->paused) {
         // LOG_DEBUG("检测到需要播放的音频");
         shouldplay = true;
         // 加入待混音列表
@@ -190,8 +163,9 @@ void XAuidoMixer::send_pcm_thread() {
 }
 
 // 混合音频
-void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
-                      std::vector<float> &mixed_pcm, float global_volume) {
+void XAuidoMixer::mix(
+    const std::vector<std::shared_ptr<XAudioOrbit>> &src_sounds,
+    std::vector<float> &mixed_pcm, float global_volume) {
   // LOG_DEBUG("开始混音");
   // 目标数据大小
   size_t des_size = mixed_pcm.size();
@@ -208,28 +182,28 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
 
   for (int i = 0; i < src_sounds.size(); i++) {
     auto &audio = src_sounds[i];
-    auto &p = prop(audio->handle);
     // 检查属性
-    if (!p.sound) {
+    if (!audio->sound) {
       XERROR("音频轨道属性出错");
       // 暂时静音
       std::fill(mixed_pcm.begin(), mixed_pcm.end(), 0.0f);
       return;
     }
     // 当前音轨播放位置
-    auto &playpos = p.playpos;
+    auto &playpos = audio->playpos;
     // 结束检查
-    if (playpos >= audio->pcm_data.size()) {
+    if (playpos >= audio->sound->pcm_data.size()) {
       // 检查结尾
-      XTRACE("[" + std::to_string(audio->handle) + "]播放结束");
-      playpos = 0;
-      auto &loop = p.loop;
-
-      if (!loop) loop = true;
+      XTRACE("[" + std::to_string(audio->sound->handle) + "]播放结束");
+      if (audio->loop) {
+        playpos = 0;
+      } else {
+        audio->paused = true;
+      }
     }
 
     // 获取变速属性
-    auto speed = p.speed;
+    auto speed = audio->speed;
     // 取出音频数据:
     /*
      * speed = 0.5时,取0.5 x des_size
@@ -240,19 +214,20 @@ void XAuidoMixer::mix(const std::vector<std::shared_ptr<XSound>> &src_sounds,
     for (int j = 0; j < input_data_size; j++) {
       auto currentpos = std::floor(playpos);
       playpos++;
-      if (currentpos < (double)audio->pcm_data.size()) {
-        src_pcms[i][j] = audio->pcm_data[(int)currentpos] * p.volume;
+      if (currentpos < (double)audio->sound->pcm_data.size()) {
+        src_pcms[i][j] =
+            audio->sound->pcm_data[(int)currentpos] * audio->volume;
       } else {
         src_pcms[i][j] = 0;
       }
     }
     auto t = xutil::pcmpos2milliseconds(
         (size_t)playpos, static_cast<int>(Config::samplerate), 2);
-    XINFO("[" + std::to_string(audio->handle) + ":" + audio->name +
-          "]:当前播放位置:[" + std::to_string(t) + "ms]");
+    XINFO("[" + std::to_string(audio->sound->handle) + ":" +
+          audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
     // 修正结尾
-    if (playpos > (double)audio->pcm_data.size()) {
-      playpos = (double)audio->pcm_data.size();
+    if (playpos > (double)audio->sound->pcm_data.size()) {
+      playpos = (double)audio->sound->pcm_data.size();
     }
   }
   mix_pcmdata(mixed_pcm, global_volume);
