@@ -22,7 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
-set(MIXER_SOURCES src/gpu/gl/shader/shader.cpp src/engin/mix/mixer.cpp)
+set(MIXER_SOURCES src/gpu/gl/shader/shader.cpp src/engin/mix/mixer.cpp src/engin/mix/AudioOrbit.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
 set(SDL_SOURCES src/engin/sdl/rbuffer.cpp src/engin/sdl/xmicrophone.cpp
                 src/engin/sdl/xplayer.cpp)
