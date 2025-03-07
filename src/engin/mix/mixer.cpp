@@ -223,11 +223,14 @@ void XAuidoMixer::mix(
     }
     auto t = xutil::pcmpos2milliseconds(
         (size_t)playpos, static_cast<int>(Config::samplerate), 2);
-    XINFO("[" + std::to_string(audio->sound->handle) + ":" +
-          audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
     // 修正结尾
     if (playpos > (double)audio->sound->pcm_data.size()) {
       playpos = (double)audio->sound->pcm_data.size();
+    }
+    XINFO("[" + std::to_string(audio->sound->handle) + ":" +
+          audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
+    for (const auto &callback : audio->playpos_callbacks) {
+      callback->playpos_call(playpos);
     }
   }
   mix_pcmdata(mixed_pcm, global_volume);
