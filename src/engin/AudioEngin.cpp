@@ -124,7 +124,7 @@ int XAudioEngin::load(const std::string &audio,
   if (handelit != handles.end()) {
     XWARN("载入音频[" + audio + "]失败,音频已载入过,句柄[" +
           std::to_string(handelit->second) + "]");
-    return currentid;
+    return handelit->second;
   } else {
     XINFO("正在打开音频[" + audio + "]");
     // 添加句柄
