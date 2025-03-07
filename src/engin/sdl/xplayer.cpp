@@ -15,7 +15,7 @@
 
 XPlayer::XPlayer()
     : running(false), paused(false), rbuffer(Config::mix_buffer_size) {
-  XINFO("初始化播放器");
+  XTRACE("初始化播放器");
   // sdl配置
   // 播放采样率
   desired_spec.freq = static_cast<int>(Config::samplerate);
@@ -30,6 +30,7 @@ XPlayer::XPlayer()
   // 用户数据
   desired_spec.userdata = this;
   mixer = std::make_unique<XAuidoMixer>(this);
+  XINFO("初始化播放器完成");
 }
 
 XPlayer::~XPlayer() {

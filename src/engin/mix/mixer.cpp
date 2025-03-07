@@ -82,7 +82,7 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
       XERROR("混音器创建失败");
     }
   } else {
-    XWARN("混音器已初始化过");
+    XWARN("gl已初始化过");
   }
 }
 

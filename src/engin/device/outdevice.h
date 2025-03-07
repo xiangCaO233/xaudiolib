@@ -8,6 +8,7 @@ class XPlayer;
 
 class XOutputDevice {
  public:
+  float device_volume{1.0f};
   // 设备sdlid(仅索引)
   int sdl_id;
   // 设备名称
@@ -22,6 +23,9 @@ class XOutputDevice {
 
   // 创建一个位于该设备的播放器
   bool creat_player();
+
+  // 设置设备音量
+  void set_device_volume(float volume);
 };
 
 #endif  // X_AUDIO_OUTDEVICE_H
