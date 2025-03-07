@@ -92,13 +92,12 @@ XAuidoMixer::~XAuidoMixer() {
 
 // 添加音频轨道
 void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
-  std::mutex mutex;
-  {
-    std::lock_guard<std::mutex> lock(mutex);
-    audio_orbits.insert({orbit->sound->handle, orbit});
-  }
-  XDEBUG("添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
+  audio_orbits.try_emplace(orbit->sound->handle, orbit);
+  XDEBUG("已添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
          orbit->sound->name + "]");
+  XDEBUG("音轨信息:[paused:" + std::to_string(orbit->paused) + "]");
+  XDEBUG("播放器信息:[paused:" + std::to_string(des_player->paused) + "]");
+
   if (!orbit->paused && des_player->paused) {
     des_player->resume();
   }
