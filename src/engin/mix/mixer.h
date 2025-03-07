@@ -51,9 +51,9 @@ class XAuidoMixer {
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
   // 添加音频轨道
-  void add_orbit(const std::shared_ptr<XSound>& sound);
+  void add_orbit(const std::shared_ptr<XAudioOrbit>& sound);
   // 移除音频轨道
-  bool remove_orbit(const std::shared_ptr<XSound>& sound);
+  bool remove_orbit(const std::shared_ptr<XAudioOrbit>& sound);
   // 设置循环标识
   void setloop(int audio_handle, bool isloop);
   // 构造XAuidoMixer

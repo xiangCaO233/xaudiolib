@@ -85,22 +85,22 @@ XAuidoMixer::~XAuidoMixer() {
 }
 
 // 添加音频轨道
-void XAuidoMixer::add_orbit(const std::shared_ptr<XSound> &audio) {
-  // 创建音轨
-  auto orbit = std::make_shared<XAudioOrbit>(audio);
-  audio_orbits.try_emplace(audio->handle, orbit);
-  XDEBUG("添加音轨:[" + audio->name + "]");
+void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
+  audio_orbits.try_emplace(orbit->sound->handle, orbit);
+  XDEBUG("添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
+         orbit->sound->name + "]");
 };
 // 移除音频轨道
-bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &orbit) {
-  auto orbitit = audio_orbits.find(orbit->handle);
+bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
+  auto orbitit = audio_orbits.find(orbit->sound->handle);
   if (orbitit == audio_orbits.end()) {
-    XWARN("此混音器不存在音轨[" + orbit->name + "]");
+    XWARN("此混音器不存在音轨[" + orbit->sound->name + "]");
     return false;
   }
   audio_orbits.erase(orbitit);
 
-  XINFO("已移除音轨[" + std::to_string(orbit->handle) + "]");
+  XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
+        orbit->sound->name + "]");
   return true;
 };
 // 设置循环标识
