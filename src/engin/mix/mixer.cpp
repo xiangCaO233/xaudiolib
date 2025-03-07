@@ -103,6 +103,19 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
         orbit->sound->name + "]");
   return true;
 };
+bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &audio) {
+  auto orbitit = audio_orbits.find(audio->handle);
+  if (orbitit == audio_orbits.end()) {
+    XWARN("此混音器不存在音轨[" + audio->name + "]");
+    return false;
+  }
+  audio_orbits.erase(orbitit);
+
+  XINFO("已移除音轨[" + std::to_string(audio->handle) + ":" + audio->name +
+        "]");
+  return true;
+};
+
 // 设置循环标识
 void XAuidoMixer::setloop(int audio_handle, bool isloop) {
   auto orbitit = audio_orbits.find(audio_handle);

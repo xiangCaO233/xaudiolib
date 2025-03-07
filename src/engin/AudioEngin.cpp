@@ -476,7 +476,8 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
           "]设备音轨中不存在音频[" + std::to_string(audio_id) + "]");
     // 不存在
     // 加入此音频
-    mixer->add_orbit(audio);
+    auto orbit = std::make_shared<XAudioOrbit>(audio);
+    mixer->add_orbit(orbit);
     XINFO("已添加播放音频句柄[" + std::to_string(audio_id) + ":" + audio->name +
           "]到[" + std::to_string(device_index) + ":" + outdevice->device_name +
           "]音轨");
