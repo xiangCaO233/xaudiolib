@@ -16,19 +16,25 @@
 XPlayer::XPlayer()
     : running(false), paused(false), rbuffer(Config::mix_buffer_size) {
   XTRACE("初始化播放器");
+  desired_spec = new SDL_AudioSpec;
+  obtained_spec = new SDL_AudioSpec;
+  device_id = new SDL_AudioDeviceID;
   // sdl配置
   // 播放采样率
-  desired_spec.freq = static_cast<int>(Config::samplerate);
+  (*(SDL_AudioSpec *)desired_spec).freq = static_cast<int>(Config::samplerate);
   // 浮点数据型(自动转换字节序大小端)
-  desired_spec.format = AUDIO_F32;
+  (*(SDL_AudioSpec *)desired_spec).format = AUDIO_F32;
   // 声道数
-  desired_spec.channels = static_cast<uint8_t>(Config::channel);
+  (*(SDL_AudioSpec *)desired_spec).channels =
+      static_cast<uint8_t>(Config::channel);
   // 播放缓冲区大小
-  desired_spec.samples = static_cast<uint16_t>(Config::play_buffer_size);
+  (*(SDL_AudioSpec *)desired_spec).samples =
+      static_cast<uint16_t>(Config::play_buffer_size);
   // 设置回调
-  desired_spec.callback = &XPlayer::sdl_audio_callback;
+  (*(SDL_AudioSpec *)desired_spec).callback = &XPlayer::sdl_audio_callback;
   // 用户数据
-  desired_spec.userdata = this;
+  (*(SDL_AudioSpec *)desired_spec).userdata = this;
+
   mixer = std::make_unique<XAuidoMixer>(this);
   XINFO("初始化播放器完成");
 }
@@ -36,6 +42,9 @@ XPlayer::XPlayer()
 XPlayer::~XPlayer() {
   // 确保资源释放
   stop();
+  delete (SDL_AudioSpec *)desired_spec;
+  delete (SDL_AudioSpec *)obtained_spec;
+  delete (SDL_AudioDeviceID *)device_id;
   XTRACE("析构[" + std::to_string(outdevice_index) + "]设备播放器");
 }
 // 设置设备索引
@@ -45,8 +54,11 @@ void XPlayer::set_device_index(int device_index) {
 
 void XPlayer::player_thread() {
   // 打开设备
-  device_id = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0), 0,
-                                  &desired_spec, &obtained_spec, 0);
+  auto did = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(outdevice_index, 0), 0,
+                                 (SDL_AudioSpec *)desired_spec,
+                                 (SDL_AudioSpec *)obtained_spec, 0);
+  *((SDL_AudioDeviceID *)device_id) = did;
+
   if (!device_id) {
     auto error = SDL_GetError();
     XERROR(std::string("启动设备时出错,请检查SDL设备索引,当前为[") +
@@ -57,7 +69,7 @@ void XPlayer::player_thread() {
     XINFO("成功打开设备[" + std::to_string(outdevice_index) + "]");
   }
   // 开始播放
-  SDL_PauseAudioDevice(device_id, 0);
+  SDL_PauseAudioDevice(*(SDL_AudioDeviceID *)device_id, 0);
 
   while (running) {
     {
@@ -78,7 +90,7 @@ void XPlayer::player_thread() {
     cv.wait(lock, [this]() { return paused || !running; });
   }
 
-  SDL_CloseAudioDevice(device_id);
+  SDL_CloseAudioDevice(*(SDL_AudioDeviceID *)device_id);
 }
 
 // 开始
@@ -110,7 +122,7 @@ void XPlayer::stop() {
   // 等待线程正常结束
   if (sdl_playthread.joinable()) sdl_playthread.join();
   // 暂停sdl设备
-  SDL_PauseAudioDevice(device_id, 1);
+  SDL_PauseAudioDevice(*(SDL_AudioDeviceID *)device_id, 1);
   XINFO("播放线程结束");
   if (mixer->mixthread.joinable()) mixer->mixthread.join();
   XINFO("混音线程结束");
@@ -134,7 +146,8 @@ void XPlayer::ratio(float speed) {
   pause();
   stop();
   // 修改播放采样率
-  desired_spec.freq = static_cast<int>(Config::samplerate) * speed;
+  (*(SDL_AudioSpec *)desired_spec).freq =
+      static_cast<int>(Config::samplerate) * speed;
   global_speed = speed;
   start();
   resume();
