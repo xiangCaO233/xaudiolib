@@ -39,7 +39,7 @@ void main(){
 )";
 
 XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
-  XINFO("初始化混音器");
+  XTRACE("初始化混音器");
   if (!isglinitialized) {
     XWARN("gl上下文未初始化");
     XINFO("正在初始化gl上下文");
@@ -66,17 +66,23 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
           isglinitialized = true;
           // 终止glfw,防止未响应
           glfwTerminate();
+          XINFO("混音器创建成功");
         } else {
           XCRITICAL("glew初始化失败");
+          XERROR("混音器创建失败");
           glfwTerminate();
         }
       } else {
         XERROR("glfw窗体上下文初始化失败");
+        XERROR("混音器创建失败");
         glfwTerminate();
       }
     } else {
       XCRITICAL("glfw初始化失败");
+      XERROR("混音器创建失败");
     }
+  } else {
+    XWARN("混音器已初始化过");
   }
 }
 
@@ -89,6 +95,9 @@ void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
   audio_orbits.try_emplace(orbit->sound->handle, orbit);
   XDEBUG("添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
          orbit->sound->name + "]");
+  if (!orbit->paused && des_player->paused) {
+    des_player->resume();
+  }
 };
 // 移除音频轨道
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
@@ -101,6 +110,19 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
 
   XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
         orbit->sound->name + "]");
+
+  // 检查是否应该继续播放
+  bool shouldplay = false;
+  for (const auto &[handle, orbit] : audio_orbits) {
+    if (!orbit->paused) {
+      shouldplay = true;
+      break;
+    }
+  }
+  if (!shouldplay) {
+    des_player->pause();
+  }
+
   return true;
 };
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &audio) {

@@ -16,5 +16,6 @@ XOutputDevice::~XOutputDevice() {
 bool XOutputDevice::creat_player() {
   player = std::make_shared<XPlayer>();
   player->set_device_index(sdl_id);
+  XTRACE("成功创建输出设备:[" + device_name + "]上的播放器");
   return player != nullptr;
 };
