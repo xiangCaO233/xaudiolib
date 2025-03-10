@@ -168,6 +168,7 @@ int XAudioEngin::load(const std::string &audio,
         streamindex = av_find_best_stream(format, AVMEDIA_TYPE_AUDIO, -1, -1,
                                           nullptr, -1);
       codecit = audio_codecs.find(extension);
+      bool is_planner_storage;
       // 解码数据(直接填充到表所处内存中)
       if (codecit->second.first->decode_audio(format, streamindex,
                                               sound->pcm_data) >= 0) {
@@ -423,8 +424,7 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
     return;
   }
   auto pos =
-      xutil::milliseconds2pcmpos(time, static_cast<int>(Config::samplerate),
-                                 static_cast<uint8_t>(Config::channel));
+      xutil::milliseconds2pcmpos(time, static_cast<int>(Config::samplerate));
   orbitit->second->playpos = pos;
   XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
         "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
