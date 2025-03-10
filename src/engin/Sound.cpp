@@ -1,7 +1,5 @@
 #include "Sound.h"
 
-#include <libavutil/samplefmt.h>
-
 #include <utility>
 
 #include "log/colorful-log.h"
@@ -14,7 +12,6 @@ XSound::XSound(int h, std::string n, std::string p, AVFormatContext *f)
     : handle(h), name(std::move(n)), path(std::move(p)), audio_format(f) {
   XTRACE("XSound初始化");
 }
-
 XSound::~XSound() { av_free(audio_format); }
 
 // 获取位置(按帧)

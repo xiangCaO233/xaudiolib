@@ -33,17 +33,7 @@ int XAudioDecoder::decode_audio(AVFormatContext *format, int streamIndex,
   av_channel_layout_default(&out_channel_layout,
                             static_cast<int>(Config::channel));
   auto out_sample_rate = static_cast<int>(Config::samplerate);
-
-  /*
-   *采样格式		交错 (Interleaved)	非交错 (Planar)
-   *AV_SAMPLE_FMT_U8	✅	❌
-   *AV_SAMPLE_FMT_S16	✅	❌
-   *AV_SAMPLE_FMT_FLT	✅	❌
-   *AV_SAMPLE_FMT_S16P	❌	✅
-   *AV_SAMPLE_FMT_FLTP	❌	✅
-   */
-
-  enum AVSampleFormat out_sample_format = AV_SAMPLE_FMT_FLTP;
+  enum AVSampleFormat out_sample_format = AV_SAMPLE_FMT_FLT;
 
   int sampler_allocat_ret = swr_alloc_set_opts2(
       &resampler, &out_channel_layout, out_sample_format, out_sample_rate,

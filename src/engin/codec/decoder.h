@@ -26,8 +26,8 @@ class XAudioDecoder {
   // 析构XAudioDecoder
   virtual ~XAudioDecoder();
   // 解码整个音频
-  int decode_audio(AVFormatContext* format, int streamIndex,
-                   std::vector<float>& pcm_data);
+  int decode_audio(AVFormatContext* format,
+                   int streamIndex, std::vector<float>& pcm_data);
 };
 
 #endif  // X_AUDIO_DECODER_H

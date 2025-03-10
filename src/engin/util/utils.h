@@ -5,11 +5,13 @@
 #include <cstdint>
 
 namespace xutil {
-inline int64_t pcmpos2milliseconds(size_t pos, int pcmsamplerate) {
-  return pos * 1000 / pcmsamplerate;
+inline int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate,
+                                   int channels) {
+  return pcmpos * 1000 / pcmsamplerate / channels;
 }
-inline size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate) {
-  return milliseconds * pcmsamplerate / 1000;
+inline size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
+                                  int channels) {
+  return milliseconds * pcmsamplerate / 1000 * channels;
 }
 }  // namespace xutil
 

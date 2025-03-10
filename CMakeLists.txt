@@ -75,7 +75,6 @@ else()
     libswresample
     libavcodec
     libavformat)
-	pkg_check_modules(Rubberband REQUIRED rubberband)
 endif(WIN32)
 
 # 可执行程序
@@ -100,7 +99,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
 					 nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -116,7 +114,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
 					 nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -132,7 +129,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
 					 nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -147,7 +143,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     testxaudiolib
     PUBLIC 
 		nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
 		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -161,7 +156,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     xaudio
     PUBLIC 
 		nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
 		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -175,7 +169,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     xaudio-dev
     PUBLIC 
 		nlohmann_json::nlohmann_json
-					 ${RUBBERBAND_LIBRARIES}
 		spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
