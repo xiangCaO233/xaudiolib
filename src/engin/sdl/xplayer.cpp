@@ -21,19 +21,19 @@ XPlayer::XPlayer()
   device_id = new SDL_AudioDeviceID;
   // sdl配置
   // 播放采样率
-  (*(SDL_AudioSpec *)desired_spec).freq = static_cast<int>(Config::samplerate);
+  ((SDL_AudioSpec *)desired_spec)->freq = static_cast<int>(Config::samplerate);
   // 浮点数据型(自动转换字节序大小端)
-  (*(SDL_AudioSpec *)desired_spec).format = AUDIO_F32;
+  ((SDL_AudioSpec *)desired_spec)->format = AUDIO_F32;
   // 声道数
-  (*(SDL_AudioSpec *)desired_spec).channels =
+  ((SDL_AudioSpec *)desired_spec)->channels =
       static_cast<uint8_t>(Config::channel);
   // 播放缓冲区大小
-  (*(SDL_AudioSpec *)desired_spec).samples =
+  ((SDL_AudioSpec *)desired_spec)->samples =
       static_cast<uint16_t>(Config::play_buffer_size);
   // 设置回调
-  (*(SDL_AudioSpec *)desired_spec).callback = &XPlayer::sdl_audio_callback;
+  ((SDL_AudioSpec *)desired_spec)->callback = &XPlayer::sdl_audio_callback;
   // 用户数据
-  (*(SDL_AudioSpec *)desired_spec).userdata = this;
+  ((SDL_AudioSpec *)desired_spec)->userdata = this;
 
   mixer = std::make_unique<XAuidoMixer>(this);
   XINFO("初始化播放器完成");
@@ -146,7 +146,7 @@ void XPlayer::ratio(float speed) {
   pause();
   stop();
   // 修改播放采样率
-  (*(SDL_AudioSpec *)desired_spec).freq =
+  ((SDL_AudioSpec *)desired_spec)->freq =
       static_cast<int>(Config::samplerate) * speed;
   global_speed = speed;
   start();
