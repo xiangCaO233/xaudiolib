@@ -422,9 +422,8 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
           "]上不存在音轨句柄[" + std::to_string(id) + "]");
     return;
   }
-  auto pos =
-      xutil::milliseconds2pcmpos(time, static_cast<int>(Config::samplerate),
-                                 static_cast<uint8_t>(Config::channel));
+  auto pos = xutil::milliseconds2plannerpcmpos(
+      time, static_cast<int>(Config::samplerate));
   orbitit->second->playpos = pos;
   XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
         "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
