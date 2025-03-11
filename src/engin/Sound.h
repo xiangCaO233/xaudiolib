@@ -12,6 +12,9 @@ class XSound {
   int handle;
   // pcm声音数据
   std::vector<float> pcm_data;
+
+  // pcm数据(分声道)
+  std::vector<std::vector<float>> pcm;
   // 音频文件名
   const std::string name;
   // 音频路径

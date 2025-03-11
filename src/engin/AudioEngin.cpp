@@ -169,12 +169,13 @@ int XAudioEngin::load(const std::string &audio,
                                           nullptr, -1);
       codecit = audio_codecs.find(extension);
       // 解码数据(直接填充到表所处内存中)
-      if (codecit->second.first->decode_audio(format, streamindex,
-                                              sound->pcm_data) >= 0) {
-        XINFO("解码[" + sound->name + "]成功");
-        XINFO("音频数据大小:[" + std::to_string(sound->pcm_data.size()) + "]");
+      if (codecit->second.first->decode_audio_planner(format, streamindex,
+                                                      sound->pcm) >= 0) {
+        XINFO("解码为planner[" + sound->name + "]成功");
+        XINFO("音频数据大小:L[" + std::to_string(sound->pcm[0].size() * 4) +
+              "],R[" + std::to_string(sound->pcm[1].size() * 4) + "]");
       } else {
-        XERROR("解码出现问题");
+        XERROR("解码为planner出现问题");
         handelit = handles.find(name);
         handles.erase(handelit);
         auto audioit = audios.find(currentid);
@@ -183,6 +184,22 @@ int XAudioEngin::load(const std::string &audio,
 
         return -1;
       }
+
+      // if (codecit->second.first->decode_audio(format, streamindex,
+      //                                         sound->pcm_data) >= 0) {
+      //   XINFO("解码[" + sound->name + "]成功");
+      //   XINFO("音频数据大小:[" + std::to_string(sound->pcm_data.size()) +
+      //   "]");
+      // } else {
+      //   XERROR("解码出现问题");
+      //   handelit = handles.find(name);
+      //   handles.erase(handelit);
+      //   auto audioit = audios.find(currentid);
+      //   audios.erase(audioit);
+      //   audio_codecs.erase(codecit);
+
+      //  return -1;
+      //}
     } else {
       XERROR("打开[" + audio + "]失败,请检查文件");
       return -1;
