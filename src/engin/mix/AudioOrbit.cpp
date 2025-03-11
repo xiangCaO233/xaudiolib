@@ -8,11 +8,13 @@
 XAudioOrbit::XAudioOrbit(std::shared_ptr<XSound> audio) : sound(audio){};
 // 析构XAudioOrbit
 XAudioOrbit::~XAudioOrbit() = default;
+
 // 添加播放位置回调
 void XAudioOrbit::add_playpos_callback(
     std::shared_ptr<PlayposCallBack> callback) {
   playpos_callbacks.push_back(callback);
 };
+
 // 移除回调
 void XAudioOrbit::remove_playpos_callback(
     std::shared_ptr<PlayposCallBack> callback) {

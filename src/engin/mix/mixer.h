@@ -33,8 +33,8 @@ class XAuidoMixer {
   XPlayer* des_player;
   // 未知音轨
   XAudioOrbit unknown_orbit;
-  // 全部音轨的原始数据
-  std::vector<std::vector<float>> src_pcms;
+  // 全部音轨的原始数据-Planner
+  std::vector<std::vector<std::vector<float>>> pcms;
   // 着色器程序
   // Shader* shader;
   // 顶点着色器源代码
@@ -46,8 +46,8 @@ class XAuidoMixer {
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
   void mix_pcmdata(std::vector<float>& mixed_pcm, float global_volume);
-  void resample(std::vector<float>& pcm, size_t des_size);
-  void reset_pcms();
+  // Planner存储的数据拉伸
+  void stretch(std::vector<std::vector<float>>& pcm, size_t des_size);
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
   // 添加音频轨道

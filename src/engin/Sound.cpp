@@ -9,7 +9,7 @@ extern "C" {
 }
 
 XSound::XSound(int h, std::string n, std::string p, AVFormatContext *f)
-    : handle(h), name(std::move(n)), path(std::move(p)), audio_format(f) {
+    : handle(h), name(n), path(p), audio_format(f) {
   XTRACE("XSound初始化");
 }
 XSound::~XSound() { av_free(audio_format); }
@@ -32,4 +32,4 @@ size_t XSound::locatetime(size_t milliseconds) const {
 }
 
 // 获取音频数据大小
-size_t XSound::get_pcm_data_size() const { return pcm_data.size(); }
+size_t XSound::get_pcm_data_size() const { return pcm.size() * pcm[0].size(); }

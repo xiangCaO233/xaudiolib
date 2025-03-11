@@ -188,7 +188,7 @@ void XAuidoMixer::send_pcm_thread() {
     }
     if (!shouldplay) {
       // 没有需要播放的音频了
-      XINFO("全部音频播放结束,已暂停");
+      XINFO("全部音频播放结束,mixer已暂停");
       des_player->rbuffer.write(0.0f, des_player->rbuffer.available());
       des_player->pause();
     } else {
@@ -205,17 +205,24 @@ void XAuidoMixer::mix(
     const std::vector<std::shared_ptr<XAudioOrbit>> &src_sounds,
     std::vector<float> &mixed_pcm, float global_volume) {
   // LOG_DEBUG("开始混音");
-  // 目标数据大小
-  size_t des_size = mixed_pcm.size();
+  // 目标数据大小(sdl需求的交错存储的数据)
+  size_t des_size = mixed_pcm.size() / static_cast<int>(Config::channel);
+
   // 扩充大小
-  for (auto i = src_pcms.size(); i < src_sounds.size(); i++) {
-    src_pcms.emplace_back();
-    src_pcms.back().reserve(10 * Config::mix_buffer_size);
+  for (auto i = pcms.size(); i < src_sounds.size(); i++) {
+    // 添加音频
+    pcms.emplace_back();
+    // 添加各个声道
+    for (int i = 0; i < static_cast<int>(Config::channel); i++) {
+      pcms.back().emplace_back();
+      // 为每个声道预分配空间(至少四倍-最低0.25x倍速)
+      pcms.back().back().reserve(4 * des_size);
+    }
   }
-  if (src_pcms.size() > src_sounds.size()) {
+
+  if (pcms.size() > src_sounds.size()) {
     // 移除多余
-    src_pcms.erase(src_pcms.end() - (src_pcms.size() - src_sounds.size()),
-                   src_pcms.end());
+    pcms.erase(pcms.end() - (pcms.size() - src_sounds.size()), pcms.end());
   }
 
   for (int i = 0; i < src_sounds.size(); i++) {
@@ -227,10 +234,12 @@ void XAuidoMixer::mix(
       std::fill(mixed_pcm.begin(), mixed_pcm.end(), 0.0f);
       return;
     }
+
     // 当前音轨播放位置
     auto &playpos = audio->playpos;
-    // 结束检查
-    if (playpos >= audio->sound->pcm_data.size()) {
+
+    // 结束检查(检查一个声道即可)
+    if (playpos >= audio->sound->pcm[0].size()) {
       // 检查结尾
       XTRACE("[" + std::to_string(audio->sound->handle) + "]播放结束");
       if (audio->loop) {
@@ -248,24 +257,33 @@ void XAuidoMixer::mix(
      * speed = 2时,取2 x des_size
      */
     double input_data_size = speed * (double)des_size;
-    src_pcms[i].resize((int)input_data_size);
-    for (int j = 0; j < input_data_size; j++) {
-      auto currentpos = std::floor(playpos);
-      playpos++;
-      if (currentpos < (double)audio->sound->pcm_data.size()) {
-        src_pcms[i][j] =
-            audio->sound->pcm_data[(int)currentpos] * audio->volume;
-      } else {
-        src_pcms[i][j] = 0;
-      }
-    }
-    // 修正结尾
-    if (playpos > (double)audio->sound->pcm_data.size()) {
-      playpos = (double)audio->sound->pcm_data.size();
+
+    // 为每个声道调整尺寸
+    for (int j = 0; j < static_cast<int>(Config::channel); j++) {
+      pcms[i][j].resize((int)input_data_size);
     }
 
-    auto t = xutil::pcmpos2milliseconds(
-        (size_t)playpos, static_cast<int>(Config::samplerate), 2);
+    for (int j = 0; j < input_data_size; j++) {
+      auto currentpos = std::floor(playpos);
+      // 转移每个声道的数据
+      for (int k = 0; k < static_cast<int>(Config::channel); k++) {
+        if (currentpos < (double)audio->sound->pcm[k].size()) {
+          // 第i个音频第k个声道第j个数据
+          pcms[i][k][j] = audio->sound->pcm[k][(int)currentpos] * audio->volume;
+        } else {
+          pcms[i][k][j] = 0;
+        }
+      }
+      playpos++;
+    }
+
+    // 修正结尾
+    if (playpos > (double)audio->sound->pcm[0].size()) {
+      playpos = (double)audio->sound->pcm[0].size();
+    }
+
+    auto t = xutil::plannerpcmpos2milliseconds(
+        (size_t)playpos, static_cast<int>(Config::samplerate));
     XINFO("[" + std::to_string(audio->sound->handle) + ":" +
           audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
 
@@ -278,18 +296,20 @@ void XAuidoMixer::mix(
 
 void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
-  for (auto &pcm : src_pcms) {
-    // 重采样
-    resample(pcm, mixed_pcm.size());
+  for (auto &pcm : pcms) {
+    // 拉伸
+    stretch(pcm, mixed_pcm.size());
   }
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
-    for (auto &pcm : src_pcms) {
-      mixed_pcm[i] += pcm[i] * global_volume;
+    for (auto &pcm : pcms) {
+      // 交错写入混音数据行
+      mixed_pcm[i] += pcm[i % 2][i / 2] * global_volume;
     }
   }
 }
 
-void XAuidoMixer::resample(std::vector<float> &pcm, size_t des_size) {
-  // TODO(xiang 2025-03-02): 实现重采样
+void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
+                          size_t des_size) {
+  // TODO(xiang 2025-03-02): 实现拉伸
 }
