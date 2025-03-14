@@ -34,6 +34,7 @@ class XAuidoMixer {
   // 未知音轨
   XAudioOrbit unknown_orbit;
   // 全部音轨的原始数据-Planner
+  // index1:音频索引;index2:声道索引;index3:数据索引
   std::vector<std::vector<std::vector<float>>> pcms;
   // 着色器程序
   // Shader* shader;

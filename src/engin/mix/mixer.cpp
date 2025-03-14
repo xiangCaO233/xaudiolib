@@ -1,5 +1,7 @@
 #include "mixer.h"
 
+#include <rubberband/RubberBandStretcher.h>
+
 #include <cmath>
 #include <cstddef>
 #include <memory>
@@ -258,24 +260,25 @@ void XAuidoMixer::mix(
      */
     double input_data_size = speed * (double)des_size;
 
-    // 为每个声道调整尺寸
+    // 为每个声道调整数组大小
     for (int j = 0; j < static_cast<int>(Config::channel); j++) {
       pcms[i][j].resize((int)input_data_size);
     }
 
-    for (int j = 0; j < input_data_size; j++) {
-      auto currentpos = std::floor(playpos);
-      // 转移每个声道的数据
-      for (int k = 0; k < static_cast<int>(Config::channel); k++) {
-        if (currentpos < (double)audio->sound->pcm[k].size()) {
+    // 转移每个声道的数据
+    for (int k = 0; k < static_cast<int>(Config::channel); k++) {
+      for (int j = 0; j < input_data_size; j++) {
+        if (playpos + j < (double)audio->sound->pcm[k].size()) {
           // 第i个音频第k个声道第j个数据
-          pcms[i][k][j] = audio->sound->pcm[k][(int)currentpos] * audio->volume;
+          pcms[i][k][j] =
+              audio->sound->pcm[k][(int)(playpos + j)] * audio->volume;
         } else {
+          // 超过结尾填充0
           pcms[i][k][j] = 0;
         }
       }
-      playpos++;
     }
+    playpos += input_data_size;
 
     // 修正结尾
     if (playpos > (double)audio->sound->pcm[0].size()) {
@@ -312,4 +315,19 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
 void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
                           size_t des_size) {
   // TODO(xiang 2025-03-02): 实现拉伸
+  float *pcmdata_ptr[pcm.size()];
+  for (int i = 0; i < pcm.size(); i++) {
+    pcmdata_ptr[i] = pcm[i].data();
+  }
+  /*
+   *
+   * RubberBandStretcher(size_t sampleRate,
+   *                     size_t channels,
+   *                     Options options = DefaultOptions,
+   *                     double initialTimeRatio = 1.0,
+   *                     double initialPitchScale = 1.0);
+   */
+  RubberBand::RubberBandStretcher s(
+      static_cast<int>(Config::samplerate), static_cast<int>(Config::channel),
+      RubberBand::RubberBandStretcher::OptionProcessRealTime, 1.0);
 }

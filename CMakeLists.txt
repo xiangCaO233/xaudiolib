@@ -75,6 +75,8 @@ else()
     libswresample
     libavcodec
     libavformat)
+	# rubberband库
+	pkg_check_modules(RUBBERBAND REQUIRED rubberband)
 endif(WIN32)
 
 # 可执行程序
@@ -98,6 +100,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 ${RUBBERBAND_LIBRARIES}
 					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
@@ -113,6 +116,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 ${RUBBERBAND_LIBRARIES}
 					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
@@ -128,6 +132,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
+					 ${RUBBERBAND_LIBRARIES}
 					 nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
@@ -144,6 +149,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     PUBLIC 
 		nlohmann_json::nlohmann_json
 		spdlog::spdlog
+		${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -157,6 +163,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     PUBLIC 
 		nlohmann_json::nlohmann_json
 		spdlog::spdlog
+		${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            SDL2::SDL2
@@ -170,6 +177,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     PUBLIC 
 		nlohmann_json::nlohmann_json
 		spdlog::spdlog
+		${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
