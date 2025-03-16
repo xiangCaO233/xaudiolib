@@ -301,7 +301,7 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
   for (auto &pcm : pcms) {
     // 拉伸
-    stretch(pcm, mixed_pcm.size());
+    stretch(pcm, mixed_pcm.size() / static_cast<int>(Config::channel));
   }
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
@@ -315,19 +315,72 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
 void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
                           size_t des_size) {
   // TODO(xiang 2025-03-02): 实现拉伸
-  float *pcmdata_ptr[pcm.size()];
-  for (int i = 0; i < pcm.size(); i++) {
-    pcmdata_ptr[i] = pcm[i].data();
+  if (pcm.empty() || pcm[0].empty() || des_size == 0) return;
+
+  const size_t original_size = pcm[0].size();
+  const size_t num_channels = pcm.size();
+  if (original_size == 0 || original_size == des_size) return;
+
+  const float ratio =
+      static_cast<float>(des_size) / static_cast<float>(original_size);
+
+  RubberBand::RubberBandStretcher *stretcher;
+  auto it = stretchers.find(ratio);
+  if (it == stretchers.end() || it->second.available() < 0) {
+    stretchers.erase(ratio);  // 移除旧的 stretcher
+    auto [new_it, inserted] = stretchers.try_emplace(
+        ratio, static_cast<int>(Config::samplerate),
+        static_cast<int>(num_channels),
+        RubberBand::RubberBandStretcher::OptionProcessRealTime, ratio, 1.0);
+    stretcher = &(new_it->second);
+  } else {
+    stretcher = &it->second;
   }
-  /*
-   *
-   * RubberBandStretcher(size_t sampleRate,
-   *                     size_t channels,
-   *                     Options options = DefaultOptions,
-   *                     double initialTimeRatio = 1.0,
-   *                     double initialPitchScale = 1.0);
-   */
-  RubberBand::RubberBandStretcher s(
-      static_cast<int>(Config::samplerate), static_cast<int>(Config::channel),
-      RubberBand::RubberBandStretcher::OptionProcessRealTime, 1.0);
+
+  std::vector<std::vector<float>> stretched_pcm(num_channels,
+                                                std::vector<float>(des_size));
+  std::vector<float *> output_ptrs(num_channels);
+  for (size_t ch = 0; ch < num_channels; ++ch) {
+    output_ptrs[ch] = stretched_pcm[ch].data();
+  }
+
+  const size_t block_size = 256;
+  size_t processed = 0;
+  while (processed < original_size) {
+    size_t remaining = original_size - processed;
+    size_t chunk_size = std::min(block_size, remaining);
+    bool is_final = (processed + chunk_size) >= original_size;
+
+    std::vector<const float *> input_ptrs(num_channels);
+    for (size_t ch = 0; ch < num_channels; ++ch) {
+      input_ptrs[ch] = pcm[ch].data() + processed;
+    }
+
+    stretcher->process(input_ptrs.data(), chunk_size, is_final);
+    processed += chunk_size;
+
+    while (stretcher->available() > 0) {
+      const int avail = stretcher->available();
+      const size_t to_read = std::min(static_cast<size_t>(avail), des_size);
+      const int received = stretcher->retrieve(output_ptrs.data(), to_read);
+      if (received <= 0) break;
+
+      for (auto &ptr : output_ptrs) ptr += received;
+    }
+  }
+
+  // 结束处理
+  stretcher->process(nullptr, 0, true);
+
+  // 读取剩余输出
+  while (stretcher->available() > 0) {
+    const int avail = stretcher->available();
+    const size_t to_read = std::min(static_cast<size_t>(avail), des_size);
+    const int received = stretcher->retrieve(output_ptrs.data(), to_read);
+    if (received <= 0) break;
+
+    for (auto &ptr : output_ptrs) ptr += received;
+  }
+
+  pcm = std::move(stretched_pcm);
 }

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "engin/mix/AudioOrbit.h"
@@ -15,6 +16,9 @@ extern "C" {
 #include "../../gpu/gl/shader/shader.h"
 
 class XPlayer;
+namespace RubberBand {
+class RubberBandStretcher;
+}
 
 class XAuidoMixer {
  public:
@@ -42,7 +46,8 @@ class XAuidoMixer {
   static const char* vertexshader_source;
   // 片段着色器源代码
   static const char* fragmentshader_source;
-
+  // 拉伸器
+  std::unordered_map<float, RubberBand::RubberBandStretcher> stretchers;
   // 混合音频
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
