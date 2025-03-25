@@ -314,29 +314,45 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
 
 void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
                           size_t des_size) {
-  // TODO(xiang 2025-03-02): 实现拉伸
+  // 无需要处理的数据,直接返回
   if (pcm.empty() || pcm[0].empty() || des_size == 0) return;
 
+  // 原始数据大小(单声道)
   const size_t original_size = pcm[0].size();
+  // 声道数量
   const size_t num_channels = pcm.size();
-  if (original_size == 0 || original_size == des_size) return;
+  // 原始大小与目标大小相同,拉伸倍率为1.0,不作处理,直接返回
+  if (original_size == des_size) return;
 
+  // 计算实际需要拉伸的倍率
   const float ratio =
       static_cast<float>(des_size) / static_cast<float>(original_size);
 
-  RubberBand::RubberBandStretcher *stretcher;
-  auto it = stretchers.find(ratio);
-  if (it == stretchers.end() || it->second.available() < 0) {
-    stretchers.erase(ratio);  // 移除旧的 stretcher
-    auto [new_it, inserted] = stretchers.try_emplace(
-        ratio, static_cast<int>(Config::samplerate),
-        static_cast<int>(num_channels),
-        RubberBand::RubberBandStretcher::OptionProcessRealTime, ratio, 1.0);
-    stretcher = &(new_it->second);
-  } else {
-    stretcher = &it->second;
-  }
+  // 构造拉伸器
+  RubberBand::RubberBandStretcher stretcher(
+      static_cast<int>(Config::samplerate), static_cast<int>(num_channels),
+      RubberBand::RubberBandStretcher::OptionEngineFiner |  // R3引擎,时间精确
+          RubberBand::RubberBandStretcher::
+              OptionProcessOffline |  // 离线处理,一次完成全部数据
+          RubberBand::RubberBandStretcher::
+              OptionChannelsTogether |  // 所有声道一起分析
+          RubberBand::RubberBandStretcher::OptionWindowShort |   // 短窗口,提速
+          RubberBand::RubberBandStretcher::OptionThreadingAuto,  // 自动选择线程
+      ratio, des_player->global_pitch);
 
+  // 转化为rubberband需要的数组指针
+  // 准备输入数据指针
+  std::vector<const float *> input_ptrs(num_channels);
+  for (size_t ch = 0; ch < num_channels; ++ch) {
+    input_ptrs[ch] = pcm[ch].data();
+  }
+  // 学习样本
+  stretcher.study(input_ptrs.data(), original_size, true);
+  // 一次性提交所有数据
+  stretcher.process(input_ptrs.data(), original_size, true);
+
+  // 准备输出缓冲区
+  // 定义拉伸后的数据行
   std::vector<std::vector<float>> stretched_pcm(num_channels,
                                                 std::vector<float>(des_size));
   std::vector<float *> output_ptrs(num_channels);
@@ -344,43 +360,8 @@ void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
     output_ptrs[ch] = stretched_pcm[ch].data();
   }
 
-  const size_t block_size = 256;
-  size_t processed = 0;
-  while (processed < original_size) {
-    size_t remaining = original_size - processed;
-    size_t chunk_size = std::min(block_size, remaining);
-    bool is_final = (processed + chunk_size) >= original_size;
-
-    std::vector<const float *> input_ptrs(num_channels);
-    for (size_t ch = 0; ch < num_channels; ++ch) {
-      input_ptrs[ch] = pcm[ch].data() + processed;
-    }
-
-    stretcher->process(input_ptrs.data(), chunk_size, is_final);
-    processed += chunk_size;
-
-    while (stretcher->available() > 0) {
-      const int avail = stretcher->available();
-      const size_t to_read = std::min(static_cast<size_t>(avail), des_size);
-      const int received = stretcher->retrieve(output_ptrs.data(), to_read);
-      if (received <= 0) break;
-
-      for (auto &ptr : output_ptrs) ptr += received;
-    }
-  }
-
-  // 结束处理
-  stretcher->process(nullptr, 0, true);
-
-  // 读取剩余输出
-  while (stretcher->available() > 0) {
-    const int avail = stretcher->available();
-    const size_t to_read = std::min(static_cast<size_t>(avail), des_size);
-    const int received = stretcher->retrieve(output_ptrs.data(), to_read);
-    if (received <= 0) break;
-
-    for (auto &ptr : output_ptrs) ptr += received;
-  }
-
-  pcm = std::move(stretched_pcm);
+  // 获取处理后的数据(阻塞，直到所有数据处理完成)
+  stretcher.retrieve(output_ptrs.data(), des_size);
+  // 替换原始数据
+  pcm.swap(stretched_pcm);
 }

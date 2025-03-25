@@ -26,6 +26,8 @@ class XPlayer {
   float global_volume;
   // 全局速度
   float global_speed{1.0f};
+  // 全局音调
+  float global_pitch{1.0f};
   // 数据请求状态
   bool isrequested{false};
   // 混音互斥锁
@@ -68,6 +70,8 @@ class XPlayer {
   void resume();
   // 更改全局播放速度(变调)
   void ratio(float speed);
+  // 更改全局音调
+  void pitch(float pth);
 
   // sdl播放回调函数
   static void sdl_audio_callback(void* userdata, uint8_t* stream, int len);

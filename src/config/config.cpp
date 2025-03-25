@@ -11,7 +11,7 @@ int Config::decode_thread_count = 4;
 // 混音方式
 mixtype Config::mix_method = mixtype::CPU_MIX;
 // 混音处理时的环形缓冲区大小(至少为play_buffer_size 的48倍,否则影响音频)
-int Config::mix_buffer_size = 73728;
+int Config::mix_buffer_size = 36864;
 // 播放音频时的声道数
 channels Config::channel = channels::AUDIO_DOUBLE_CHANNEL;
 // 播放音频时的采样率

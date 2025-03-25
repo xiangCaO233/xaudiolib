@@ -8,7 +8,7 @@ class XPlayer;
 
 class XOutputDevice {
  public:
-  float device_volume{1.0f};
+  float device_volume{0.5f};
   // 设备sdlid(仅索引)
   int sdl_id;
   // 设备名称

@@ -152,6 +152,13 @@ void XPlayer::ratio(float speed) {
   start();
   resume();
 }
+// 更改全局音调
+void XPlayer::pitch(float pth) {
+  if (pth >= 0.2 && pth <= 2.0) {
+    global_pitch = pth;
+  }
+}
+// 设置播放器音量
 void XPlayer::set_player_volume(float v) {
   if (v >= 0 && v <= 1.0f) {
     global_volume = v;
