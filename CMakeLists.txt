@@ -22,7 +22,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
-set(MIXER_SOURCES src/gpu/gl/shader/shader.cpp src/engin/mix/mixer.cpp src/engin/mix/AudioOrbit.cpp)
+set(MIXER_SOURCES src/gpu/gl/shader/shader.cpp src/engin/mix/mixer.cpp
+                  src/engin/mix/AudioOrbit.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
 set(SDL_SOURCES src/engin/sdl/rbuffer.cpp src/engin/sdl/xmicrophone.cpp
                 src/engin/sdl/xplayer.cpp)
@@ -75,8 +76,8 @@ else()
     libswresample
     libavcodec
     libavformat)
-	# rubberband库
-	pkg_check_modules(RUBBERBAND REQUIRED rubberband)
+  # rubberband库
+  pkg_check_modules(RUBBERBAND REQUIRED rubberband)
 endif(WIN32)
 
 # 可执行程序
@@ -100,8 +101,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-					 ${RUBBERBAND_LIBRARIES}
-					 nlohmann_json::nlohmann_json
+           /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
+           nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -116,8 +117,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-					 ${RUBBERBAND_LIBRARIES}
-					 nlohmann_json::nlohmann_json
+           /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
+           nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -132,8 +133,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     PUBLIC ${COREAUDIO_LIBRARY}
            ${AUDIOTOOLBOX_LIBRARY}
            ${AUDIOUNIT_LIBRARY}
-					 ${RUBBERBAND_LIBRARIES}
-					 nlohmann_json::nlohmann_json
+           ${RUBBERBAND_LIBRARIES}
+           nlohmann_json::nlohmann_json
            spdlog::spdlog
            OpenAL::OpenAL
            OpenCL::OpenCL
@@ -144,12 +145,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
            SDL2::SDL2
            PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  # rubberband库
+  pkg_check_modules(RUBBERBAND REQUIRED rubberband)
   target_link_libraries(
     testxaudiolib
-    PUBLIC 
-		nlohmann_json::nlohmann_json
-		spdlog::spdlog
-		${RUBBERBAND_LIBRARIES}
+    PUBLIC nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -160,10 +162,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
-    PUBLIC 
-		nlohmann_json::nlohmann_json
-		spdlog::spdlog
-		${RUBBERBAND_LIBRARIES}
+    PUBLIC nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            SDL2::SDL2
@@ -174,10 +175,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
            PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
-    PUBLIC 
-		nlohmann_json::nlohmann_json
-		spdlog::spdlog
-		${RUBBERBAND_LIBRARIES}
+    PUBLIC nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
            OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::GLEW
@@ -195,7 +195,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            GLEW::glew
            SDL2::SDL2
            spdlog::spdlog
-					 nlohmann_json::nlohmann_json
+           nlohmann_json::nlohmann_json
            OpenGL::GL
            glm::glm
            glfw
@@ -206,7 +206,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
            OpenCL::OpenCL
            GLEW::glew
            spdlog::spdlog
-					 nlohmann_json::nlohmann_json
+           nlohmann_json::nlohmann_json
            OpenGL::GL
            glm::glm
            glfw
@@ -217,7 +217,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     PUBLIC OpenAL::OpenAL
            OpenCL::OpenCL
            GLEW::glew
-					 nlohmann_json::nlohmann_json
+           nlohmann_json::nlohmann_json
            SDL2::SDL2
            OpenGL::GL
            glm::glm
