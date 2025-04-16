@@ -37,7 +37,7 @@ class XLogger {
   static std::shared_ptr<spdlog::logger> logger;
 
  public:
-  static void init();
+  static void init(const char* name);
   static void shutdown();
   static void enable();
   static void disable();

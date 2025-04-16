@@ -16,7 +16,7 @@ XAudioManager::XAudioManager() {
 XAudioManager::~XAudioManager() { XTRACE("销毁音频管理器"); }
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
-  XLogger::init();
+  XLogger::init("xaudiolib");
   return std::make_shared<XAudioManager>();
 }
 
