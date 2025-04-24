@@ -22,7 +22,7 @@ class XAudioOrbit {
   // 轨道音量
   float volume{1.0f};
   // 轨道指针播放速度
-  float speed{0.5f};
+  float speed{1.0f};
   // 轨道暂停标识
   bool paused{false};
   // 轨道循环标识
