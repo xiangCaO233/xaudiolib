@@ -45,7 +45,6 @@ XPlayer::~XPlayer() {
   delete (SDL_AudioSpec *)desired_spec;
   delete (SDL_AudioSpec *)obtained_spec;
   delete (SDL_AudioDeviceID *)device_id;
-  XTRACE("析构[" + std::to_string(outdevice_index) + "]设备播放器");
 }
 // 设置设备索引
 void XPlayer::set_device_index(int device_index) {

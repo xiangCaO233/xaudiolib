@@ -88,9 +88,7 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
   }
 }
 
-XAuidoMixer::~XAuidoMixer() {
-  XTRACE("析构[" + std::to_string(des_player->outdevice_index) + "]混音器");
-}
+XAuidoMixer::~XAuidoMixer() {}
 
 // 添加音频轨道
 void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {

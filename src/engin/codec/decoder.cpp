@@ -16,9 +16,7 @@ XAudioDecoder::XAudioDecoder(AVCodecID id) : decoder_id_name(id) {
   }
 }
 
-XAudioDecoder::~XAudioDecoder() {
-  XTRACE("销毁解码器[" + std::string(avcodec_get_name(decoder_id_name)) + "]");
-}
+XAudioDecoder::~XAudioDecoder() {}
 
 int XAudioDecoder::decode_audio(AVFormatContext *format, int streamIndex,
                                 std::vector<float> &pcm_data) {

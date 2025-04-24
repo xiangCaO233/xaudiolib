@@ -1,4 +1,5 @@
 #include "encoder.h"
+
 #include "log/colorful-log.h"
 
 XAudioEncoder::XAudioEncoder(AVCodecID id) {

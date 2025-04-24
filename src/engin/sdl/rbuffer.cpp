@@ -7,7 +7,7 @@ ringbuffer::ringbuffer(size_t size)
   buffer = std::make_shared<float[]>(size + 1);
   readbuffer = std::make_shared<float[]>(size);
 }
-ringbuffer::~ringbuffer() { XTRACE("销毁环形缓冲区"); };
+ringbuffer::~ringbuffer() {};
 
 // 可读数据量
 size_t ringbuffer::readable() const {

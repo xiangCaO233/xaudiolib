@@ -13,7 +13,7 @@ XAudioManager::XAudioManager() {
   if (engin) XINFO("初始化引擎成功");
 }
 
-XAudioManager::~XAudioManager() { XTRACE("销毁音频管理器"); }
+XAudioManager::~XAudioManager() {}
 
 std::shared_ptr<XAudioManager> XAudioManager::newmanager() {
   XLogger::init("xaudiolib");

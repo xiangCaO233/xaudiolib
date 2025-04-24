@@ -20,10 +20,7 @@
 int XAudioEngin::currentid = 0;
 
 XAudioEngin::XAudioEngin() { XINFO("XAudioEngin初始化"); }
-XAudioEngin::~XAudioEngin() {
-  shutdown();
-  XTRACE("引擎已关闭");
-}
+XAudioEngin::~XAudioEngin() { shutdown(); }
 
 std::unique_ptr<XAudioEngin> XAudioEngin::init() {
   XINFO("初始化音频引擎");
@@ -117,10 +114,12 @@ int XAudioEngin::load(const std::string &audio,
       extension = path.extension().string();
     }
   }
-  auto p = std::filesystem::absolute(path).string();
+  // 规范化路径
+  auto p = std::filesystem::weakly_canonical(std::filesystem::absolute(path))
+               .string();
   auto name = path.filename().string();
   loaded_audio_name = name;
-  auto handelit = handles.find(name);
+  auto handelit = handles.find(p);
   if (handelit != handles.end()) {
     XWARN("载入音频[" + audio + "]失败,音频已载入过,句柄[" +
           std::to_string(handelit->second) + "]");
@@ -137,12 +136,12 @@ int XAudioEngin::load(const std::string &audio,
 
       auto sound = std::make_shared<XSound>(currentid, name, p, audioformat);
       audios.try_emplace(currentid, sound);
-      handles[name] = currentid;
+      handles[p] = currentid;
       // 获取流信息
       if (avformat_find_stream_info(format, nullptr) < 0) {
         XWARN("获取流信息失败");
         // 清理前面塞入的数据
-        handelit = handles.find(name);
+        handelit = handles.find(p);
         handles.erase(handelit);
         auto audioit = audios.find(currentid);
         audios.erase(audioit);
@@ -176,7 +175,7 @@ int XAudioEngin::load(const std::string &audio,
               std::to_string(sound->get_pcm_data_size() * 4) + "]");
       } else {
         XERROR("解码出现问题");
-        handelit = handles.find(name);
+        handelit = handles.find(p);
         handles.erase(handelit);
         auto audioit = audios.find(currentid);
         audios.erase(audioit);
@@ -205,7 +204,7 @@ void XAudioEngin::unload(int id) {
   auto audioit = audios.find(id);
   if (audioit != audios.end()) {
     // 删除句柄
-    auto handelit = handles.find(audioit->second->name);
+    auto handelit = handles.find(audioit->second->path);
     handles.erase(handelit);
     // TODO(xiang 2024-12-19): 还需要删除所有设备中的此音轨
     XINFO("已卸载[" + audioit->second->name + "],句柄:[" + std::to_string(id) +
@@ -293,6 +292,7 @@ const std::string &XAudioEngin::audio_name(int id) {
   is_audio_loaded(id, res);
   return res->name;
 }
+
 // 获取音频路径
 const std::string &XAudioEngin::audio_path(int id) {
   std::shared_ptr<XSound> res;

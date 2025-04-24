@@ -8,9 +8,7 @@
 XOutputDevice::XOutputDevice(int id, std::string &name)
     : sdl_id(id), device_name(name) {}
 
-XOutputDevice::~XOutputDevice() {
-  XTRACE("销毁输出设备:[" + device_name + "]");
-}
+XOutputDevice::~XOutputDevice() {}
 
 // 创建一个位于该设备的播放器
 bool XOutputDevice::creat_player() {
