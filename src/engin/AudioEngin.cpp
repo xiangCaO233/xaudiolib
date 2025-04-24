@@ -95,7 +95,6 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
 
 void XAudioEngin::shutdown() {
   SDL_Quit();
-  XTRACE("保存配置");
   Config::save();
 }
 
