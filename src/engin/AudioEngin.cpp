@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "Sound.h"
 #include "config/config.h"
@@ -206,6 +207,18 @@ void XAudioEngin::unload(int id) {
     auto handelit = handles.find(audioit->second->path);
     handles.erase(handelit);
     // TODO(xiang 2024-12-19): 还需要删除所有设备中的此音轨
+    for (const auto &[id, device] : outdevices) {
+      std::vector<int> removelist;
+      if (device->player) {
+        for (const auto &[id, audio_orbit] :
+             device->player->mixer->audio_orbits) {
+          removelist.emplace_back(id);
+        }
+        for (const auto &id : removelist) {
+          device->player->mixer->audio_orbits.erase(id);
+        }
+      }
+    }
     XINFO("已卸载[" + audioit->second->name + "],句柄:[" + std::to_string(id) +
           "]");
     // 删除音频
