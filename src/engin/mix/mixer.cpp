@@ -158,6 +158,14 @@ void XAuidoMixer::send_pcm_thread() {
     auto lock = std::unique_lock<std::mutex>(des_player->mix_mutex);
     // LOG_DEBUG("等待播放器请求数据");
     // 等待播放器请求数据
+
+    // 等待时发送回调信号
+    for (const auto &[handle, audio_orbit] : audio_orbits) {
+      for (const auto &callback : audio_orbit->playpos_callbacks) {
+        callback->playpos_call(audio_orbit->playpos);
+      }
+    }
+
     des_player->mixercv.wait(lock, [this]() {
       // 等待数据请求或播放器停止
       return (!des_player->paused && des_player->isrequested) ||
@@ -197,11 +205,6 @@ void XAuidoMixer::send_pcm_thread() {
       des_player->rbuffer.write(mixed_pcm.data(), size);
     }
     des_player->isrequested = false;
-    for (const auto &audio_orbit : sounds) {
-      for (const auto &callback : audio_orbit->playpos_callbacks) {
-        callback->playpos_call(audio_orbit->playpos);
-      }
-    }
   }
 }
 
