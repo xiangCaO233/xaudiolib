@@ -84,7 +84,7 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
       XERROR("混音器创建失败");
     }
   } else {
-    XWARN("gl已初始化过");
+    XINFO("gl已初始化过");
   }
 }
 
@@ -197,6 +197,11 @@ void XAuidoMixer::send_pcm_thread() {
       des_player->rbuffer.write(mixed_pcm.data(), size);
     }
     des_player->isrequested = false;
+    for (const auto &audio_orbit : sounds) {
+      for (const auto &callback : audio_orbit->playpos_callbacks) {
+        callback->playpos_call(audio_orbit->playpos);
+      }
+    }
   }
 }
 
@@ -287,10 +292,6 @@ void XAuidoMixer::mix(
         (size_t)playpos, static_cast<int>(Config::samplerate));
     XINFO("[" + std::to_string(audio->sound->handle) + ":" +
           audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
-
-    for (const auto &callback : audio->playpos_callbacks) {
-      callback->playpos_call(playpos);
-    }
   }
   mix_pcmdata(mixed_pcm, global_volume);
 }
