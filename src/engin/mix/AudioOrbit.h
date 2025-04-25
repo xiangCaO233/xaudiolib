@@ -2,7 +2,7 @@
 #define X_AUDIO_ORBIT_H
 
 #include <memory>
-#include <vector>
+#include <unordered_set>
 
 class XSound;
 
@@ -16,7 +16,7 @@ class XAudioOrbit {
  public:
   std::shared_ptr<XSound> sound;
   // 回调列表
-  std::vector<std::shared_ptr<PlayposCallBack>> playpos_callbacks;
+  std::unordered_set<std::shared_ptr<PlayposCallBack>> playpos_callbacks;
   // 播放指针
   double playpos{0.0};
   // 轨道音量
