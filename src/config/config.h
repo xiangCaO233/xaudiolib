@@ -6,6 +6,7 @@
 
 using json = nlohmann::json;
 
+namespace x {
 enum class transfertype {
   /*
    *缓存式
@@ -98,5 +99,6 @@ class Config {
   // 保存配置
   static void save();
 };
+}  // namespace x
 
 #endif  // X_CONFIG_H

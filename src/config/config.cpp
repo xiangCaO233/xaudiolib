@@ -4,6 +4,7 @@
 
 #include "log/colorful-log.h"
 
+namespace x {
 // 音频传输方式
 transfertype Config::audio_transfer_method = transfertype::AUDIO_DATA_BUFFERED;
 // 音频解码线程数
@@ -62,3 +63,4 @@ void Config::save() {
     XERROR("无法保存配置文件!");
   }
 }
+}  // namespace x

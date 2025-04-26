@@ -23,6 +23,7 @@ enum class mixtype;
 enum class channels;
 enum class sampleratetype;
 
+namespace x {
 class Config {
  public:
   // 音频传输方式
@@ -53,6 +54,7 @@ class Config {
   // 保存配置
   static void save();
 };
+}  // namespace x
 
 namespace xutil {
 int64_t plannerpcmpos2milliseconds(size_t plannerpcmpos, int pcmsamplerate);
