@@ -175,7 +175,7 @@ void XAuidoMixer::send_pcm_thread() {
     // 播放器停止则混音线程也立刻停止
     if (!des_player->running) break;
     // 每次发送数据量
-    auto size = int(floorf((float)Config::mix_buffer_size / 3.0f));
+    auto size = int(floorf((float)x::Config::mix_buffer_size / 3.0f));
     // 混合数据
     std::vector<float> mixed_pcm(size, 0);
     // 记录需要混合的音频
@@ -214,14 +214,14 @@ void XAuidoMixer::mix(
     std::vector<float> &mixed_pcm, float global_volume) {
   // LOG_DEBUG("开始混音");
   // 目标数据大小(sdl需求的交错存储的数据)
-  size_t des_size = mixed_pcm.size() / static_cast<int>(Config::channel);
+  size_t des_size = mixed_pcm.size() / static_cast<int>(x::Config::channel);
 
   // 扩充大小
   for (auto i = pcms.size(); i < src_sounds.size(); i++) {
     // 添加音频
     pcms.emplace_back();
     // 添加各个声道
-    for (int i = 0; i < static_cast<int>(Config::channel); i++) {
+    for (int i = 0; i < static_cast<int>(x::Config::channel); i++) {
       pcms.back().emplace_back();
       // 为每个声道预分配空间(至少四倍-最低0.25x倍速)
       pcms.back().back().reserve(4 * des_size);
@@ -267,12 +267,12 @@ void XAuidoMixer::mix(
     double input_data_size = speed * (double)des_size;
 
     // 为每个声道调整数组大小
-    for (int j = 0; j < static_cast<int>(Config::channel); j++) {
+    for (int j = 0; j < static_cast<int>(x::Config::channel); j++) {
       pcms[i][j].resize((int)input_data_size);
     }
 
     // 转移每个声道的数据
-    for (int k = 0; k < static_cast<int>(Config::channel); k++) {
+    for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
       for (int j = 0; j < input_data_size; j++) {
         if (playpos + j < (double)audio->sound->pcm[k].size()) {
           // 第i个音频第k个声道第j个数据
@@ -292,7 +292,7 @@ void XAuidoMixer::mix(
     }
 
     auto t = xutil::plannerpcmpos2milliseconds(
-        (size_t)playpos, static_cast<int>(Config::samplerate));
+        (size_t)playpos, static_cast<int>(x::Config::samplerate));
     XINFO("[" + std::to_string(audio->sound->handle) + ":" +
           audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
   }
@@ -303,7 +303,7 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
   for (auto &pcm : pcms) {
     // 拉伸
-    stretch(pcm, mixed_pcm.size() / static_cast<int>(Config::channel));
+    stretch(pcm, mixed_pcm.size() / static_cast<int>(x::Config::channel));
   }
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
@@ -332,7 +332,7 @@ void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
 
   // 构造拉伸器
   RubberBand::RubberBandStretcher stretcher(
-      static_cast<int>(Config::samplerate), static_cast<int>(num_channels),
+      static_cast<int>(x::Config::samplerate), static_cast<int>(num_channels),
       RubberBand::RubberBandStretcher::OptionEngineFiner |  // R3引擎,时间精确
           RubberBand::RubberBandStretcher::
               OptionProcessOffline |  // 离线处理,一次完成全部数据

@@ -31,7 +31,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
     if (std::filesystem::exists(config_path)) {
       XTRACE("配置目录存在");
       // 加载配置文件
-      Config::load();
+      x::Config::load();
     }
   } else {
     XWARN("配置目录不存在");
@@ -96,7 +96,7 @@ std::unique_ptr<XAudioEngin> XAudioEngin::init() {
 
 void XAudioEngin::shutdown() {
   SDL_Quit();
-  Config::save();
+  x::Config::save();
 }
 
 int XAudioEngin::load(const std::string &audio,
@@ -435,7 +435,7 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
     return;
   }
   auto pos = xutil::milliseconds2plannerpcmpos(
-      time, static_cast<int>(Config::samplerate));
+      time, static_cast<int>(x::Config::samplerate));
   orbitit->second->playpos = pos;
   XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
         "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +

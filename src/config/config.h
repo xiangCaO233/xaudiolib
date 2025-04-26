@@ -66,6 +66,7 @@ class XAudioEncoder;
 class XAudioDecoder;
 
 class Config {
+ public:
   // 音频传输方式
   static transfertype audio_transfer_method;
   // 音频解码线程数(max128)

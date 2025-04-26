@@ -14,22 +14,23 @@
 #include "log/colorful-log.h"
 
 XPlayer::XPlayer()
-    : running(false), paused(false), rbuffer(Config::mix_buffer_size) {
+    : running(false), paused(false), rbuffer(x::Config::mix_buffer_size) {
   XTRACE("初始化播放器");
   desired_spec = new SDL_AudioSpec;
   obtained_spec = new SDL_AudioSpec;
   device_id = new SDL_AudioDeviceID;
   // sdl配置
   // 播放采样率
-  (*(SDL_AudioSpec *)desired_spec).freq = static_cast<int>(Config::samplerate);
+  (*(SDL_AudioSpec *)desired_spec).freq =
+      static_cast<int>(x::Config::samplerate);
   // 浮点数据型(自动转换字节序大小端)
   (*(SDL_AudioSpec *)desired_spec).format = AUDIO_F32;
   // 声道数
   (*(SDL_AudioSpec *)desired_spec).channels =
-      static_cast<uint8_t>(Config::channel);
+      static_cast<uint8_t>(x::Config::channel);
   // 播放缓冲区大小
   (*(SDL_AudioSpec *)desired_spec).samples =
-      static_cast<uint16_t>(Config::play_buffer_size);
+      static_cast<uint16_t>(x::Config::play_buffer_size);
   // 设置回调
   (*(SDL_AudioSpec *)desired_spec).callback = &XPlayer::sdl_audio_callback;
   // 用户数据
@@ -144,7 +145,7 @@ void XPlayer::ratio(float speed) {
   stop();
   // 修改播放采样率
   (*(SDL_AudioSpec *)desired_spec).freq =
-      static_cast<int>(Config::samplerate) * speed;
+      static_cast<int>(x::Config::samplerate) * speed;
   global_speed = speed;
   start();
   resume();
@@ -176,7 +177,7 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   // +
   //           "]::writepos:[" + std::to_string(rbuffer.writepos) + "]}");
   if (rbuffer.readable() <=
-      int(floorf((float)Config::mix_buffer_size / 3.0f))) {
+      int(floorf((float)x::Config::mix_buffer_size / 3.0f))) {
     // 数据即将使用完,请求更新
     player->isrequested = true;
     // XDEBUG("请求数据");
