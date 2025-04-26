@@ -18,12 +18,11 @@ class XPlayer;
 class Shader;
 struct AVFormatContext;
 
+namespace x {
 enum class transfertype;
 enum class mixtype;
 enum class channels;
 enum class sampleratetype;
-
-namespace x {
 class Config {
  public:
   // 音频传输方式
