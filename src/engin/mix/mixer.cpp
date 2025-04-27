@@ -263,28 +263,114 @@ void XAuidoMixer::mix(
     /*
      * speed = 0.5时,取0.5 x des_size
      * speed = 2时,取2 x des_size
+     * 最终拉伸到des_size
      */
-    double input_data_size = speed * (double)des_size;
+
+    // 向上取整
+    double actrual_play_data_size = std::ceil(speed * (double)des_size);
 
     // 为每个声道调整数组大小
     for (int j = 0; j < static_cast<int>(x::Config::channel); j++) {
-      pcms[i][j].resize((int)input_data_size);
+      pcms[i][j].resize((int)actrual_play_data_size);
     }
 
     // 转移每个声道的数据
-    for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
-      for (int j = 0; j < input_data_size; j++) {
-        if (playpos + j < (double)audio->sound->pcm[k].size()) {
-          // 第i个音频第k个声道第j个数据
-          pcms[i][k][j] =
-              audio->sound->pcm[k][(int)(playpos + j)] * audio->volume;
-        } else {
-          // 超过结尾填充0
-          pcms[i][k][j] = 0;
+    if (speed == 1.0) {
+      for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
+        for (int j = 0; j < actrual_play_data_size; j++) {
+          if (playpos + j < (double)audio->sound->pcm[k].size()) {
+            // 第i个音频第k个声道第j个数据
+            pcms[i][k][j] =
+                audio->sound->pcm[k][(int)(playpos + j)] * audio->volume;
+          } else {
+            // 超过结尾填充0
+            pcms[i][k][j] = 0;
+          }
+        }
+      }
+
+    } else {
+      if (speed < 1.0) {
+        // 样本数比原来少了,依旧取des_size进行分析拉伸(居中),取结果中的input_data_size
+        std::vector<std::vector<float>> temp_pcms(
+            static_cast<int>(x::Config::channel), std::vector<float>(des_size));
+
+        // 实际取样开始位置
+        auto startpos = playpos - (des_size - actrual_play_data_size) / 2.0;
+        // XWARN("实际音频取样开始位置[" + std::to_string(startpos) + "]");
+
+        for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
+          for (int j = 0; j < des_size; j++) {
+            if (startpos + j < (double)audio->sound->pcm[k].size() &&
+                startpos + j > 0) {
+              // 第i个音频第k个声道第j个数据
+              temp_pcms[k][j] =
+                  audio->sound->pcm[k][(int)(startpos + j)] * audio->volume;
+            } else {
+              // 超过结尾或开头填充0
+              temp_pcms[k][j] = 0;
+            }
+          }
+        }
+        // speed小于1时,总是使用des_size
+        auto pre_stretch_size = temp_pcms[0].size();
+        // XWARN("拉伸前音频样本数[" + std::to_string(pre_stretch_size) + "]");
+        // 例:
+        // 0.5x(原数据内容:-分析用,不播放;;+实际播放的样本-最终需要取出的数据)
+        // ---++++++---
+        // 变成
+        // ------++++++++++++------
+        // 将音频数据拉伸到指定时长
+        stretch(temp_pcms, 1.0 / speed * pre_stretch_size);
+        // 从结果中取出指定位置的数据
+        auto stretch_res_size = temp_pcms[0].size();
+        // XWARN("拉伸后音频样本数[" + std::to_string(stretch_res_size) + "]");
+        auto pos_in_sample_pcm = (des_size - actrual_play_data_size) / 2.0;
+        // XWARN("播放位置(在拉伸前的样本中)[" +
+        // std::to_string(pos_in_sample_pcm)
+        // +
+        //       "]");
+        auto pos_in_temppcm = (stretch_res_size - des_size) / 2.0;
+        // XWARN("播放位置(在拉伸后的样本中)[" + std::to_string(pos_in_temppcm)
+        // +
+        //       "]");
+        for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
+          for (int j = 0; j < des_size; j++) {
+            // 第i个音频第k个声道第j个数据
+            pcms[i][k][j] =
+                temp_pcms[k][(int)(pos_in_temppcm + j)] * audio->volume;
+          }
+        }
+      } else {
+        // 样本数比原来多了,取actrual_play_data_size进行分析拉伸,取结果中的全部
+        std::vector<std::vector<float>> temp_pcms(
+            static_cast<int>(x::Config::channel),
+            std::vector<float>(actrual_play_data_size));
+        for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
+          for (int j = 0; j < actrual_play_data_size; j++) {
+            if (playpos + j < (double)audio->sound->pcm[k].size() &&
+                playpos + j > 0) {
+              // 第i个音频第k个声道第j个数据
+              temp_pcms[k][j] =
+                  audio->sound->pcm[k][(int)(playpos + j)] * audio->volume;
+            } else {
+              // 超过结尾或开头填充0
+              temp_pcms[k][j] = 0;
+            }
+          }
+        }
+        // 将音频数据拉伸到指定时长
+        stretch(temp_pcms, 1.0 / speed * temp_pcms[0].size());
+        // 从结果中取出指定位置的数据
+        for (int k = 0; k < static_cast<int>(x::Config::channel); k++) {
+          for (int j = 0; j < des_size; j++) {
+            // 第i个音频第k个声道第j个数据
+            pcms[i][k][j] = temp_pcms[k][j] * audio->volume;
+          }
         }
       }
     }
-    playpos += input_data_size;
+    playpos += actrual_play_data_size;
 
     // 修正结尾
     if (playpos > (double)audio->sound->pcm[0].size()) {
@@ -301,10 +387,6 @@ void XAuidoMixer::mix(
 
 void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
-  for (auto &pcm : pcms) {
-    // 拉伸
-    stretch(pcm, mixed_pcm.size() / static_cast<int>(x::Config::channel));
-  }
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
     for (auto &pcm : pcms) {
@@ -338,7 +420,8 @@ void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
               OptionProcessOffline |  // 离线处理,一次完成全部数据
           RubberBand::RubberBandStretcher::
               OptionChannelsTogether |  // 所有声道一起分析
-          RubberBand::RubberBandStretcher::OptionWindowShort |   // 短窗口,提速
+          RubberBand::RubberBandStretcher::
+              OptionWindowStandard |                             // 短窗口,提速
           RubberBand::RubberBandStretcher::OptionThreadingAuto,  // 自动选择线程
       ratio, des_player->global_pitch);
 
@@ -361,9 +444,24 @@ void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
   for (size_t ch = 0; ch < num_channels; ++ch) {
     output_ptrs[ch] = stretched_pcm[ch].data();
   }
+  // 4. 正确处理可能的多次retrieve
+  size_t retrieved = 0;
+  while (retrieved < des_size) {
+    int avail = stretcher.available();
+    if (avail <= 0) break;
 
-  // 获取处理后的数据(阻塞，直到所有数据处理完成)
-  stretcher.retrieve(output_ptrs.data(), des_size);
+    size_t toRetrieve =
+        std::min(static_cast<size_t>(avail), des_size - retrieved);
+    int actual = stretcher.retrieve(output_ptrs.data(), toRetrieve);
+    if (actual <= 0) break;
+
+    // 移动指针
+    for (size_t ch = 0; ch < num_channels; ++ch) {
+      output_ptrs[ch] += actual;
+    }
+    retrieved += actual;
+  }
+
   // 替换原始数据
   pcm.swap(stretched_pcm);
 }
