@@ -141,6 +141,11 @@ void XPlayer::resume() {
 }
 // 更改全局播放速度(变调)
 void XPlayer::ratio(float speed) {
+  static bool is_ratio_alting{false};
+  while (is_ratio_alting) {
+    std::this_thread::yield();
+  }
+  is_ratio_alting = true;
   pause();
   stop();
   // 修改播放采样率
@@ -149,6 +154,7 @@ void XPlayer::ratio(float speed) {
   global_speed = speed;
   start();
   resume();
+  is_ratio_alting = false;
 }
 // 更改全局音调
 void XPlayer::pitch(float pth) {
