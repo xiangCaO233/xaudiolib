@@ -2,6 +2,7 @@
 
 #include <rubberband/RubberBandStretcher.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <memory>
@@ -92,33 +93,46 @@ XAuidoMixer::~XAuidoMixer() {}
 
 // 添加音频轨道
 void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
-  audio_orbits.try_emplace(orbit->sound->handle, orbit);
-  XDEBUG("已添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
-         orbit->sound->name + "]");
-  XDEBUG("音轨信息:[paused:" + std::to_string(orbit->paused) + "]");
-  XDEBUG("播放器信息:[paused:" + std::to_string(des_player->paused) + "]");
+  audio_orbits[orbit->sound].emplace_back(orbit);
+  // XDEBUG("已添加音轨:[" + std::to_string(orbit->sound->handle) + ":" +
+  //        orbit->sound->name + "]");
+  // XDEBUG("音轨信息:[paused:" + std::to_string(orbit->paused) + "]");
+  // XDEBUG("播放器信息:[paused:" + std::to_string(des_player->paused) + "]");
 
   if (!orbit->paused && des_player->paused) {
     des_player->resume();
   }
 };
+
 // 移除音频轨道
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
-  auto orbitit = audio_orbits.find(orbit->sound->handle);
-  if (orbitit == audio_orbits.end()) {
-    XWARN("此混音器不存在音轨[" + orbit->sound->name + "]");
+  auto orbit_list_it = audio_orbits.find(orbit->sound);
+  if (orbit_list_it == audio_orbits.end()) {
+    XWARN("此混音器不存在音源[" + orbit->sound->name + "]");
     return false;
   }
-  audio_orbits.erase(orbitit);
 
+  auto orbitit = std::find(orbit_list_it->second.begin(),
+                           orbit_list_it->second.end(), orbit);
+  if (orbitit == orbit_list_it->second.end()) {
+    XWARN("此音源不存在音轨[" + orbit->sound->name + "]");
+    return false;
+  }
+
+  orbit_list_it->second.erase(orbitit);
   XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
         orbit->sound->name + "]");
 
   // 检查是否应该继续播放
   bool shouldplay = false;
-  for (const auto &[handle, orbit] : audio_orbits) {
-    if (!orbit->paused) {
-      shouldplay = true;
+  for (const auto &[sound, orbits] : audio_orbits) {
+    for (const auto &orbit : orbits) {
+      if (!orbit->paused) {
+        shouldplay = true;
+        break;
+      }
+    }
+    if (shouldplay) {
       break;
     }
   }
@@ -128,27 +142,29 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
 
   return true;
 };
-bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &audio) {
-  auto orbitit = audio_orbits.find(audio->handle);
-  if (orbitit == audio_orbits.end()) {
-    XWARN("此混音器不存在音轨[" + audio->name + "]");
+
+bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &sound) {
+  auto orbit_list_it = audio_orbits.find(sound);
+  if (orbit_list_it != audio_orbits.end()) {
+    audio_orbits.erase(orbit_list_it);
+    return true;
+  } else {
     return false;
   }
-  audio_orbits.erase(orbitit);
-
-  XINFO("已移除音轨[" + std::to_string(audio->handle) + ":" + audio->name +
-        "]");
-  return true;
 };
 
 // 设置循环标识
 void XAuidoMixer::setloop(int audio_handle, bool isloop) {
-  auto orbitit = audio_orbits.find(audio_handle);
-  if (orbitit == audio_orbits.end()) {
-    XWARN("此混音器不存在音轨[" + std::to_string(audio_handle) + "]");
-    return;
+  for (auto &[sound, orbits] : audio_orbits) {
+    if (sound->handle == audio_handle) {
+      for (const auto &orbit : orbits) {
+        orbit->loop = isloop;
+      }
+      return;
+    }
   }
-  orbitit->second->loop = isloop;
+  XWARN("此混音器不存在音轨[" + std::to_string(audio_handle) + "]");
+  return;
 };
 
 void XAuidoMixer::send_pcm_thread() {
@@ -160,9 +176,11 @@ void XAuidoMixer::send_pcm_thread() {
     // 等待播放器请求数据
 
     // 等待时发送回调信号
-    for (const auto &[handle, audio_orbit] : audio_orbits) {
-      for (const auto &callback : audio_orbit->playpos_callbacks) {
-        callback->playpos_call(audio_orbit->playpos);
+    for (const auto &[sound, orbits] : audio_orbits) {
+      for (const auto &audio_orbit : orbits) {
+        for (const auto &callback : audio_orbit->playpos_callbacks) {
+          callback->playpos_call(audio_orbit->playpos);
+        }
       }
     }
 
@@ -182,15 +200,17 @@ void XAuidoMixer::send_pcm_thread() {
     auto sounds = std::vector<std::shared_ptr<XAudioOrbit>>();
 
     bool shouldplay = false;
-    for (const auto &[handle, audio] : audio_orbits) {
-      if (!audio->paused) {
-        // LOG_DEBUG("检测到需要播放的音频");
-        shouldplay = true;
-        // 加入待混音列表
-        sounds.push_back(audio);
-        if (des_player->paused) {
-          // 需要播放,恢复播放线程
-          des_player->resume();
+    for (const auto &[sound, orbits] : audio_orbits) {
+      for (const auto &audio : orbits) {
+        if (!audio->paused) {
+          // LOG_DEBUG("检测到需要播放的音频");
+          shouldplay = true;
+          // 加入待混音列表
+          sounds.push_back(audio);
+          if (des_player->paused) {
+            // 需要播放,恢复播放线程
+            des_player->resume();
+          }
         }
       }
     }

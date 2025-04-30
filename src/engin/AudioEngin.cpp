@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_audio.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -207,16 +208,9 @@ void XAudioEngin::unload(int id) {
     auto handelit = handles.find(audioit->second->path);
     handles.erase(handelit);
     // TODO(xiang 2024-12-19): 还需要删除所有设备中的此音轨
-    for (const auto &[id, device] : outdevices) {
-      std::vector<int> removelist;
+    for (const auto &[did, device] : outdevices) {
       if (device->player) {
-        for (const auto &[id, audio_orbit] :
-             device->player->mixer->audio_orbits) {
-          removelist.emplace_back(id);
-        }
-        for (const auto &id : removelist) {
-          device->player->mixer->audio_orbits.erase(id);
-        }
+        device->player->mixer->remove_orbit(audios[id]);
       }
     }
     XINFO("已卸载[" + audioit->second->name + "],句柄:[" + std::to_string(id) +
@@ -361,12 +355,13 @@ float XAudioEngin::volume(int deviceid, int id) {
   }
   // 检查混音器
   const auto &mixer = player->mixer;
-  auto orbitit = mixer->audio_orbits.find(id);
-  if (orbitit == mixer->audio_orbits.end()) {
-    XWARN("此设备上不存在音轨句柄[" + std::to_string(id) + "]");
-    return -1.0f;
-  }
-  return orbitit->second->volume;
+  // auto orbitit = mixer->audio_orbits.find(id);
+  // if (orbitit == mixer->audio_orbits.end()) {
+  //   XWARN("此设备上不存在音轨句柄[" + std::to_string(id) + "]");
+  //   return -1.0f;
+  // }
+  // return orbitit->second->volume;
+  return 1.0f;
 };
 
 // 设置音频音量
@@ -388,16 +383,16 @@ void XAudioEngin::setVolume(int deviceid, int id, float v) {
   }
   const auto &mixer = player->mixer;
   // 检查混音器音轨
-  auto orbitit = mixer->audio_orbits.find(id);
-  if (orbitit == mixer->audio_orbits.end()) {
-    XWARN("此设备上不存在音轨句柄[" + std::to_string(id) + "]");
-    return;
-  }
-  if (v >= 0 && v <= 1.0f) {
-    orbitit->second->volume = v;
-  } else {
-    XWARN("设置音量失败,请检查音量值[" + std::to_string(v) + "]");
-  }
+  // auto orbitit = mixer->audio_orbits.find(id);
+  // if (orbitit == mixer->audio_orbits.end()) {
+  //   XWARN("此设备上不存在音轨句柄[" + std::to_string(id) + "]");
+  //   return;
+  // }
+  // if (v >= 0 && v <= 1.0f) {
+  //   orbitit->second->volume = v;
+  // } else {
+  //   XWARN("设置音量失败,请检查音量值[" + std::to_string(v) + "]");
+  // }
 }
 
 // 设置全局音量
@@ -428,18 +423,18 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
   }
   const auto &mixer = player->mixer;
   // 检查混音器音轨
-  auto orbitit = mixer->audio_orbits.find(id);
-  if (orbitit == mixer->audio_orbits.end()) {
-    XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
-          "]上不存在音轨句柄[" + std::to_string(id) + "]");
-    return;
-  }
-  auto pos = xutil::milliseconds2plannerpcmpos(
-      time, static_cast<int>(x::Config::samplerate));
-  orbitit->second->playpos = pos;
-  XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
-        "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
-        std::to_string(pos) + "]");
+  // auto orbitit = mixer->audio_orbits.find(id);
+  // if (orbitit == mixer->audio_orbits.end()) {
+  //   XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
+  //         "]上不存在音轨句柄[" + std::to_string(id) + "]");
+  //   return;
+  // }
+  // auto pos = xutil::milliseconds2plannerpcmpos(
+  //     time, static_cast<int>(x::Config::samplerate));
+  // orbitit->second->playpos = pos;
+  // XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
+  //       "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
+  //       std::to_string(pos) + "]");
 }
 
 // 播放句柄
@@ -481,25 +476,28 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
   }
   // 找播放器绑定的混音器中是否存在此音频
   const auto &mixer = player->mixer;
-  auto orbitit = mixer->audio_orbits.find(audio_id);
-  if (orbitit == mixer->audio_orbits.end()) {
+  auto orbitsit = mixer->audio_orbits.find(audios[audio_id]);
+  if (orbitsit == mixer->audio_orbits.end()) {
     XWARN("[" + std::to_string(device_index) + ":" + outdevice->device_name +
-          "]设备音轨中不存在音频[" + std::to_string(audio_id) + "]");
+          "]设备音轨中不存在音源[" + std::to_string(audio_id) + "]");
     // 不存在
     // 加入此音频
     auto orbit = std::make_shared<XAudioOrbit>(audio);
     mixer->add_orbit(orbit);
+    orbitsit = mixer->audio_orbits.find(audios[audio_id]);
     XINFO("已添加播放音频句柄[" + std::to_string(audio_id) + ":" + audio->name +
           "]到[" + std::to_string(device_index) + ":" + outdevice->device_name +
           "]音轨");
   } else {
-    if (orbitit->second->paused) {
-      // 存在
-      XWARN("检测到音频暂停,继续播放句柄[" + std::to_string(audio_id) + "]");
-      // 更新音频暂停标识
-      orbitit->second->paused = false;
-    } else {
-      XWARN("音频已正在播放中");
+    for (const auto &orbit : orbitsit->second) {
+      if (orbit->paused) {
+        // 存在
+        XWARN("检测到音频暂停,继续播放句柄[" + std::to_string(audio_id) + "]");
+        // 更新音频暂停标识
+        orbit->paused = false;
+      } else {
+        XWARN("轨道已正在播放中");
+      }
     }
   }
   if (player->paused) {
@@ -507,9 +505,11 @@ void XAudioEngin::play(int device_index, int audio_id, bool loop) {
           outdevice->device_name + "]设备播放器暂停,继续播放");
     player->resume();
   }
-  // 更新循环标识
-  orbitit = mixer->audio_orbits.find(audio_id);
-  orbitit->second->loop = loop;
+
+  for (const auto &orbit : orbitsit->second) {
+    // 更新循环标识
+    orbit->loop = loop;
+  }
 }
 
 // 暂停音频句柄
@@ -530,16 +530,18 @@ void XAudioEngin::pause(int device_index, int audio_id) {
     return;
   }
   const auto &mixer = player->mixer;
-  auto orbitit = mixer->audio_orbits.find(audio_id);
-  if (orbitit == mixer->audio_orbits.end()) {
-    XWARN("暂停失败,设备[" + std::to_string(device_index) + "]不存在句柄[" +
-          std::to_string(audio_id) + "]");
+  auto orbitsit = mixer->audio_orbits.find(audios[audio_id]);
+  if (orbitsit == mixer->audio_orbits.end()) {
+    XWARN("暂停失败,设备[" + std::to_string(device_index) + "]不存在音源[" +
+          orbitsit->first->name + "]");
     return;
   }
-  // 暂停对应的音频
-  orbitit->second->paused = true;
+  // 暂停对应的音源
+  for (auto &orbit : orbitsit->second) {
+    orbit->paused = true;
+  }
   XINFO("已暂停设备[" + std::to_string(device_index) + ":" +
-        outdevice->device_name + "]上的句柄[" + std::to_string(audio_id) + "]");
+        outdevice->device_name + "]上的音源[" + orbitsit->first->name + "]");
 }
 
 // 恢复
@@ -560,14 +562,16 @@ void XAudioEngin::resume(int device_index, int audio_id) {
     return;
   }
   const auto &mixer = player->mixer;
-  auto orbitit = mixer->audio_orbits.find(audio_id);
-  if (orbitit == mixer->audio_orbits.end()) {
-    XWARN("设备[" + std::to_string(device_index) + ":" +
-          outdevice->device_name + "]不存在此音频轨道");
+  auto orbitsit = mixer->audio_orbits.find(audios[audio_id]);
+  if (orbitsit == mixer->audio_orbits.end()) {
+    XWARN("暂停失败,设备[" + std::to_string(device_index) + "]不存在音源[" +
+          orbitsit->first->name + "]");
     return;
   }
   // 恢复对应的音频
-  orbitit->second->paused = false;
+  for (auto &orbit : orbitsit->second) {
+    orbit->paused = false;
+  }
   // 检查播放器状态
   if (!player->running) {
     player->start();

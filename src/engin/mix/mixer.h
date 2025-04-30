@@ -1,6 +1,7 @@
 #ifndef X_AUDIO_MIXER_H
 #define X_AUDIO_MIXER_H
 
+#include <list>
 #include <memory>
 #include <thread>
 #include <unordered_map>
@@ -22,8 +23,10 @@ class RubberBandStretcher;
 
 class XAuidoMixer {
  public:
-  // 全部音轨(句柄-轨道)
-  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
+  // 全部音轨--(音源-链表)
+  std::unordered_map<std::shared_ptr<XSound>,
+                     std::list<std::shared_ptr<XAudioOrbit>>>
+      audio_orbits;
   // 混音线程
   std::thread mixthread;
   // 是否已初始化gl上下文
@@ -50,14 +53,18 @@ class XAuidoMixer {
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
            std::vector<float>& mixed_pcm, float global_volume);
   void mix_pcmdata(std::vector<float>& mixed_pcm, float global_volume);
+
   // Planner存储的数据拉伸
   void stretch(std::vector<std::vector<float>>& pcm, size_t des_size);
+
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
+
   // 添加音频轨道
-  void add_orbit(const std::shared_ptr<XAudioOrbit>& sound);
+  void add_orbit(const std::shared_ptr<XAudioOrbit>& orbit);
+
   // 移除音频轨道
-  bool remove_orbit(const std::shared_ptr<XAudioOrbit>& sound);
+  bool remove_orbit(const std::shared_ptr<XAudioOrbit>& orbit);
   bool remove_orbit(const std::shared_ptr<XSound>& sound);
   // 设置循环标识
   void setloop(int audio_handle, bool isloop);
