@@ -32,6 +32,8 @@ set(ENGIN_SOURCES
   src/engin/AudioEngin.cpp
   src/engin/AudioManager.cpp
   src/engin/Sound.cpp
+	src/engin/util/ncm.h
+	src/engin/util/utils.h
   ${CONFIG_SOURCES}
   ${CODEC_SOURCES}
   ${DEVICE_SOURCES}
