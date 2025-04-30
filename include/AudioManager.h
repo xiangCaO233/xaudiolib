@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <cstdint>
+#include <list>
 #include <memory>
 #include <string>
 #include <thread>
@@ -150,8 +151,10 @@ class XAudioOrbit {
 
 class XAuidoMixer {
  public:
-  // 全部音轨(句柄-轨道)
-  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
+  // 全部音轨--(音源-链表)
+  std::unordered_map<std::shared_ptr<XSound>,
+                     std::list<std::shared_ptr<XAudioOrbit>>>
+      audio_orbits;
   // 混音线程
   std::thread mixthread;
   // 是否已初始化gl上下文
