@@ -423,18 +423,21 @@ void XAudioEngin::pos(int deviceid, int id, int64_t time) {
   }
   const auto &mixer = player->mixer;
   // 检查混音器音轨
-  // auto orbitit = mixer->audio_orbits.find(id);
-  // if (orbitit == mixer->audio_orbits.end()) {
-  //   XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
-  //         "]上不存在音轨句柄[" + std::to_string(id) + "]");
-  //   return;
-  // }
-  // auto pos = xutil::milliseconds2plannerpcmpos(
-  //     time, static_cast<int>(x::Config::samplerate));
-  // orbitit->second->playpos = pos;
-  // XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
-  //       "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
-  //       std::to_string(pos) + "]");
+
+  auto orbitsit = mixer->audio_orbits.find(audios[id]);
+  if (orbitsit == mixer->audio_orbits.end()) {
+    XWARN("设备[" + std::to_string(deviceid) + ":" + outdevice->device_name +
+          "]上不存在音源[" + std::to_string(id) + "]");
+    return;
+  }
+  auto pos = xutil::milliseconds2plannerpcmpos(
+      time, static_cast<int>(x::Config::samplerate));
+  for (auto &orbit : orbitsit->second) {
+    orbit->playpos = pos;
+  }
+  XINFO("跳转[" + std::to_string(deviceid) + ":" + outdevice->device_name +
+        "]设备上音频句柄[" + std::to_string(id) + "]到位置:[" +
+        std::to_string(pos) + "]");
 }
 
 // 播放句柄
