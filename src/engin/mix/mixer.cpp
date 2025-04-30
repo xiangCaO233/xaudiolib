@@ -253,7 +253,9 @@ void XAuidoMixer::mix(
       if (audio->loop) {
         playpos = 0;
       } else {
+        // 未设置循环时播放完成自动删除轨道
         audio->paused = true;
+        remove_orbit(audio);
       }
     }
 
