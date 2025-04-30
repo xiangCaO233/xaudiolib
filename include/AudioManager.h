@@ -56,11 +56,6 @@ class Config {
 };
 }  // namespace x
 
-namespace xutil {
-int64_t plannerpcmpos2milliseconds(size_t plannerpcmpos, int pcmsamplerate);
-size_t milliseconds2plannerpcmpos(int64_t milliseconds, int pcmsamplerate);
-}  // namespace xutil
-
 class ringbuffer {
   // 缓冲区本体
   std::shared_ptr<float[]> buffer;
