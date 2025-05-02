@@ -293,7 +293,7 @@ void XAuidoMixer::mix(
 
     // 为每个声道调整数组大小
     for (int j = 0; j < static_cast<int>(x::Config::channel); j++) {
-      pcms[i][j].resize((int)actrual_play_data_size);
+      pcms[i][j].resize(des_size);
     }
 
     // 转移每个声道的数据
