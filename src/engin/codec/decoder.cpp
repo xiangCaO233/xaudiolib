@@ -180,7 +180,6 @@ int XAudioDecoder::decode_audio_planner(AVFormatContext *format,
           // XDEBUG("当前pcm[" + std::to_string(ch) + "]大小:[" +
           //        std::to_string(pcm[ch].size()) + "]");
         }
-
         // 释放缓冲区
         av_freep(&out_buffer[0]);
         av_freep(&out_buffer);
