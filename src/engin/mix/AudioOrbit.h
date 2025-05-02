@@ -25,6 +25,8 @@ class XAudioOrbit {
   float speed{1.0f};
   // 轨道暂停标识
   bool paused{false};
+  // 自动移除标识
+  bool autoremove{false};
   // 轨道循环标识
   bool loop{false};
 
