@@ -104,6 +104,17 @@ void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
   }
 };
 
+// 添加立即音频轨道-一遍-自动移除
+void XAuidoMixer::add_orbit_immediatly(
+    const std::shared_ptr<XAudioOrbit> &orbit) {
+  orbit->loop = false;
+  orbit->autoremove = true;
+  immediate_orbits[orbit->sound].emplace_back(orbit);
+  if (!orbit->paused && des_player->paused) {
+    des_player->resume();
+  }
+}
+
 // 移除音频轨道
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
   auto orbit_list_it = audio_orbits.find(orbit->sound);
@@ -414,6 +425,7 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
+    // 主音轨
     for (auto &pcm : pcms) {
       if (i < (pcm[0].size() * pcm.size())) {
         // 交错写入混音数据行

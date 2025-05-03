@@ -23,10 +23,14 @@ class RubberBandStretcher;
 
 class XAuidoMixer {
  public:
-  // 全部音轨--(音源-链表)
+  // 音轨--(音源-链表)
   std::unordered_map<std::shared_ptr<XSound>,
                      std::list<std::shared_ptr<XAudioOrbit>>>
       audio_orbits;
+  // 立即音轨-实时
+  std::unordered_map<std::shared_ptr<XSound>,
+                     std::list<std::shared_ptr<XAudioOrbit>>>
+      immediate_orbits;
   // 混音线程
   std::thread mixthread;
   // 是否已初始化gl上下文
@@ -62,6 +66,9 @@ class XAuidoMixer {
 
   // 添加音频轨道
   void add_orbit(const std::shared_ptr<XAudioOrbit>& orbit);
+
+  // 添加立即音频轨道
+  void add_orbit_immediatly(const std::shared_ptr<XAudioOrbit>& orbit);
 
   // 移除音频轨道
   bool remove_orbit(const std::shared_ptr<XAudioOrbit>& orbit);
