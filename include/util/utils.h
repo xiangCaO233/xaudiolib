@@ -5,9 +5,10 @@
 #include <cstdint>
 
 namespace xutil {
-inline int64_t plannerpcmpos2milliseconds(size_t plannerpcmpos,
-                                          int pcmsamplerate) {
-  return plannerpcmpos * 1000 / pcmsamplerate;
+inline double plannerpcmpos2milliseconds(size_t plannerpcmpos,
+
+                                         int pcmsamplerate) {
+  return plannerpcmpos * 1000.0 / double(pcmsamplerate);
 }
 inline size_t milliseconds2plannerpcmpos(int64_t milliseconds,
                                          int pcmsamplerate) {
