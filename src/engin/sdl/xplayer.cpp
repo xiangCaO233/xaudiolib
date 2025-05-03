@@ -222,4 +222,20 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
       }
     }
   }
+
+  std::vector<std::shared_ptr<XAudioOrbit>> remove_orbit;
+  for (auto &[sound, orbits] : player->mixer->immediate_orbits) {
+    for (auto &orbit : orbits) {
+      if (orbit->playpos >= sound->pcm[0].size()) {
+        remove_orbit.emplace_back(orbit);
+      }
+    }
+  }
+
+  std::thread remove_thread([=]() {
+    for (const auto &orbit : remove_orbit) {
+      player->mixer->remove_orbit(orbit);
+    }
+  });
+  remove_thread.detach();
 }
