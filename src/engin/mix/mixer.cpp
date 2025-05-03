@@ -178,6 +178,7 @@ void XAuidoMixer::send_pcm_thread() {
     // 等待时发送回调信号
     for (const auto &[sound, orbits] : audio_orbits) {
       for (const auto &audio_orbit : orbits) {
+        if (audio_orbit->paused) continue;
         for (const auto &callback : audio_orbit->playpos_callbacks) {
           callback->playpos_call(audio_orbit->playpos);
         }
