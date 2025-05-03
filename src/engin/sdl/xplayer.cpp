@@ -213,6 +213,8 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
             remove_list.emplace_back(orbit);
           }
         }
+        // 更新播放位置
+        orbit->playpos += numSamples;
       }
     }
   }
