@@ -199,29 +199,29 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   // 从环形缓冲区读取音频数据
   rbuffer.read(audiopcm, numSamples);
   // 直接在sdl播放回调填充更新立即音轨
-  // std::vector<std::shared_ptr<XAudioOrbit>> remove_list;
-  // for (const auto &[sound, immorbits] : player->mixer->immediate_orbits) {
-  //   for (int i = 0; i < numSamples; ++i) {
-  //     for (const auto &orbit : immorbits) {
-  //       for (const auto &channel_pcm : sound->pcm) {
-  //         if (orbit->playpos + i / sound->pcm.size() < sound->pcm[0].size())
-  //         {
-  //           audiopcm[i] +=
-  //               sound->pcm[int(orbit->playpos + i) % sound->pcm.size()]
-  //                         [int(orbit->playpos + i) / sound->pcm.size()] *
-  //               player->global_volume * orbit->volume;
-  //         } else {
-  //           // 轨道播放完了
-  //           remove_list.emplace_back(orbit);
-  //         }
-  //       }
-  //       // 更新播放位置
-  //       orbit->playpos += numSamples;
-  //     }
-  //   }
-  // }
-  // // 清理播放完的立即轨道
-  // for (const auto &orbit : remove_list) player->mixer->remove_orbit(orbit);
+  std::vector<std::shared_ptr<XAudioOrbit>> remove_list;
+  for (const auto &[sound, immorbits] : player->mixer->immediate_orbits) {
+    for (int i = 0; i < numSamples; ++i) {
+      for (const auto &orbit : immorbits) {
+        for (const auto &channel_pcm : sound->pcm) {
+          if (orbit->playpos + i / sound->pcm.size() < sound->pcm[0].size()) {
+            audiopcm[i] += sound->pcm[i % sound->pcm.size()]
+                                     [orbit->playpos + i / sound->pcm.size()] *
+                           player->global_volume * orbit->volume;
+          } else {
+            // 轨道播放完了
+            remove_list.emplace_back(orbit);
+          }
+        }
+        // 更新播放位置
+        orbit->playpos += numSamples / sound->pcm.size();
+      }
+    }
+  }
+
+  // 清理播放完的立即轨道
+  for (const auto &orbit : remove_list)
+    player->mixer->remove_orbit_immediatly(orbit);
 
   if (!audiopcm) {
     // LOG_DEBUG("播放静音");

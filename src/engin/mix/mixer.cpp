@@ -154,6 +154,28 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
   return true;
 };
 
+bool XAuidoMixer::remove_orbit_immediatly(
+    const std::shared_ptr<XAudioOrbit> &orbit) {
+  auto orbit_list_it = immediate_orbits.find(orbit->sound);
+  if (orbit_list_it == immediate_orbits.end()) {
+    XWARN("此混音器不存在音源[" + orbit->sound->name + "]");
+    return false;
+  }
+
+  auto orbitit = std::find(orbit_list_it->second.begin(),
+                           orbit_list_it->second.end(), orbit);
+  if (orbitit == orbit_list_it->second.end()) {
+    XWARN("此音源不存在音轨[" + orbit->sound->name + "]");
+    return false;
+  }
+
+  orbit_list_it->second.erase(orbitit);
+  XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
+        orbit->sound->name + "]");
+
+  return true;
+}
+
 bool XAuidoMixer::remove_orbit(const std::shared_ptr<XSound> &sound) {
   auto orbit_list_it = audio_orbits.find(sound);
   if (orbit_list_it != audio_orbits.end()) {
