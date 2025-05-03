@@ -445,6 +445,7 @@ void XAuidoMixer::mix(
 
 void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
                               float global_volume) {
+  std::vector<std::shared_ptr<XAudioOrbit>> remove_immorbits;
   for (size_t i = 0; i < mixed_pcm.size(); i++) {
     // 混音
     // 主音轨
@@ -452,11 +453,28 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
       if (i < (pcm[0].size() * pcm.size())) {
         // 交错写入混音数据行
         mixed_pcm[i] += pcm[i % 2][i / 2] * global_volume;
-      } else {
-        mixed_pcm[i] += 0;
+      }
+    }
+    // 立即音轨
+    for (const auto &[sound, orbits] : immediate_orbits) {
+      for (const auto &orbit : orbits) {
+        if (orbit->playpos * 2 + i <
+            (sound->pcm[0].size() * sound->pcm.size())) {
+          // 混入主音轨
+          mixed_pcm[i] +=
+              sound->pcm[i % sound->pcm.size()][i / sound->pcm.size()] *
+              orbit->volume * global_volume;
+          // 更新播放位置
+          orbit->playpos += i % sound->pcm.size();
+        } else {
+          // 播放完毕
+          remove_immorbits.emplace_back(orbit);
+        }
       }
     }
   }
+  // 移除播放完的立即音轨
+  for (const auto &orbit : remove_immorbits) remove_orbit_immediatly(orbit);
 }
 
 void XAuidoMixer::stretch(std::vector<std::vector<float>> &pcm,
