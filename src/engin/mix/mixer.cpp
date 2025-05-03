@@ -131,8 +131,8 @@ bool XAuidoMixer::remove_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {
   }
 
   orbit_list_it->second.erase(orbitit);
-  XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
-        orbit->sound->name + "]");
+  // XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
+  //       orbit->sound->name + "]");
 
   // 检查是否应该继续播放
   bool shouldplay = false;
@@ -170,8 +170,8 @@ bool XAuidoMixer::remove_orbit_immediatly(
   }
 
   orbit_list_it->second.erase(orbitit);
-  XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
-        orbit->sound->name + "]");
+  // XINFO("已移除音轨[" + std::to_string(orbit->sound->handle) + ":" +
+  //       orbit->sound->name + "]");
 
   return true;
 }
