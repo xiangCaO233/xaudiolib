@@ -234,7 +234,7 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
 
   std::thread remove_thread([=]() {
     for (const auto &orbit : remove_orbit) {
-      player->mixer->remove_orbit(orbit);
+      player->mixer->remove_orbit_immediatly(orbit);
     }
   });
   remove_thread.detach();
