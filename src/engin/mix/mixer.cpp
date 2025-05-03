@@ -451,7 +451,7 @@ void XAuidoMixer::mix_pcmdata(std::vector<float> &mixed_pcm,
     for (auto &pcm : pcms) {
       if (i < (pcm[0].size() * pcm.size())) {
         // 交错写入混音数据行
-        mixed_pcm[i] += pcm[i % 2][i / 2] * global_volume;
+        mixed_pcm[i] += pcm[i % pcm.size()][i / pcm.size()] * global_volume;
       }
     }
   }

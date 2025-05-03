@@ -207,4 +207,19 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   }
   // 写入sdl回调数据
   std::memcpy(stream, audiopcm, numSamples * sizeof(uint32_t));
-};
+  auto des_data = reinterpret_cast<float *>(stream);
+
+  // 读取立即轨道数据
+  for (int i = 0; i < numSamples; ++i) {
+    for (auto &[sound, orbits] : player->mixer->immediate_orbits) {
+      for (auto &orbit : orbits) {
+        if (orbit->playpos + i / sound->pcm.size() < sound->pcm[0].size()) {
+          des_data[i] += sound->pcm[i % sound->pcm.size()]
+                                   [orbit->playpos + i / sound->pcm.size()] *
+                         orbit->volume * player->global_volume;
+        }
+        orbit->playpos += 1.0 / double(sound->pcm.size());
+      }
+    }
+  }
+}
