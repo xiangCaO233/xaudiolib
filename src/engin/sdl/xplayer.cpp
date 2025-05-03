@@ -218,7 +218,6 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
                                    [orbit->playpos + i / sound->pcm.size()] *
                          orbit->volume * player->global_volume;
         }
-        orbit->playpos += 1.0 / double(sound->pcm.size());
       }
     }
   }
@@ -226,6 +225,8 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
   std::vector<std::shared_ptr<XAudioOrbit>> remove_orbit;
   for (auto &[sound, orbits] : player->mixer->immediate_orbits) {
     for (auto &orbit : orbits) {
+      // 更新播放位置并检查
+      orbit->playpos += numSamples / sound->pcm.size();
       if (orbit->playpos >= sound->pcm[0].size()) {
         remove_orbit.emplace_back(orbit);
       }
