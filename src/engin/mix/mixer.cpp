@@ -437,8 +437,9 @@ void XAuidoMixer::mix(
 
     auto t = xutil::plannerpcmpos2milliseconds(
         (size_t)playpos, static_cast<int>(x::Config::samplerate));
-    XINFO("[" + std::to_string(audio->sound->handle) + ":" +
-          audio->sound->name + "]:当前播放位置:[" + std::to_string(t) + "ms]");
+    // XINFO("[" + std::to_string(audio->sound->handle) + ":" +
+    //       audio->sound->name + "]:当前播放位置:[" + std::to_string(t) +
+    //       "ms]");
   }
   mix_pcmdata(mixed_pcm, global_volume);
 }
