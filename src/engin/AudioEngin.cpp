@@ -103,6 +103,7 @@ void XAudioEngin::shutdown() {
 int XAudioEngin::load(const std::string &audio,
                       std::string &loaded_audio_name) {
     std::filesystem::path path(audio);
+    if (!std::filesystem::exists(path)) return -1;
     auto extension = path.extension().string();
     if (extension == ".ncm") {
         // 调用ncmdump
