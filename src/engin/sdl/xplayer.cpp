@@ -210,6 +210,7 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
     std::memcpy(stream, audiopcm, numSamples * sizeof(uint32_t));
     auto des_data = reinterpret_cast<float *>(stream);
 
+    std::lock_guard<std::mutex> lock(player->mixer->immediate_mtx);
     // 读取立即轨道数据
     for (int i = 0; i < numSamples; ++i) {
         for (auto &[sound, orbits] : player->mixer->immediate_orbits) {
@@ -224,9 +225,7 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
             }
         }
     }
-
     std::vector<std::shared_ptr<XAudioOrbit>> remove_orbit;
-    std::lock_guard<std::mutex> lock(player->mixer->immediate_mtx);
     for (auto &[sound, orbits] : player->mixer->immediate_orbits) {
         for (auto &orbit : orbits) {
             if (!orbit) continue;
@@ -238,11 +237,7 @@ void XPlayer::sdl_audio_callback(void *userdata, uint8_t *stream, int len) {
             }
         }
     }
-
-    std::thread remove_thread([=]() {
-        for (const auto &orbit : remove_orbit) {
-            player->mixer->remove_orbit_immediatly(orbit);
-        }
-    });
-    remove_thread.detach();
+    for (const auto &orbit : remove_orbit) {
+        player->mixer->remove_orbit_immediatly(orbit);
+    }
 }
