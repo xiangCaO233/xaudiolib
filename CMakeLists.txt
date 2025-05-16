@@ -16,29 +16,28 @@ add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CODEC_SOURCES src/engin/codec/encoder.cpp src/engin/codec/decoder.cpp)
 set(DEVICE_SOURCES src/engin/device/outdevice.cpp src/engin/device/indevice.cpp)
 set(MIXER_SOURCES src/gpu/gl/shader/shader.cpp src/engin/mix/mixer.cpp
-  src/engin/mix/AudioOrbit.cpp)
+                  src/engin/mix/AudioOrbit.cpp)
 set(CONFIG_SOURCES src/config/config.cpp)
 set(SDL_SOURCES src/engin/sdl/rbuffer.cpp src/engin/sdl/xmicrophone.cpp
-  src/engin/sdl/xplayer.cpp)
+                src/engin/sdl/xplayer.cpp)
 
 set(ENGIN_SOURCES
-  src/engin/AudioEngin.cpp
-  src/engin/AudioManager.cpp
-  src/engin/Sound.cpp
-	src/engin/util/ncm.h
-	src/engin/util/utils.h
-  ${CONFIG_SOURCES}
-  ${CODEC_SOURCES}
-  ${DEVICE_SOURCES}
-  ${MIXER_SOURCES}
-  ${SDL_SOURCES})
+    src/engin/AudioEngin.cpp
+    src/engin/AudioManager.cpp
+    src/engin/Sound.cpp
+    src/engin/util/ncm.h
+    src/engin/util/utils.h
+    ${CONFIG_SOURCES}
+    ${CODEC_SOURCES}
+    ${DEVICE_SOURCES}
+    ${MIXER_SOURCES}
+    ${SDL_SOURCES})
 
 set(LIB_SOURCES src/log/colorful_log.cpp ${ENGIN_SOURCES})
 
@@ -116,134 +115,134 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   target_link_libraries(
     testxaudiolib
     PUBLIC ${COREAUDIO_LIBRARY}
-    ${AUDIOTOOLBOX_LIBRARY}
-    ${AUDIOUNIT_LIBRARY}
-    /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
-    nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::GLEW
-    glfw
-    OpenGL::GL
-    glm::glm
-    SDL2::SDL2
-    PkgConfig::ffmpeg)
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
+           nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           GLEW::GLEW
+           glfw
+           OpenGL::GL
+           glm::glm
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
     PUBLIC ${COREAUDIO_LIBRARY}
-    ${AUDIOTOOLBOX_LIBRARY}
-    ${AUDIOUNIT_LIBRARY}
-    /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
-    nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::GLEW
-    glfw
-    OpenGL::GL
-    glm::glm
-    SDL2::SDL2
-    PkgConfig::ffmpeg)
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           /opt/homebrew/Cellar/rubberband/4.0.0/lib/librubberband.3.dylib
+           nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           GLEW::GLEW
+           glfw
+           OpenGL::GL
+           glm::glm
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
     PUBLIC ${COREAUDIO_LIBRARY}
-    ${AUDIOTOOLBOX_LIBRARY}
-    ${AUDIOUNIT_LIBRARY}
-    ${RUBBERBAND_LIBRARIES}
-    nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::GLEW
-    glfw
-    OpenGL::GL
-    glm::glm
-    SDL2::SDL2
-    PkgConfig::ffmpeg)
+           ${AUDIOTOOLBOX_LIBRARY}
+           ${AUDIOUNIT_LIBRARY}
+           ${RUBBERBAND_LIBRARIES}
+           nlohmann_json::nlohmann_json
+           spdlog::spdlog
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           GLEW::GLEW
+           glfw
+           OpenGL::GL
+           glm::glm
+           SDL2::SDL2
+           PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # rubberband库
   pkg_check_modules(RUBBERBAND REQUIRED rubberband)
   target_link_libraries(
     testxaudiolib
     PUBLIC nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    ${RUBBERBAND_LIBRARIES}
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::GLEW
-    SDL2::SDL2
-    glfw
-    OpenGL::GL
-    glm::glm
-    PkgConfig::ffmpeg)
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           GLEW::GLEW
+           SDL2::SDL2
+           glfw
+           OpenGL::GL
+           glm::glm
+           PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio
     PUBLIC nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    ${RUBBERBAND_LIBRARIES}
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    SDL2::SDL2
-    glfw
-    OpenGL::GL
-    glm::glm
-    GLEW::GLEW
-    PkgConfig::ffmpeg)
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           SDL2::SDL2
+           glfw
+           OpenGL::GL
+           glm::glm
+           GLEW::GLEW
+           PkgConfig::ffmpeg)
   target_link_libraries(
     xaudio-dev
     PUBLIC nlohmann_json::nlohmann_json
-    spdlog::spdlog
-    ${RUBBERBAND_LIBRARIES}
-    OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::GLEW
-    SDL2::SDL2
-    OpenGL::GL
-    glm::glm
-    glfw
-    PkgConfig::ffmpeg)
+           spdlog::spdlog
+           ${RUBBERBAND_LIBRARIES}
+           OpenAL::OpenAL
+           OpenCL::OpenCL
+           GLEW::GLEW
+           SDL2::SDL2
+           OpenGL::GL
+           glm::glm
+           glfw
+           PkgConfig::ffmpeg)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # windows
   target_link_libraries(
     testxaudiolib
     PUBLIC OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::glew
-    SDL2::SDL2
-    spdlog::spdlog
-    nlohmann_json::nlohmann_json
-    OpenGL::GL
-    glm::glm
-    glfw
-    G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
-    ${FFMPEG_LIBRARIES})
+           OpenCL::OpenCL
+           GLEW::glew
+           SDL2::SDL2
+           spdlog::spdlog
+           nlohmann_json::nlohmann_json
+           OpenGL::GL
+           glm::glm
+           glfw
+           G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
+           ${FFMPEG_LIBRARIES})
   target_link_libraries(
     xaudio
     PUBLIC OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::glew
-    spdlog::spdlog
-    nlohmann_json::nlohmann_json
-    OpenGL::GL
-    glm::glm
-    glfw
-    SDL2::SDL2
-    G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
-    ${FFMPEG_LIBRARIES})
+           OpenCL::OpenCL
+           GLEW::glew
+           spdlog::spdlog
+           nlohmann_json::nlohmann_json
+           OpenGL::GL
+           glm::glm
+           glfw
+           SDL2::SDL2
+           G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
+           ${FFMPEG_LIBRARIES})
   target_link_libraries(
     xaudio-dev
     PUBLIC OpenAL::OpenAL
-    OpenCL::OpenCL
-    GLEW::glew
-    nlohmann_json::nlohmann_json
-    SDL2::SDL2
-    OpenGL::GL
-    glm::glm
-    glfw
-    spdlog::spdlog
-    G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
-    ${FFMPEG_LIBRARIES})
+           OpenCL::OpenCL
+           GLEW::glew
+           nlohmann_json::nlohmann_json
+           SDL2::SDL2
+           OpenGL::GL
+           glm::glm
+           glfw
+           spdlog::spdlog
+           G:\\coding\\vcpkg\\installed\\x64-windows\\lib\\rubberband.lib
+           ${FFMPEG_LIBRARIES})
 else()
   # 其它系统
   message(STATUS "当前系统: ${CMAKE_SYSTEM_NAME}")
