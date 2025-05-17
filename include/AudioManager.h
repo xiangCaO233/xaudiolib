@@ -139,7 +139,7 @@ class XAudioOrbit {
     // 构造XAudioOrbit
     explicit XAudioOrbit(std::shared_ptr<XSound> audio = nullptr);
     // 析构XAudioOrbit
-    ~XAudioOrbit() = default;
+    ~XAudioOrbit();
     // 添加播放位置回调
     void add_playpos_callback(std::shared_ptr<PlayposCallBack> callback);
     // 移除回调
