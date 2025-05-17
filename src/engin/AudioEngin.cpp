@@ -120,6 +120,7 @@ int XAudioEngin::load(const std::string &audio,
     // 规范化路径
     auto p = std::filesystem::weakly_canonical(std::filesystem::absolute(path))
                  .string();
+    std::replace(p.begin(), p.end(), '\\', '/');
     auto name = path.filename().string();
     loaded_audio_name = name;
     auto handelit = handles.find(p);
