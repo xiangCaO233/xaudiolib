@@ -1,5 +1,6 @@
 #include "mixer.h"
 
+#include <GLFW/glfw3.h>
 #include <rubberband/RubberBandStretcher.h>
 
 #include <algorithm>
@@ -90,7 +91,7 @@ XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
     }
 }
 
-XAuidoMixer::~XAuidoMixer() {}
+XAuidoMixer::~XAuidoMixer() { glfwTerminate(); }
 
 // 添加音频轨道
 void XAuidoMixer::add_orbit(const std::shared_ptr<XAudioOrbit> &orbit) {

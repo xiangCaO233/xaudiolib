@@ -13,7 +13,7 @@ XSound::XSound(int h, std::string n, std::string p, AVFormatContext *f)
     : handle(h), name(n), path(p), audio_format(f) {
     XTRACE("XSound初始化");
 }
-XSound::~XSound() { av_free(audio_format); }
+XSound::~XSound() { avformat_close_input(&audio_format); }
 
 // 获取位置(按帧)
 size_t XSound::locateframe(size_t frameindex) const {
