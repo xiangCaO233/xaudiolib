@@ -21,8 +21,11 @@ channels Config::channel = channels::AUDIO_DOUBLE_CHANNEL;
 sampleratetype Config::samplerate = sampleratetype::AVMEDIA_SAMPLERATE;
 // 播放音频的缓冲区大小(有下限)
 int Config::play_buffer_size = 256;
+
 // 保存路径
-std::string Config::config_file_path = "./config/latest_config.json";
+std::string Config::config_file_path() {
+    return "./config/audio_settings.json";
+}
 
 void Config::to_json(json& j) {
     j = json{{"audio_transfer_method", static_cast<int>(audio_transfer_method)},
@@ -45,21 +48,21 @@ void Config::from_json(const json& j) {
 }
 
 void Config::load() {
-    std::ifstream input(config_file_path);
+    std::ifstream input(config_file_path());
     if (input) {
         json j;
         input >> j;
         from_json(j);
     } else {
-        XERROR("无法打开配置文件: " + config_file_path);
+        XERROR("无法打开配置文件: " + config_file_path());
     }
 };
 
 void Config::save() {
     json j;
     to_json(j);
-    std::cout << std::filesystem::absolute(config_file_path) << "\n";
-    std::ofstream output(config_file_path);
+    std::cout << std::filesystem::absolute(config_file_path()) << "\n";
+    std::ofstream output(config_file_path());
     if (output) {
         // 美化输出，缩进为4
         output << j.dump(4);

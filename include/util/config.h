@@ -83,7 +83,7 @@ class Config {
     // 播放音频的缓冲区大小
     static int play_buffer_size;
     // 保存路径
-    static std::string config_file_path();
+    static std::string config_file_path;
 
     friend XAudioEngin;
     friend XPlayer;
