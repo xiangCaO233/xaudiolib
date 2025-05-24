@@ -122,10 +122,10 @@ void XPlayer::stop() {
     // 唤起线程
     cv.notify_all();
     mixercv.notify_all();
-    // 等待线程正常结束
-    if (sdl_playthread.joinable()) sdl_playthread.join();
     // 暂停sdl设备
     SDL_PauseAudioDevice(*(SDL_AudioDeviceID *)device_id, 1);
+    // 等待线程正常结束
+    if (sdl_playthread.joinable()) sdl_playthread.join();
     if (mixer->mixthread.joinable()) mixer->mixthread.join();
 }
 // 暂停
