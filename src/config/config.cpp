@@ -61,7 +61,7 @@ void Config::load() {
 void Config::save() {
     json j;
     to_json(j);
-    std::cout << std::filesystem::absolute(config_file_path()) << "\n";
+    // std::cout << std::filesystem::absolute(config_file_path()) << "\n";
     std::ofstream output(config_file_path());
     if (output) {
         // 美化输出，缩进为4
