@@ -58,7 +58,9 @@ class XAuidoMixer {
     // 混合音频
     void mix(const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
              std::vector<float>& mixed_pcm, float global_volume);
-    void mix_pcmdata(std::vector<float>& mixed_pcm, float global_volume);
+    void mix_pcmdata(
+        const std::vector<std::shared_ptr<XAudioOrbit>>& src_sounds,
+        std::vector<float>& mixed_pcm, float global_volume);
 
     // Planner存储的数据拉伸
     void stretch(std::vector<std::vector<float>>& pcm, size_t des_size);
