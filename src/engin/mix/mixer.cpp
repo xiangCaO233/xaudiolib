@@ -464,24 +464,29 @@ void XAuidoMixer::mix_pcmdata(
     for (size_t i = 0; i < mixed_pcm.size(); i++) {
         // 混音
         // 主音轨
-        int sound_index = 0;
+        // int sound_index = 0;
         for (auto &pcm : pcms) {
             if (i < (pcm[0].size() * pcm.size())) {
                 // 交错写入混音数据行
                 mixed_pcm[i] +=
                     pcm[i % pcm.size()][i / pcm.size()] * global_volume;
             } else {
-                if (src_sounds[sound_index]->playpos + (i / 2) <
-                    src_sounds[sound_index]->sound->pcm[0].size()) {
-                    mixed_pcm[i] +=
-                        src_sounds[sound_index]
-                            ->sound
-                            ->pcm[i % 2]
-                                 [src_sounds[sound_index]->playpos + (i / 2)] *
-                        global_volume;
-                }
+                mixed_pcm[i] +=
+                    pcm[i % pcm.size()][pcm[0].size() - 1] * global_volume;
+                // if (src_sounds[sound_index]->playpos + (i / 2) <
+                //     src_sounds[sound_index]->sound->pcm[0].size()) {
+                //     mixed_pcm[i] +=
+                //         src_sounds[sound_index]
+                //             ->sound
+                //             ->pcm[i % 2]
+                //                  [src_sounds[sound_index]->playpos + (i / 2)]
+                //                  *
+                //         global_volume;
+                // } else {
+                //     mixed_pcm[i] += 0;
+                // }
             }
-            ++sound_index;
+            // ++sound_index;
         }
     }
 }
