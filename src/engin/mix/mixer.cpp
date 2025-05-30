@@ -45,50 +45,51 @@ void main(){
 
 XAuidoMixer::XAuidoMixer(XPlayer *player) : des_player(player) {
     XTRACE("初始化混音器");
-    if (!isglinitialized) {
-        XWARN("gl上下文未初始化");
-        XINFO("正在初始化gl上下文");
-        if (glfwInit()) {
-            XINFO("glfw初始化成功");
-            // 配置glfw参数
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-            // Apple平台前向适配
-            XINFO("当前为Apple平台,启用opengl前向兼容");
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-            auto w = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-            glfwHideWindow(w);
-            glfwPollEvents();
-            if (w) {
-                glfwMakeContextCurrent(w);
-                if (glewInit() == GLEW_OK) {
-                    XINFO("glew初始化成功");
-                    XINFO("初始化opengl着色器");
-                    glshader = std::make_unique<Shader>(vsource, fsource);
-                    isglinitialized = true;
-                    // 终止glfw,防止未响应
-                    glfwTerminate();
-                    XINFO("混音器创建成功");
-                } else {
-                    XCRITICAL("glew初始化失败");
-                    XERROR("混音器创建失败");
-                    glfwTerminate();
-                }
-            } else {
-                XERROR("glfw窗体上下文初始化失败");
-                XERROR("混音器创建失败");
-                glfwTerminate();
-            }
-        } else {
-            XCRITICAL("glfw初始化失败");
-            XERROR("混音器创建失败");
-        }
-    } else {
-        XINFO("gl已初始化过");
-    }
+    //     if (!isglinitialized) {
+    //         XWARN("gl上下文未初始化");
+    //         XINFO("正在初始化gl上下文");
+    //         if (glfwInit()) {
+    //             XINFO("glfw初始化成功");
+    //             // 配置glfw参数
+    //             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    //             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    //             glfwWindowHint(GLFW_OPENGL_PROFILE,
+    //             GLFW_OPENGL_CORE_PROFILE);
+    // #ifdef __APPLE__
+    //             // Apple平台前向适配
+    //             XINFO("当前为Apple平台,启用opengl前向兼容");
+    //             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    // #endif
+    //             auto w = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+    //             glfwHideWindow(w);
+    //             glfwPollEvents();
+    //             if (w) {
+    //                 glfwMakeContextCurrent(w);
+    //                 if (glewInit() == GLEW_OK) {
+    //                     XINFO("glew初始化成功");
+    //                     XINFO("初始化opengl着色器");
+    //                     glshader = std::make_unique<Shader>(vsource,
+    //                     fsource); isglinitialized = true;
+    //                     // 终止glfw,防止未响应
+    //                     glfwTerminate();
+    //                     XINFO("混音器创建成功");
+    //                 } else {
+    //                     XCRITICAL("glew初始化失败");
+    //                     XERROR("混音器创建失败");
+    //                     glfwTerminate();
+    //                 }
+    //             } else {
+    //                 XERROR("glfw窗体上下文初始化失败");
+    //                 XERROR("混音器创建失败");
+    //                 glfwTerminate();
+    //             }
+    //         } else {
+    //             XCRITICAL("glfw初始化失败");
+    //             XERROR("混音器创建失败");
+    //         }
+    //     } else {
+    //         XINFO("gl已初始化过");
+    //     }
 }
 
 XAuidoMixer::~XAuidoMixer() { glfwTerminate(); }
